@@ -1,0 +1,98 @@
+\documentclass[oneside,a4paper,11pt]{book}
+\usepackage[utf8]{inputenc}
+\usepackage{svg}
+\usepackage[italian]{babel}
+\usepackage{float}
+\usepackage{fancyvrb}
+\usepackage{titling}
+\usepackage[margin=1in,footskip=0.25in]{geometry}
+\usepackage{listings}
+\usepackage[DIV=12,BCOR=2mm,headinclude=true,footinclude=false]{typearea}
+\usepackage{color, colortbl,xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tcolorbox}
+\usepackage{chngcntr}
+\usepackage{diagbox}
+\usepackage{calc}
+\usepackage{amssymb}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{parskip}
+\usepackage{cancel}
+\usepackage{forest}
+\usepackage{listings}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}}
+\pagestyle{fancy}
+\fancyhf{}% Clear header/footer
+\fancyhead[L]{\nouppercase\leftmark}
+\fancyhead[R]{\thepage}
+\usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,decorations.pathreplacing,shapes.multipart,calc,snakes}
+\usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart}
+\tcbuselibrary{skins}
+\counterwithin{figure}{section}
+%Nuovi comandi
+\newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\newcommand\prodG{\stackrel{\mathclap{\normalfont\mbox{\tiny{G}}}}{\Longrightarrow}}
+%asmthm
+\newlength{\marginlabelsep}\setlength{\marginlabelsep}{0.5em}
+\newtheoremstyle{italicstyle} %% Name
+  {} %% <- Space above (empty = default = \topsep = 8.0pt plus 2.0pt minus 4.0pt)
+  {} %% <- Space below (empty = default = \topsep = 8.0pt plus 2.0pt minus 4.0pt)
+  {\itshape} %% <- Body font
+  {} %% <- Indent amount (empty = no indent, \parindent = just that)
+  {\bfseries} %% <- Thm head font
+  {} %% <- Punctuation after thm head
+  {1pt} %% <- Space after thm head (or " " or \newline) (default: 5pt plus 1pt minus 1pt)
+  {\vtop to 0pt{\llap{\thmname{#1}\hskip\marginlabelsep}
+                \llap{\thmnumber{#2}\hskip\marginlabelsep}}\thmnote{#3\\}%
+  }
+\newtheoremstyle{normStyle} %% Name
+  {} %% <- Space above (empty = default = \topsep = 8.0pt plus 2.0pt minus 4.0pt)
+  {} %% <- Space below (empty = default = \topsep = 8.0pt plus 2.0pt minus 4.0pt)
+  {\normalfont} %% <- Body font
+  {} %% <- Indent amount (empty = no indent, \parindent = just that)
+  {\bfseries} %% <- Thm head font
+  {} %% <- Punctuation after thm head
+  {1pt} %% <- Space after thm head (or " " or \newline) (default: 5pt plus 1pt minus 1pt)
+  {\vtop to 0pt{\llap{\thmname{#1}\hskip\marginlabelsep}
+                \llap{\thmnumber{#2}\hskip\marginlabelsep}}\thmnote{#3\\}%
+  }
+\theoremstyle{italicstyle}
+\newtheorem{corollary}{Corollario}[section]
+\newtheorem{notazione}{Notazione}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{definizione}{Definizione}[section]
+\newtheorem{nota}{Nota}[section]
+\newtheorem{exercise}{Esercizio}[section]
+\theoremstyle{normStyle}
+\newtheorem{exmp}{Esempio}[section]
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{proposizione}{Proposizione}[section]
+\tcbuselibrary{listings,skins}
+\newtcblisting{mylisting}[2][]{
+    arc=0pt, outer arc=0pt,
+    listing only, 
+    title=#2,
+    #1,
+    listing options= {escapechar=|}
+}
+\newcommand{\myboxedtext}[2][rectangle,draw]{%
+    \tikz[baseline=-0.6ex] \node [#1]{#2};}%
+%%======================================================================
+\title{Fondamenti di Algoritmi, Complessità e Problem Solving}
+\author{\textit{Alessio Gjergji}}
+\date{}
+\begin{document}
+\maketitle
+\tableofcontents
+\chapter{Introduzione}
+\end{document}

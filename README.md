@@ -1,4 +1,4 @@
-# Benvenuti nei miei Appunti di Magistrale in Ingegneria e Scienze Informatiche
+# Appunti di Magistrale in Ingegneria e Scienze Informatiche
 
 Ciao a tutti! Sono Alessio, e sono entusiasta di condividere con voi i miei appunti e le mie esperienze durante il mio percorso di studi in Ingegneria e Scienze Informatiche presso l'Università di Verona.
 
