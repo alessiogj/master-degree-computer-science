@@ -1,1 +1,1 @@
-# master-degree-computer-science
+# Master Degree in Computer Science

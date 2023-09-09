@@ -1,0 +1,16 @@
+# Ignora i file generati dalla compilazione LaTeX (esclusi .tex e .pdf)
+**/*.aux
+**/*.log
+**/*.out
+**/*.synctex.gz
+**/*.toc
+**/*.fdb_latexmk
+**/*.fls
+
+# Ignora specifici file e cartelle
+init_latex.py
+.vscode/
+.DS_Store
+
+# Mantieni la cartella img e il suo percorso completo
+!/**/img/
