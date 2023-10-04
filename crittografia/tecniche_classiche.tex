@@ -348,6 +348,28 @@ le seguenti:
         N 0.00 & R 0.00 &
     \end{tabular}
 \end{figure}
+confrontando questa suddivisione con la Figura \ref{fig:frequenza-lettere-testo-cifrato}, sembra probabile
+che le lettere cifrate P e Z siano equivalenti alle lettere in chiaro e e t, ma non è certo quale sia
+quale. Le lettere S, U, O, M e H sono tutte di frequenza relativamente alta e probabilmente corrispondono
+alle lettere in chiaro dell'insieme \{\textit{a, h, i, n, o, r, s}\}. Le lettere con le frequenze più basse
+(\textit{ovvero A, B, G, Y, I, J}) sono probabilmente incluse nell'insieme \{\textit{b, j, k, q, v, x, z}\}.
+
+Ci sono diverse modalità per procedere in questo punto. Potremmo fare alcune assegnazioni
+provvisorie e iniziare a completare il testo in chiaro per vedere se assomiglia a uno scheletro
+ragionevole di un messaggio. Un approccio più sistematico è cercare altre regolarità. Ad esempio,
+potrebbero essere noti alcuni termini nel testo. Oppure potremmo cercare sequenze ripetute di lettere
+cifrate e cercare di dedurne le corrispondenti lettere in chiaro.
+
+Un potente strumento è rappresentato dalla frequenza delle combinazioni di due lettere, note come digrammi.
+Potrebbe essere compilata una tabella simile alla Figura \ref{fig:frequenza-lettere-testo-cifrato} che mostri
+la frequenza relativa dei digrammi. Il digramma più comune è th. Nel nostro testo cifrato, il digramma più
+comune è ZW, che appare tre volte. Quindi facciamo corrispondere Z a t e W a h. Quindi, in base alla nostra
+ipotesi precedente, possiamo equiparare P a e. Ora notiamo che la sequenza ZWP appare nel testo cifrato, e possiamo
+tradurre quella sequenza come ``the''. Questo è il trigramma (\textit{combinazione di tre lettere}) più frequente in inglese,
+il che sembra indicare che siamo sulla strada giusta.
+
+Successivamente, notiamo la sequenza ZWSZ nella prima riga. Non sappiamo se queste quattro lettere formano una
+parola completa, ma se lo fanno, è del tipo $th\_t$. In tal caso, S corrisponde ad a.
 
 \begin{figure}[H]
     \centering
@@ -362,13 +384,13 @@ le seguenti:
             nodes near coords align={vertical}, % Imposta l'allineamento verticale dei numeri delle coordinate
             nodes near coords style={rotate=90}, % Ruota i numeri delle coordinate in verticale
             nodes near coords style={right, font=\footnotesize}, % Posiziona i numeri sopra le barre e riduce la dimensione del carattere
-            width=14cm,
-            height=8cm,
+            width=12cm,
+            height=6cm,
             enlarge x limits=0.05,
             ymin=0,
-            ymax=17,
+            ymax=20,
             ymajorgrids=true,
-            bar width=10pt, % Larghezza delle barre
+            bar width=8pt, % Larghezza delle barre
             axis line style={gray}, % Imposta il colore dell'asse su grigio
             y axis line style={gray}, % Imposta il colore dell'asse y su grigio
         ]
@@ -398,4 +420,326 @@ le seguenti:
         \end{axis}
         \end{tikzpicture}
         \caption{Frequenze relative alle lettere nei testi inglesi}
+        \label{fig:frequenza-lettere-testo-cifrato}
 \end{figure}
+Finora abbiamo identificato solo quattro lettere, ma già abbiamo una buona parte del messaggio.
+Continuando l'analisi delle frequenze e sperimentando, dovremmo facilmente trovare una soluzione
+da questo punto. Il testo completo, con spazi aggiunti tra le parole, è il seguente:
+
+\begin{verbatim}
+    it was disclosed yesterday that several informal but
+    direct contacts have been made with political
+    representatives of the viet cong in moscow
+\end{verbatim}
+
+I cifrari monoalfabetici sono facili da decifrare perché riflettono i dati di frequenza
+dell'alfabeto originale. Una contromisura consiste nel fornire più sostituti, noti come omofoni,
+per una singola lettera. Ad esempio, la lettera "e" potrebbe essere assegnata a diversi simboli
+cifrati, come 16, 74, 35 e 21, con ciascun omofono assegnato a una lettera in rotazione o casualmente.
+Se il numero di simboli assegnati a ciascuna lettera è proporzionale alla frequenza relativa di
+quella lettera, le informazioni sulla frequenza delle singole lettere vengono completamente oscurate.
+Il grande matematico Carl Friedrich Gauss credeva di aver ideato un cifrario infrangibile utilizzando
+gli omofoni. Tuttavia, anche con gli omofoni, ogni elemento del testo in chiaro influenza
+solo un elemento del testo cifrato, e i modelli di lettere multiple (\textit{ad esempio, le frequenze
+dei digrammi}) sopravvivono comunque nel testo cifrato, rendendo la crittoanalisi relativamente semplice.
+
+\subsection{Cifrario di Playfair}
+Il cifrario di crittografia a più lettere più conosciuto è il cifrario di
+\textit{Playfair}, che tratta i digrammi nel testo in chiaro come unità singole e li traduce
+in digrammi nel testo cifrato. L'algoritmo di \textit{Playfair} si basa sull'uso di una matrice $5 \times 5$
+di lettere costruita utilizzando una parola chiave. Ecco un esempio, risolto da Lord Peter Wimsey nel
+romanzo ``Have His Carcase" di \textit{Dorothy Sayers}:
+
+\begin{center}
+    \begin{tikzpicture}[font=\ttfamily\small]
+        \matrix (playfair) [matrix of nodes,nodes={draw,minimum size=12mm,anchor=center},column sep=-\pgflinewidth,row sep=-\pgflinewidth]{
+            |[fill=gray!20]| M & |[fill=gray!20]| O & |[fill=gray!20]| N & |[fill=gray!20]| A & |[fill=gray!20]| R \\
+            |[fill=gray!20]| H & |[fill=gray!20]| Y & B & C & D \\
+            E & F & G & I & K \\
+            L & P & Q & S & T \\
+            U & V & W & X & Z \\
+        };
+      \end{tikzpicture}
+    \end{center}
+In questo caso, la parola chiave è "monarchia". La matrice viene costruita riempiendo le lettere della parola chiave (senza duplicati) da sinistra a destra e dall'alto verso il basso, e poi riempiendo il resto della matrice con le lettere rimanenti in ordine alfabetico. Le lettere I e J contano come una sola lettera. Il testo in chiaro viene crittografato due lettere alla volta, secondo le seguenti regole:
+\begin{enumerate}
+    \item Le lettere ripetute nel testo in chiaro che si trovano nella stessa coppia 
+    vengono separate da una lettera di riempimento, come ad esempio ``x", quindi ``balloon" 
+    verrebbe trattato come ``ba lx lo on".
+    \item Due lettere nel testo in chiaro che si trovano nella stessa riga della matrice
+    vengono ciascuna sostituite dalla lettera a destra, con il primo elemento della riga
+    che segue ciclicamente l'ultimo. Ad esempio, ``ar" viene crittografato come ¡¡RM".
+    \item Due lettere nel testo in chiaro che si trovano nella stessa colonna vengono ciascuna
+    sostituite dalla lettera sottostante, con l'elemento superiore della colonna che segue
+    ciclicamente l'ultimo. Ad esempio, ``mu" viene crittografato come ``CM".
+    \item In caso contrario, ogni lettera nel testo in chiaro nella coppia viene sostituita
+    dalla lettera che si trova nella stessa riga e nella colonna occupata dall'altra lettera
+    nel testo in chiaro. Quindi, ``hs" diventa ``BP" e "ea" diventa ``IM" (o ``JM", a discrezione
+    dell'incifratore).
+\end{enumerate}
+Il cifrario Playfair rappresenta un grande passo avanti rispetto ai semplici cifrari monoalfabetici.
+Per una cosa, mentre ci sono solo $26$ lettere, ci sono 26 $\cdot 26 = 676$ digrammi, rendendo
+più difficile l'identificazione dei digrammi individuali. Inoltre, le frequenze relative delle singole
+lettere mostrano una gamma molto più ampia rispetto a quella dei digrammi, rendendo l'analisi delle
+frequenze molto più difficile. Per queste ragioni, il cifrario Playfair è stato a lungo considerato
+indistruttibile. È stato utilizzato come sistema standard sul campo dall'Esercito Britannico durante
+la Prima Guerra Mondiale e ha ancora goduto di un notevole utilizzo da parte dell'Esercito degli Stati
+Uniti e altre forze alleate durante la Seconda Guerra Mondiale.
+Nonostante questo livello di fiducia nella sua sicurezza, il cifrario Playfair è relativamente facile
+da decifrare, perché lascia comunque gran parte della struttura della lingua in chiaro intatta. Di solito,
+poche centinaia di lettere del testo cifrato sono sufficienti.
+Un modo per rivelare l'efficacia del cifrario Playfair e di altri cifrari è mostrato nella Figura \ref{fig:playfair}.
+La linea etichettata ``testo in chiaro" rappresenta una tipica distribuzione di frequenza dei $26$ caratteri
+alfabetici (\textit{senza distinzione tra maiuscole e minuscole}) in un testo normale. Questa è anche la
+distribuzione di frequenza di qualsiasi cifrario di sostituzione monoalfabetica, perché i valori di
+frequenza per le singole lettere sono gli stessi, solo con lettere diverse sostituite alle lettere
+originali. Il grafico è sviluppato nel seguente modo: il numero di occorrenze di ciascuna lettera nel
+testo viene conteggiato e diviso per il numero di occorrenze della lettera più frequentemente utilizzata.
+Utilizzando i risultati della Figura \ref{fig:frequenza-lettere-testo-cifrato}, vediamo che la
+lettera ``e" è quella più frequentemente utilizzata.
+Di conseguenza, "e" ha una frequenza relativa di $1$, ``t" di $9.056/12.702 \approx 0,72$, e così via.
+I punti sull'asse orizzontale corrispondono alle lettere in ordine decrescente di frequenza.
+La Figura \ref{fig:playfair} mostra anche la distribuzione di frequenza che si ottiene quando il testo viene
+crittografato utilizzando il cifrario Playfair. Per normalizzare il grafico, il numero di occorrenze
+di ciascuna lettera nel testo cifrato è stato nuovamente diviso per il numero di occorrenze della
+lettera ``e" nel testo in chiaro. Il grafico risultante mostra quindi in che misura la distribuzione
+di frequenza delle lettere, che rende facile risolvere i cifrari di sostituzione, sia mascherata dalla
+crittografia. Se l'informazione sulla distribuzione di frequenza fosse totalmente nascosta nel processo
+di crittografia, il grafico delle frequenze nel testo cifrato sarebbe piatto e l'analisi crittografica
+utilizzando solo il testo cifrato sarebbe effettivamente impossibile. Come mostra la figura, il cifrario
+Playfair ha una distribuzione più piatta rispetto al testo in chiaro, ma comunque rivela molta struttura
+su cui un crittoanalista può lavorare. Il grafico mostra anche il cifrario Vigenère, discusso
+successivamente. Le curve di Hill e Vigenère nel grafico si basano su risultati riportati in \verb|[SIMM93]|.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/frequenza_playfair.png}
+    \caption{Frequenza delle occorrenze delle lettere nel testo cifrato}
+    \label{fig:playfair}
+\end{figure}
+\subsection{Cifrario poliafabetico}
+Un altro modo per migliorare la semplice tecnica monoalfabetica è utilizzare diverse sostituzioni monoalfabetiche man mano che si procede attraverso il messaggio in chiaro. Il nome generico per questo approccio è cifrario di sostituzione polialfabetica. Tutte queste tecniche hanno le seguenti caratteristiche in comune:
+
+\begin{enumerate}
+  \item Un insieme di regole di sostituzione monoalfabetica correlate viene utilizzato.
+  \item Una chiave determina quale particolare regola viene scelta per una data trasformazione.
+\end{enumerate}
+
+\subsubsection{Cifrario di Vigenère}
+Il cifrario di Vigenère è uno dei più noti e semplici cifrari polialfabetici.
+In questo schema, l'insieme di regole di sostituzione monoalfabetica correlate consiste
+nei $26$ cifrari di Cesare con spostamenti da $0$ a $25$. Ogni cifrario è indicato da una chiave
+lettera, che è la lettera cifrata che sostituisce la lettera in chiaro ``a". Quindi, un
+cifrario di Cesare con uno spostamento di 3 è indicato dalla chiave ``3".
+
+Il cifrario di Vigenère può essere espresso nel seguente modo. Supponiamo una sequenza
+di lettere in chiaro $P = p_0, p_1, p_2, \ldots, p_{n-1}$ e una chiave costituita dalla
+sequenza di lettere $K = k_0, k_1, k_2, \ldots, k_{m-1}$, dove tipicamente $m \leq n$.
+La sequenza di lettere cifrate $C = C_0, C_1, C_2, \ldots, C_{n-1}$ viene calcolata come segue:
+
+\[
+    C_i = (p_i + k_{i \mod m}) \mod 26
+\]
+
+Dove $i \mod m$ indica l'operazione di modulo. In altre parole, si somma la lettera in chiaro
+$p_i$ con la corrispondente lettera chiave $k_{i \mod m}$ e il risultato è ridotto modulo $26$
+per ottenere la lettera cifrata $C_i$.
+
+La decrittografia è effettuata in modo simile:
+
+\[
+p_i = (C_i - k_{i \mod m}) \mod 26
+\]
+
+Per crittografare un messaggio, è necessaria una chiave lunga quanto il messaggio stesso. Di solito,
+la chiave è una parola chiave ripetuta. Ad esempio, se la parola chiave è ``deceptive" e il messaggio
+è ``we are discovered save yourself", la cifratura procede come segue:
+
+\begin{align*}
+\text{chiave:} & \quad \text{deceptivedeceptivedeceptive} \\
+\text{in chiaro:} & \quad \text{wearediscoveredsaveyourself} \\
+\text{cifrato:} & \quad \text{zIcvTWqngRzgvTWavzHcqyglmgJ}
+\end{align*}
+
+Espresso in forma di enumerazione alfabetica, il cifrario di Vigenère è il seguente:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|cccccccccccccc|}
+    \hline
+    \textbf{key} & 3 & 4 & 2 & 4 & 15 & 19 & 8 & 21 & 4 & 3 & 4 & 2 & 4 & 15 \\
+    \hline
+    \textbf{plaintext} & 22 & 4 & 0 & 17 & 4 & 3 & 8 & 18 & 2 & 14 & 21 & 4 & 17 & 4 \\
+    \hline
+    \textbf{ciphertext} & 25 & 8 & 2 & 21 & 19 & 22 & 16 & 13 & 6 & 17 & 25 & 6 & 21 & 19 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|ccccccccccccc|}
+    \hline
+    \textbf{key} & 19 & 8 & 21 & 4 & 3 & 4 & 2 & 4 & 15 & 19 & 8 & 21 & 4 \\
+    \hline
+    \textbf{plaintext} & 3 & 8 18 & 0 & 21 & 4 & 24 & 14 & 20 & 17 & 18 & 4 & 11 & 5 \\
+    \hline
+    \textbf{ciphertext} & 22 & 0 & 21 & 25 & 7 & 2 & 16 & 24 & 6 & 11 & 12 & 6 & 9 \\
+    \hline
+    \end{tabular}
+\end{table}
+La forza di questo cifrario è che ci sono molte lettere cifrate per ciascuna lettera in chiaro,
+una per ciascuna lettera unica della parola chiave. Pertanto, le informazioni sulla frequenza delle
+lettere sono oscurate. Tuttavia, non viene persa tutta la conoscenza della struttura del testo in chiaro.
+
+Innanzitutto, supponiamo che l'avversario ritenga che il cifrato sia stato crittografato utilizzando
+una sostituzione monoalfabetica o un cifrario di Vigenère. Si può effettuare un semplice test per
+effettuare una determinazione. Se si utilizza una sostituzione monoalfabetica, le proprietà statistiche
+del cifrato dovrebbero essere le stesse del linguaggio del testo in chiaro. Quindi, facendo riferimento
+alla Figura \ref{fig:frequenza-lettere-testo-cifrato}, dovrebbe esserci una lettera del cifrato con una
+frequenza relativa di circa il $12,7\%$,
+una con circa il $9,06\%$, e così via. Se è disponibile solo un singolo messaggio per l'analisi, non
+ci si aspetterebbe una corrispondenza esatta di questo piccolo campione con il profilo statistico del
+linguaggio del testo in chiaro. Tuttavia, se la corrispondenza è vicina, possiamo assumere una
+sostituzione monoalfabetica.
+
+Se, d'altra parte, si sospetta un cifrario di Vigenère, il progresso dipende dalla determinazione della
+lunghezza della chiave, come verrà visto tra un momento. Per ora, concentriamoci su come può essere
+determinata la lunghezza della chiave. L'importante intuizione che porta a una soluzione è la seguente:
+se due sequenze identiche di lettere in chiaro si verificano a una distanza che è un multiplo intero della
+lunghezza della chiave, genereranno sequenze di cifrati identiche. Nell'esempio precedente, due istanze
+della sequenza ``red" sono separate da nove posizioni dei caratteri. Di conseguenza, in entrambi i casi,
+la ``r" è cifrata usando la lettera chiave ``e", la ``e" è cifrata usando la lettera chiave ``p", e la ``d" è
+cifrata usando la lettera chiave ``t". Quindi, in entrambi i casi, la sequenza di cifrati è ``VTW".
+Indichiamo ciò evidenziando le lettere pertinenti del cifrato e sfumando i numeri di cifrato rilevanti.
+
+Un analista che osserva solo il cifrato rileverebbe le sequenze ripetute ``VTW" con uno spostamento di
+9 e farebbe l'assunzione che la chiave sia lunga tre o nove lettere. L'apparizione di ``VTW" due volte
+potrebbe essere casuale e potrebbe non riflettere lettere in chiaro identiche crittografate con lettere
+chiave identiche. Tuttavia, se il messaggio è abbastanza lungo, ci saranno diverse sequenze di cifrati
+ripetuti. Cercando fattori comuni negli spostamenti delle diverse sequenze, l'analista dovrebbe essere
+in grado di fare una buona congettura sulla lunghezza della chiave.
+
+La soluzione del cifrario ora dipende da un'importante intuizione. Se la lunghezza della chiave è ``m", 
+il cifrario, in effetti, consiste di ``m" sostituzioni monoalfabetiche separate. Ad esempio, con la chiave
+``DECEPTIVE", le lettere nelle posizioni $1, 10, 19$ e così via sono tutte crittografate con lo stesso
+cifrario monoalfabetico. Quindi, possiamo utilizzare le conosciute caratteristiche di frequenza del
+linguaggio del testo in chiaro per attaccare separatamente ciascuna delle sostituzioni monoalfabetiche.
+
+La natura periodica della chiave può essere eliminata utilizzando una chiave non ripetitiva lunga quanto
+il messaggio stesso. Vigenère ha proposto quello che viene chiamato un sistema autokey, in cui una chiave
+è concatenata al testo in chiaro stesso per fornire una chiave in esecuzione. Nel nostro esempio:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Chiave} & deceptivewearediscoveredsav \\
+    \hline
+    \textbf{Testo in chiaro} & wearediscoveredsaveyourself \\
+    \hline
+    \textbf{Cifrato} & zIcvTWqngKzeIIgaSxSTSlvvWla \\
+    \hline
+    \end{tabular}
+\end{table}
+
+Anche questo schema è vulnerabile all'analisi crittografica. Poiché la chiave e il testo in
+chiaro condividono la stessa distribuzione di frequenza delle lettere, è possibile applicare
+una tecnica statistica. Ad esempio, la lettera ``e" cifrata con ``e", come indicato in
+Figura \ref{fig:frequenza-lettere-testo-cifrato}, ci si aspetta che si verifichi con una
+frequenza di $(0,127)^2 \approx 0,016$, mentre la lettera ``t" cifrata con ``t" si verificherebbe
+solo circa la metà delle volte. Queste regolarità possono essere sfruttate per raggiungere un'analisi
+crittografica di successo.
+
+\subsubsection{Cifraro di Vernam}
+La difesa definitiva contro una crittoanalisi di questo tipo consiste nel scegliere una chiave
+lunga quanto il testo in chiaro e che non abbia alcuna relazione statistica con esso. Un sistema
+del genere fu introdotto da un ingegnere AT\&T di nome Gilbert Vernam nel 1918.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/xor_logico.png}
+    \caption{Schema di Vernam}
+    \label{fig:vernam}
+\end{figure}
+Il suo sistema lavora con i dati binari (\textit{bit}) e utilizza l'operazione di \verb|XOR| logico:
+\[
+  c_i = p_i \oplus k_i  
+\]
+
+dove:
+\begin{itemize}
+    \item $c_i$ è l'$i$-esimo bit del testo cifrato
+    \item $p_i$ è l'$i$-esimo bit del testo in chiaro
+    \item $k_i$ è l'$i$-esimo bit della chiave
+    \item $\oplus$ è l'operatore \verb|XOR| logico
+\end{itemize}
+
+L'operazione di \verb|XOR| logico è definita come segue:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Input} & \textbf{Output} & \textbf{Descrizione} \\
+    \hline
+    0 & 0 & 0 $\oplus$ 0 = 0 \\
+    \hline
+    0 & 1 & 0 $\oplus$ 1 = 1 \\
+    \hline
+    1 & 0 & 1 $\oplus$ 0 = 1 \\
+    \hline
+    1 & 1 & 1 $\oplus$ 1 = 0 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+L'essenza di questa tecnica risiede nel modo in cui viene costruita la chiave. Vernam 
+ha proposto l'uso di una lunga striscia di nastro che alla fine ripeteva la chiave, quindi 
+di fatto il sistema funzionava con una chiave molto lunga ma ripetitiva. Sebbene uno schema 
+del genere, con una chiave lunga, presenti notevoli difficoltà crittografiche, può essere violato con
+una quantità sufficiente di testo cifrato, l'uso di sequenze di testo in chiaro conosciute o probabili, o entrambe.
+\subsection{One-Time Pad}
+Il cifrario monouso, o \textit{one-time pad}, è un sistema di crittografia che utilizza una chiave
+casuale di lunghezza uguale o maggiore del messaggio da crittografare. È un sistema di crittografia
+perfetta, nel senso che il messaggio cifrato non può essere decifrato o violato senza conoscere la chiave.
+\begin{itemize}
+    \item \textbf{Chiave Casuale}: La chiave utilizzata nel cifrario monouso è una sequenza 
+    casuale di bit o caratteri, lunga quanto il messaggio da crittografare. Essendo completamente casuale, 
+    non contiene alcuna struttura o pattern riconoscibile.
+    
+    \item \textbf{Lunghezza della Chiave}: La chiave deve essere della stessa lunghezza del messaggio 
+    in chiaro. Questo significa che ogni messaggio richiede una chiave diversa e della stessa lunghezza.
+    
+    \item \textbf{Unicità}: Ogni chiave è utilizzata una sola volta. Dopo essere stata usata per crittografare
+    o decrittografare un messaggio, la chiave viene scartata e non viene mai riutilizzata.
+    
+    \item \textbf{Sicurezza Statistica}: La sicurezza del cifrario monouso deriva dalla sua totale casualità.
+    Poiché la chiave è una sequenza casuale e unica per ogni messaggio, non esiste alcuna relazione statistica
+    tra il testo cifrato e il testo in chiaro. Questo significa che il testo cifrato non fornisce alcuna
+    informazione utile per violare il cifrario, rendendolo teoricamente indistruttibile.
+\end{itemize}
+Il cifrario monouso, noto come ``one-time pad" è considerato perfetto dal punto di vista statistico
+e crittografico per due ragioni principali:
+
+\begin{enumerate}
+    \item \textbf{Casualità della Chiave:} La chiave nel cifrario monouso è una sequenza casuale di bit o caratteri.
+    La casualità è fondamentale dal punto di vista statistico. In termini di probabilità, ogni bit o carattere nella
+    chiave ha una probabilità del 50\% di essere $0$ o $1$ (\textit{in caso di bit}) o di essere una qualsiasi
+    lettera nell'alfabeto (\textit{in caso di caratteri}). Questo fatto è rappresentato dalla distribuzione di
+    probabilità uniforme.
+   
+    Formula della distribuzione uniforme per bit:
+    \[ P(X = 0) = P(X = 1) = \frac{1}{2} \]
+
+    Formula della distribuzione uniforme per caratteri:
+    \[ P(X = x_i) = \frac{1}{n} \text{ per ogni } x_i \text{ nell'alfabeto di lunghezza } n \]
+
+    Ad esempio, in un alfabeto di $26$ lettere, la probabilità di ciascuna lettera è $1/26$.
+
+    Nel caso di una chiave di lunghezza $n$, la probabilità di una particolare sequenza di $n$ bit o caratteri
+    è $1/2^n$ o $1/n^n$ rispettivamente. Poichè non vi è alcuna relazione nei bit o caratteri della chiave.
+
+    \item \textbf{Unicità della Chiave:} Ogni chiave viene utilizzata una sola volta per crittografare
+    o decrittografare un messaggio specifico e viene scartata dopo l'uso. Questo significa che non c'è alcuna
+    relazione statistica tra il testo cifrato e il testo in chiaro. L'assenza di qualsiasi pattern o relazione
+    è fondamentale dal punto di vista della teoria della probabilità.
+\end{enumerate}
