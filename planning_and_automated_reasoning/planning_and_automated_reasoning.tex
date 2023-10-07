@@ -1,7 +1,7 @@
 \documentclass[oneside,a4paper,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{svg}
-\usepackage[italian]{babel}
+\usepackage[english]{babel}
 \usepackage{float}
 \usepackage{fancyvrb}
 \usepackage{titling}
@@ -85,6 +85,12 @@
     #1,
     listing options= {escapechar=|}
 }
+
+\usepackage{listings,newtxtt}
+
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries, }
+
+
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%
 %%======================================================================
