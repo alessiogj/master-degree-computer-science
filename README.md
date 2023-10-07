@@ -12,7 +12,11 @@ In questo repository troverete gli appunti, gli esercizi e le risorse relative a
 
 2. **Fondamenti di Linguaggi di Programmazione e Specifica**.
 
-3. **Fondamenti di Algoritmi, Complessità e Problem Solving**.
+3. **Fondamenti di Algoritmi, Complessità e Problem Solving** (_Dal secondo semestre_)
+
+4. **Analisi e Verifica del Software**.
+
+5. **Planning And Automated Reasoning** (_Attualmente in stand by_)
 
 Queste materie rappresentano solo l'inizio del mio percorso di studio, e saranno aggiunte ulteriori materie man mano che il mio percorso procede. Continuate a seguirmi per rimanere aggiornati!
 
@@ -24,4 +28,4 @@ Se siete interessati a contribuire a questo repository o avete suggerimenti su c
 - Aggiungendo nuovi appunti o risorse per materie che non sono ancora presenti.
 - Partecipando alle discussioni nella sezione delle Issues o nei commenti.
 
-**Buono studio!** 📚✨
+**Buono studio!**
