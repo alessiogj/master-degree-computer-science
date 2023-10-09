@@ -1,0 +1,283 @@
+\chapter{Un semplice linguaggio imperativo}
+La sintassi del nostro semplice linguaggio imperativo è definita utilizzando
+la notazione \texttt{BNF} come segue:
+
+\begin{itemize}
+    \item \texttt{true} e \texttt{false} sono booleani.
+    \item I numeri interi $n$ appartengono a $\mathbb{N}$.
+    \item Le locazioni $l$ sono identificatori di variabili.
+  \end{itemize}
+  La sintassi del linguaggio può essere definita dalle seguenti produzioni grammaticali:
+  
+\begin{grammar}
+    <Operations> ::= $+$ | $\geq$
+    
+    <Expressions>  ::= $n$ | $b$ | $e$ op $e$ | \texttt{if} $e$ \texttt{then} $e$ \texttt{else} $e$ \alt 
+    $l$ := $e$ | !$l$ | \texttt{skip} | $e$ ; $e$ 
+    \alt \texttt{while} $e$ \texttt{do} $e$
+\end{grammar}
+\section{Valutazione delle espressioni}
+I valori delle espressioni dipendono dai valori correnti all'interno 
+delle locazioni.
+\[
+  !l_1 + !l_2 - 1
+\] 
+In questo caso, il valore dell'espressione dipende dai valori correnti nelle 
+locazioni $l_1$ e $l_2$.
+
+Quindi, per valutare un'espressione, dobbiamo considerare questi cambiamenti:
+\begin{itemize}
+  \item Come valutiamo un'espressione $e$, in questo caso $!l_1$?
+  \item Come valutiamo un'assegnamento $l := e$?
+\end{itemize}
+Abbiamo bisogno di più informazioni relative allo stato della memoria.
+\subsection{Funzioni parziali}
+Una funzione parziale $f$ è una funzione che può non essere definita per
+tutti gli input. In questo caso, scriveremo $f(x) \downarrow$ se $f$ è definita
+per $x$ e $f(x) \uparrow$ se $f$ non è definita per $x$.
+
+In generale una funzione parziale può essere definita come segue:
+\[
+  f : A \rightharpoonup  B
+\]
+dove $A$ è il dominio di $f$ e $B$ è il codominio di $f$.
+\paragraph{Convenzioni}
+\begin{itemize}
+  \item $dom(f)$ è l'insieme degli elementi nel dominio di $f$, formalmente:
+  \[
+    dom(f) = \{x \in A : \exists b \in B \,s.t.\, f(a) = b\}
+  \]
+  \item $ran(f)$ è l'insieme degli elementi nel codominio di $f$, formalmente:
+  \[
+    ran(f) = \{b \in B : \exists a \in A \,s.t.\, f(a) = b\}
+  \]
+\end{itemize}
+Quindi $f$ è una funzione totale se $dom(f) = A$ e $f$ è una funzione parziale
+se $dom(f) \subset A$.
+\subsection{Memoria}
+Nel nostro linguaggio, la memoria è una funzione parziale che mappa locazioni
+in interi. 
+\[
+  s : \mathbb{L} \rightharpoonup \mathbb{N}
+\]
+Per esempio: $\{l_1 \mapsto 3, l_3 \mapsto 6, l_3 \mapsto 7 \}$.
+\paragraph{Aggiornamento della memoria}
+L'aggiornamento della memoria è una funzione che prende in input una memoria
+$s$, una locazione $l$ e un valore $n$ e restituisce una nuova memoria $s'$.
+\begin{align*}
+  s' = s[l \mapsto n](l') =
+  \begin{cases}
+    n & \text{se } l = l' \\
+    s(l') & \text{altrimenti}
+    \end{cases}
+\end{align*}
+Il comportamento dei programmi dipende dallo stato della memoria. 
+\section{Sistema di transizione}
+Un sistema di transizione è composto da un insieme di
+configurazioni (\textit{Config}) e una relazione binaria (\(\subseteq\)) su coppie
+di configurazioni. La relazione rappresenta come una configurazione può effettuare
+una transizione verso un'altra.
+\[
+  \textit{Relazione binaria} \rightarrow \subseteq \textit{Config} \times \textit{Config}
+\]
+
+In particolare, gli elementi di \textit{Config} sono spesso chiamati configurazioni
+o stati. La relazione è chiamata relazione di transizione o di riduzione. Adottiamo
+una notazione infix, quindi \(c \rightarrow c'\) dovrebbe essere letto come ``la
+configurazione \(c\) può fare una transizione alla configurazione \(c'\)''.
+
+L'esecuzione completa di un programma trasforma uno stato iniziale in uno
+stato terminale. Un sistema di transizione è simile a un automa a stati
+finiti non deterministico ($\textit{NFA}^\varepsilon$) con un alfabeto vuoto,
+tranne che può
+avere un numero infinito di stati. Non specifichiamo uno stato di partenza o stati
+di accettazione.
+
+\section{Semantica operazionale nel nostro linguaggio imperativo}
+Le configurazioni sono coppie $\langle e, s\rangle$ di espressioni $e$ e memorie $s$.
+Le relazioni di transizione sono definite come segue:
+\[
+  \langle e, s \rangle \rightarrow \langle e', s' \rangle
+\]
+dove $e'$ è l'espressione risultante dalla valutazione di $e$ nello stato $s$ e
+$s'$ è lo stato risultante dalla valutazione di $e$ nello stato $s$.
+
+Le transizioni rappresentano singoli passi di calcolo. Ad esempio, avremo:
+
+\[
+\begin{array}{ll}
+\rightarrow & \langle l:=2+!l, \{l \mapsto 3\} \rangle \\
+\rightarrow & \langle l:=2+3, \{l \mapsto 3\} \rangle \\
+\rightarrow & \langle l:=5, \{l \mapsto 3\} \rangle \\
+\rightarrow & \langle \text{skip}, \{l \mapsto 5\} \rangle \\
+\not \rightarrow & 
+\end{array}
+\]
+
+Dove \(\langle e, s \rangle\) rappresenta una configurazione, \(e\) è
+un'espressione e \(s\) è uno stato. Le transizioni sono passi di calcolo
+singoli che portano da una configurazione all'altra. La notazione
+\(\langle e, s \rangle\) è ``bloccata" o in uno stato di ``deadlock"
+se \(e\) non è un valore e \(\langle e, s \rangle\) non ha una transizione
+seguente, ovvero \(\langle e, s \rangle \not\rightarrow \).
+
+Ad esempio, \(3 + \text{false}\) è ``bloccato" o in uno stato di ``deadlock"
+perché \(3 + \text{false}\) non è un valore e non può fare una transizione successiva.
+\subsection{Operazioni di base}
+\subsubsection{Somma}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(op $+$)}
+  \UnaryInfC{$\langle n_1 + n_2, s \rangle \rightarrow \langle n_1 + n_2, s \rangle$}
+\end{prooftree}
+\subsubsection{Disuguaglianza}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(op $\geq$)}
+  \UnaryInfC{$\langle n_1 \geq n_2, s \rangle \rightarrow \langle \text{b}, s \rangle$}
+\end{prooftree}
+\subsubsection{Operazione 1}
+\begin{prooftree}
+  \AxiomC{$\langle e_1, s \rangle \rightarrow \langle e_1', s' \rangle$}
+  \LeftLabel{(op $1$)}
+  \UnaryInfC{$\langle e_1 \,\texttt{op}\, e_2, s \rangle 
+  \rightarrow \langle e_1' \,\texttt{op}\, e_2, s' \rangle$}
+\end{prooftree}
+\subsubsection{Operazione 2}
+\begin{prooftree}
+  \AxiomC{$\langle e_2, s \rangle \rightarrow \langle e_2', s' \rangle$}
+  \LeftLabel{(op $1$)}
+  \UnaryInfC{$\langle e_1 \,\texttt{op}\, e_2, s \rangle 
+  \rightarrow \langle e_1 \,\texttt{op}\, e_2', s' \rangle$}
+\end{prooftree}
+Le regole di transizione introducono i cambiamenti nella memoria.
+\subsubsection{Dereferenziazione}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(deref)}
+  \RightLabel{$\quad\textit{se} \, l \in dom(s) \, \textit{e}\, s(l) = n$}
+  \UnaryInfC{$\langle !l, s \rangle \rightarrow \langle s(l), s \rangle$}
+\end{prooftree}
+\subsubsection{Assegnamento}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(assign1)}
+  \RightLabel{\, \textit{se} \, $l \in dom(s)$}
+  \UnaryInfC{$\langle l:=n, s \rangle \rightarrow \langle \texttt{skip},
+  s[l \mapsto n] \rangle$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$\langle e, s \rangle \rightarrow \langle e', s' \rangle$}
+  \LeftLabel{(assign2)}
+  \UnaryInfC{$\langle l:=e, s \rangle \, \rightarrow \langle l:=e', s' \rangle$}
+\end{prooftree}
+\subsubsection{Condizionale}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(if_tt)}
+  \UnaryInfC{$\langle \texttt{if true then } e_1 \texttt{ else } e_2, s \rangle
+  \rightarrow \langle e_1, s \rangle$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(if_ff)}
+  \UnaryInfC{$\langle \texttt{if false then } e_1 \texttt{ else } e_2, s \rangle
+  \rightarrow \langle e_2, s \rangle$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$\langle e_1, s \rangle \rightarrow \langle e_1', s' \rangle$}
+  \LeftLabel{(if)}
+  \UnaryInfC{$\langle \texttt{if } e_1 \texttt{ then } e_2 \texttt{ else } e_3, s \rangle
+  \rightarrow \langle \texttt{if } e_1' \texttt{ then } e_2 \texttt{ else } e_3, s' \rangle$}
+\end{prooftree}
+\subsubsection{Sequenza}
+\begin{prooftree}
+  \AxiomC{$\langle e_1, s \rangle \rightarrow \langle e_1', s' \rangle$}
+  \LeftLabel{(seq)}
+  \UnaryInfC{$\langle e_1; e_2, s \rangle
+  \rightarrow \langle e_1'; e_2, s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(seq.Skip)}
+  \UnaryInfC{$\langle \texttt{skip; } e_2, s \rangle
+  \rightarrow \langle e_2, s \rangle$}
+\end{prooftree}
+\subsubsection{While}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(while)}
+  \UnaryInfC{$\langle \texttt{while } e_1 \texttt{ do } e_2, s \rangle
+  \rightarrow \langle \texttt{if } e_1 \texttt{ then } e_2; \texttt{ while } e_1 \texttt{ do } e_2
+  \texttt{ else skip}, s \rangle$}
+\end{prooftree}
+Questa è una regola di riscrittura chiamata anche \textit{unwinding}, che
+consente di rivalutare la l'espressione $e_1$ ad ogni iterazione del ciclo.
+\section{Esecuzione di un programma}
+Per eseguire un programma $P$ a partire da uno stato $s$, è
+possibile trovare uno stato $s'$ tale che 
+\[\langle P, s \rangle \rightarrow_* \langle v,
+s' \rangle
+\]
+per $v \in \mathbb{V} = \mathbb{B} \cup \mathbb{Z} \cup \{ \texttt{skip}\}$.
+
+Le configurazioni della forma $\langle v, s \rangle$ sono considerate
+terminali. Qui, $ \rightarrow_*$ denota la chiusura riflessiva e transitiva
+della relazione di riduzione $\rightarrow$.
+\section{Proprietà del linguaggio}
+\begin{theorem}[Normalizzazione forte]
+  Per ogni stato $s$ e per ogni programma $P$, esistono degli stati $s'$ tali
+  che $\langle P, s \rangle \rightarrow_* \langle v, s' \rangle$, dove $\langle v,
+  s \rangle$ è una configurazione terminale.
+\end{theorem}
+  
+\begin{theorem}[Determinismo]
+  Se $\langle e, s \rangle \rightarrow \langle e_1, s_1 \rangle$ e $\langle e,
+  s \rangle \rightarrow \langle e_2, s_2 \rangle$, allora $\langle e_1, s_1 \rangle
+  = \langle e_2, s_2 \rangle$.
+\end{theorem}
+\subsection{Funzione di interpretazione semantica}
+Possiamo usare la semantica operazionale per fornire una semantica 
+formale del seguente programma:
+\begin{algorithm}
+  \caption{Esempio}
+  $l_1 \leftarrow 1$\;
+  $l_2 \leftarrow 0$\;
+  \While{$\lnot (!l_1 = !l_2)$}{
+      $l_2 := !l_2 + 1$\;
+      $l_3 := !l_3 + 1$\;
+  }
+  $l_1 := !3;$
+\end{algorithm}
+Quindi:
+\[
+  [\![ - ]\!]: Exp \rightarrow (Store \rightharpoonup Store)
+\]
+Dove forniamo una espressione arbitraria $e$, $[\![e]\!]$ è una 
+funzione parziale che mappa uno stato $s$ in un nuovo stato $s'$.
+\begin{tcolorbox}[title={Definizione}]
+  \[
+    [\![e]\!](s) = 
+    \begin{cases}
+      s' & \text{se } \langle e, s \rangle \rightarrow^* \langle v, s' \rangle \\
+      \text{undefined} & \text{altrimenti}
+    \end{cases}
+  \]
+\end{tcolorbox}
+Il nostro programma d'esempio possiamo descriverlo come segue:
+\[
+  [\![P]\!] = 
+  \begin{cases}
+    s(l_1) - 1 & \text{se } l \in \{l_1, l_3\} \text{ e } s(l_1) > 0\\
+    s(l_1) & \text{se } l = l_2 \text{ e } s(l_1) > 0 \\
+    s(l) & \text{se } l \not \in \{l_1, l_2, l_3\} \text{ e } s(l_1) > 0\\
+  \end{cases}
+\]
+\section{Espressività del linguaggio}
+Un linguaggio si dice espressivo se è possibile esprimerci qualsiasi funzione
+calcolabile. Per esempio, il linguaggio imperativo è Turing completo, quindi
+esprime qualsiasi funzione calcolabile.
+
+Il nostro linguaggio è però troppo espressivo perché è possibile esprimere
+funzioni di questa tipologia $3 + true$, il modo per evitare 
+questo problema è quello di introdurre il \textbf{type system}.
