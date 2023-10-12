@@ -517,7 +517,10 @@ successivamente. Le curve di Hill e Vigenère nel grafico si basano su risultati
     \label{fig:playfair}
 \end{figure}
 \subsection{Cifrario poliafabetico}
-Un altro modo per migliorare la semplice tecnica monoalfabetica è utilizzare diverse sostituzioni monoalfabetiche man mano che si procede attraverso il messaggio in chiaro. Il nome generico per questo approccio è cifrario di sostituzione polialfabetica. Tutte queste tecniche hanno le seguenti caratteristiche in comune:
+Un altro modo per migliorare la semplice tecnica monoalfabetica è utilizzare
+diverse sostituzioni monoalfabetiche man mano che si procede attraverso il
+messaggio in chiaro. Il nome generico per questo approccio è cifrario di sostituzione
+polialfabetica. Tutte queste tecniche hanno le seguenti caratteristiche in comune:
 
 \begin{enumerate}
   \item Un insieme di regole di sostituzione monoalfabetica correlate viene utilizzato.
@@ -736,10 +739,158 @@ e crittografico per due ragioni principali:
     Ad esempio, in un alfabeto di $26$ lettere, la probabilità di ciascuna lettera è $1/26$.
 
     Nel caso di una chiave di lunghezza $n$, la probabilità di una particolare sequenza di $n$ bit o caratteri
-    è $1/2^n$ o $1/n^n$ rispettivamente. Poichè non vi è alcuna relazione nei bit o caratteri della chiave.
+    è $1/2^n$ o $1/n^n$ rispettivamente. Poiché non vi è alcuna relazione nei bit o caratteri della chiave.
 
     \item \textbf{Unicità della Chiave:} Ogni chiave viene utilizzata una sola volta per crittografare
     o decrittografare un messaggio specifico e viene scartata dopo l'uso. Questo significa che non c'è alcuna
     relazione statistica tra il testo cifrato e il testo in chiaro. L'assenza di qualsiasi pattern o relazione
     è fondamentale dal punto di vista della teoria della probabilità.
 \end{enumerate}
+\section{Concatenazione di crittosistemi}
+Una permutazione è un mapping iniettivo e suriettivo di un insieme in se stesso.
+Una permutazione è una sostituzione che mappa ogni lettera dell'alfabeto in un'altra lettera.
+Quindi:
+\[
+    \pi : \mathcal{A} \rightarrow \mathcal{A}
+\]
+sappiamo che è vulnerabile all'analisi delle frequenze, quindi possiamo applicare 
+un sistema di concatenazione:
+\[
+  \pi_1 \circ \pi_2 \circ \pi_3 \circ \pi_4 \circ \pi_5  
+\]
+il problema è che la composizione di permutazioni è ancora una permutazione,
+quindi è la stessa cosa chè l'eseguire un'unica permutazione $\pi$.
+Varia quindi solo la rappresentazione della permutazione.
+Per risolvere il problema serve un elemento aggiuntivo che non sia una permutazione,
+ad esempio una trasposizione.
+\section{Macchina a Rotori}
+Una macchina a rotori è una macchina crittografica che sfrutta
+la crittografia a sostituzione \textbf{polialfabetica}. La macchina è composta
+da cilindri rotanti, ognuno con $26$ pin di input e $26$ pin di output,
+ciascuno con connessioni interne che collegano input e output in modo
+univoco. Un singolo cilindro crea una sostituzione monoalfabetica,
+ruotando dopo ogni input, il che crea una sostituzione polialfabetica
+con un periodo di $26$ caratteri.
+
+La vera forza delle macchine a rotori emerge quando vengono utilizzati
+più cilindri collegati in serie. Quando si preme un tasto, il cilindro
+più vicino all'input ruota di una posizione, influenzando il successivo
+e così via. Questa configurazione crea una vasta varietà di sostituzioni
+alfabetiche, con un'enorme quantità di possibilità quando si utilizzano
+più cilindri.
+
+Questo schema crittografico rappresenta una sfida significativa per i
+crittoanalisti poiché richiede un'enorme quantità di dati cifrati per
+essere decifrato in modo significativo, rendendo molto difficile
+l'analisi crittografica basata sulla frequenza delle lettere.
+
+Tale sistema protegge dall'analisi delle frequenze poiché per $26^3$ permutazioni 
+non è possibile fare un'analisi delle frequenze.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/Concatenazione_crittosistemi.png}
+    \caption{Macchina a rotori}
+\end{figure}
+
+\subsubsection{Enigma}
+La macchina Enigma è una macchina elettromeccanica portatile utilizzata per cifrare e decifrare
+messaggi segreti. È stata utilizzata in Germania durante la seconda guerra mondiale.
+La decodifica dei messaggi è molto complessa, vista la grande quantità di combinazioni possibili.
+
+Se ho a una macchina che per essere decifrata ha bisogno di un tempo più alto della validità 
+dei dati, allora posso dire che è sicura.
+
+Il modo per decodificare i messaggi è stato fondamentale sapere che il messaggio iniziava con
+una parola chiave, che era sempre la stessa. Sapendo questo, si poteva decodificare il messaggio
+riducendo notevolmente l'insieme delle chiavi disponibili per la decodifica.
+Conoscevano quindi il \textbf{plaintext}.
+
+La concatenzione di crittosistemi è molto sicura, ma non è sicura contro gli attacchi
+dove si conosce il plaintext.
+
+\section{Classificazione dei livelli di sicurezza}
+La classificazione si basa sulla difficoltà di violare il sistema, quindi sul tipo di 
+attacchi a cui resiste.
+\begin{itemize}
+    \item \textbf{Known Cipher Text Attack}: l'attaccante conosce il testo cifrato.
+    \item \textbf{Known Plaintext Attack}: l'attaccante vede il testo in chiaro e il corrispondente testo cifrato.
+    \item \textbf{Chosen Plaintext Attack}: l'attaccante sceglie il testo in chiaro e conosce il corrispondente testo cifrato.
+    \item \textbf{Adaptive Chosen Ciphertext Attack}: l'attaccante può continuamente scegliere il testo in chiaro e vedere il corrispondente testo cifrato.
+\end{itemize}
+La classifica è in base alla potenza che gli do nell'attaccarmi.
+L'obiettivo è costruire un sistema che sia sicuro contro 
+gli attacchi Adaptive Chosen Ciphertext Attack.
+\section{Data Encryption Standard (\textit{DES})}
+Il DES è un cifrario a blocchi che è stato uno dei primi algoritmi
+crittografici adottati su larga scala ed è stato ampiamente utilizzato
+fino a quando è stato sostituito dall'\textbf{Advanced Encryption Standard} (\textit{AES}).
+
+\textbf{Lunghezza della Chiave}: Il DES utilizza una chiave di $56$ bit.
+Questo significa che ci sono $2^{56}$ possibili chiavi differenti che possono
+essere utilizzate per cifrare e decifrare dati.
+
+\textbf{Lunghezza del Blocco}: Il DES opera su blocchi di dati di $64$ bit.
+Questo significa che ogni blocco di testo in chiaro da cifrare o testo cifrato
+da decifrare deve essere di $64$ bit.
+\subsection{Algoritmo di Cifratura}
+Il processo di cifratura DES coinvolge una serie di passaggi iterativi noti
+come ``rounds". Di seguito vengono spiegati i passaggi chiave dell'algoritmo
+di cifratura DES:
+
+\begin{itemize}
+    \item \textbf{Permutazione Iniziale (IP)}: Il blocco di testo in chiaro di
+    $64$ bit viene permutato secondo una tabella specifica.
+    \item \textbf{Divisione in Blocchi Sinistro e Destro}: Il blocco permutato
+    viene diviso in due parti uguali, ciascuna di 32 bit, note come ``sinistro"
+    e ``destro".
+    \item \textbf{Round di Fiestel}: Il DES utilizza una struttura chiamata
+    ``round di Fiestel", in cui i blocchi subiscono diverse trasformazioni,
+    inclusa l'applicazione di una funzione di espansione, una funzione di
+    sostituzione (\textit{S-box}), una permutazione e l'operazione \verb|XOR| con
+    una sottochiave derivata dalla chiave principale.
+    \item \textbf{Iterazioni (16 Rounds)}: L'intero processo di round di
+    Fiestel viene iterato $16$ volte, con l'uso di diverse sottochiavi derivate
+    dalla chiave principale.
+    \item \textbf{Permutazione Finale (FP)}: Alla fine delle $16$ iterazioni, i
+    blocchi sinistro e destro vengono combinati e permutati nuovamente secondo
+    una tabella specifica, ottenendo così il testo cifrato.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/DES-alg.png}
+    \caption{DES}
+\end{figure}
+\subsection{Decifratura DES}
+Il processo di decifratura DES è essenzialmente l'operazione inversa della
+cifratura. Le sottochiavi vengono utilizzate in ordine inverso rispetto alla
+cifratura per decifrare il testo cifrato e ottenere il testo in chiaro originale.
+\section{il file \texttt{etc/passwd}}
+Il file \verb|/etc/passwd| contiene le informazioni sugli utenti del sistema.
+Ogni riga del file contiene le informazioni di un utente, separate da due punti
+(:). Le informazioni sono:
+\begin{itemize}
+    \item \textbf{Username}: nome dell'utente.
+    \item \textbf{Password}: password dell'utente, cifrata con DES.
+    \item \dots
+    \item \textbf{Seed}: seed utilizzato per cifrare la password.
+\end{itemize}
+Tale file era pubblicamente disponibile e quindi era possibile mediante ricavare 
+la password mediante il dizionario visto che l'algoritmo era noto, questo senza
+nemmeno effettuare un login sulla macchina.
+\section{Cifrari a blocchi}
+Il plaintext viene diviso in blocchi di $n$ bit. Il blocco di testo in chiaro viene
+cifrato in un blocco di testo cifrato di $n$ bit.
+\subsection{Electronic Code Book}
+Il plaintext viene diviso in blocchi di $n$ bit. Ogni blocco viene cifrato
+indipendentemente dagli altri blocchi. Questo sistema soffre di malleabilità.
+
+
+Senza sapere cosa c'è dentro, possiamo frare trasformazioni note. sappiamo quello che facciamo sul
+plaintext.
+\subsection{Cipher Block Chaining}
+Non riusciamo a spedire stream, dobbiamo sempre lavorare a blocchi. Senza l'intero messaggio 
+non calcolo $c_1$. Vorrei lavorare in maniera indipendente senza per forza aver tutto il messaggio.
+
+\section{Feistel}
+\section{Crittografia a chiave pubblica}
+Ha un grosso difetto, il tempo di calcolo è molto alto.

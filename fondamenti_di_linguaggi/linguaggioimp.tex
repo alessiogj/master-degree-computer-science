@@ -266,7 +266,7 @@ funzione parziale che mappa uno stato $s$ in un nuovo stato $s'$.
 \end{tcolorbox}
 Il nostro programma d'esempio possiamo descriverlo come segue:
 \[
-  [\![P]\!] = 
+  \llbracket P \rrbracket = 
   \begin{cases}
     s(l_1) - 1 & \text{se } l \in \{l_1, l_3\} \text{ e } s(l_1) > 0\\
     s(l_1) & \text{se } l = l_2 \text{ e } s(l_1) > 0 \\
@@ -281,3 +281,241 @@ esprime qualsiasi funzione calcolabile.
 Il nostro linguaggio è però troppo espressivo perché è possibile esprimere
 funzioni di questa tipologia $3 + true$, il modo per evitare 
 questo problema è quello di introdurre il \textbf{type system}.
+\section{Type system}
+il \textit{type system} è un componente fondamentale nei linguaggi di programmazione, e le sue regole formali sono essenziali per garantire la correttezza e la sicurezza dei programmi. Ecco perché è importante definire queste regole in modo formale e strutturato:
+
+\begin{itemize}
+  \item Evitare errori di runtime: Il principale scopo di un "type system" è evitare errori di runtime.
+  Ciò significa che il sistema è in grado di individuare potenziali errori nel tipo di dati o nell'uso
+  di operatori prima che il programma venga eseguito. Ciò è particolarmente importante poiché gli errori
+  di runtime possono comportare malfunzionamenti del programma, crash o risultati imprevisti.
+  \item Soundness: Un "type system" è considerato "sound" quando garantisce che se un programma è
+  ben tipato, allora non si verificheranno errori di tipo durante l'esecuzione. Questo è un aspetto
+  fondamentale per garantire che i programmi siano corretti dal punto di vista del tipo.
+  \item Incompletezza: Tuttavia, i ``type system" sono spesso incompleti, il che significa che ci
+  sono programmi che sono corretti dal punto di vista del tipo ma che vengono respinti dal sistema.
+  Questo può accadere quando il sistema non è in grado di dedurre in modo completo il tipo dell'espressione
+  o quando le regole del ``type system" sono troppo conservative. L'incompletezza può portare alla
+  rifiutazione di programmi validi, ma è un compromesso necessario per garantire la sicurezza del tipo.
+  \item Proprietà di progress: L'obiettivo principale del "type system" è garantire che i
+  programmi ben tipati siano in grado di fare progressi durante l'esecuzione, ovvero che non si blocchino
+  o entrino in cicli infiniti. Questo aspetto è strettamente correlato all'obiettivo di non tipare programmi che
+  vanno in regola, e rappresenta un'altra dimensione importante della correttezza dei programmi.
+\end{itemize}
+Definiremo la seguente espressione ternaria:
+\[
+  \Gamma \vdash e : T
+\]
+L'espressione si legge come: \textit{in un contesto $\Gamma$, l'espressione $e$
+ha tipo $T$}. Il contesto $\Gamma$ è un insieme di assegnazioni di variabili
+a tipi, per esempio:
+\[
+\begin{array}{lllll}
+  \{\} & \vdash & \texttt{if true then 2 else 3 + 4} & : & \texttt{int} \\
+  l_1:\texttt{intref} & \vdash & {\texttt{if }l_1 \geq 3\texttt{ then } l_1 \texttt{ else } 3} & : & \texttt{int} \\
+  \{\} & \not \vdash & 3 + \,\texttt{false} & : & $T$ \text{ per ogni } $T$ \\
+  \{\} & \not \vdash & \texttt{if true then }3 \texttt{ else false} & : & $T$ \text{ per ogni } $T$ \\
+\end{array}
+\]
+Da notare che l'ultimo programma non è ben tipato, infatti in alcuni 
+casi il type system dovrebbe assegnare un interno e in altri un booleano. Esso 
+definisce un'approssimazione del comportamento del programma.
+Vogliamo generalmente che fossero \textbf{decidibili}, in modo da garantire che la compilazione 
+sia affidabile. 
+\subsection{Tipi per il linguaggio \texttt{while}}
+\begin{grammar}
+  <T> ::= \texttt{int} | \texttt{bool} | \texttt{unit}
+\end{grammar}
+I tipi delle locazioni saranno:
+\begin{grammar}
+  <$T_{loc}$> ::=  \texttt{intref}
+\end{grammar}
+Dove \( \texttt{intref} \) rappresenta un tipo utilizzato per riferimenti a valori interi nel programma.
+
+L'ambiente dei tipi, indicato come \( \Gamma \), è un insieme di funzioni parziali che associano le
+localizzazioni ($L$) ai tipi di localizzazione ($T_{\text{loc}}$). Per una rappresentazione più chiara, possiamo esprimere $\Gamma$  nel seguente formato:
+\[ \Gamma = \{l_1 : \texttt{intref}, \ldots, l_k : \texttt{intref}\} \]
+
+Questo ambiente dei tipi associa le localizzazioni \( l_1, \ldots, l_k \) al tipo \( \texttt{intref} \).
+In un contesto più avanzato, \( T_{\text{loc}} \) potrebbe contenere tipi più complessi, ma per ora,
+consideriamo solo il tipo \( \texttt{intref} \).
+\subsection{Definizione delle valutazioni dei tipi}
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(int)}
+  \RightLabel{$\texttt{for }n \in \mathbb{Z}$}
+  \UnaryInfC{$\Gamma \vdash n:\texttt{int}$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(bool)}
+  \RightLabel{$\texttt{for } b \in \{\texttt{true, false}\}$}
+  \UnaryInfC{$\Gamma \vdash b:\texttt{bool}$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$\Gamma \vdash e_1 : \texttt{int}$}
+  \AxiomC{$\Gamma \vdash e_2 : \texttt{int}$}
+  \LeftLabel{(op $+$)}
+  \BinaryInfC{$\Gamma \vdash e_1 + e_2:\texttt{int}$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$\Gamma \vdash e_1 : \texttt{int}$}
+  \AxiomC{$\Gamma \vdash e_2 : \texttt{int}$}
+  \LeftLabel{(op $\geq$)}
+  \BinaryInfC{$\Gamma \vdash e_1 \geq e_2:\texttt{bool}$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$\Gamma \vdash e_1 : \texttt{bool}$}
+  \AxiomC{$\Gamma \vdash e_2 : T$}
+  \AxiomC{$\Gamma \vdash e_3 : T$}
+  \LeftLabel{(if)}
+  \TrinaryInfC{$\Gamma \vdash \texttt{if } e_1 \texttt{ then } e_2 \texttt{ else } e_3 : T$}
+\end{prooftree}
+
+Con le regole di tipaggio scartiamo quindi le espressioni che non hanno senso,
+a tempo di compilazione.
+
+Nel processo di tipizzazione, utilizzo $\Gamma$ per portare con me informazioni parziali sul programma. Questo è fondamentale per scoprire errori a tempo di compilazione.
+
+Per ora, il tipo dell'assegnamento sarà semplicemente di tipo \texttt{unit}.
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash e : \texttt{int}$}
+\LeftLabel{(assign)}
+\RightLabel{$\Gamma(l) = \texttt{intref}$}
+\UnaryInfC{$\Gamma \vdash l := e : \texttt{unit}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$-$}
+\LeftLabel{(deref)}
+\RightLabel{$\Gamma(l) = \texttt{intref}$}
+\UnaryInfC{$\Gamma \vdash !l : \texttt{int}$}
+\end{prooftree}
+
+Di seguito, riporto le condizioni e sopra le regole induttive, le quali dipendono dal tipaggio del sottoprogramma.
+
+Si ricordi che il tipo delle locazioni è rappresentato da \texttt{intref}.
+
+\begin{prooftree}
+\AxiomC{$-$}
+\LeftLabel{(skip)}
+\UnaryInfC{$\Gamma \vdash \texttt{skip} : \texttt{unit}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash e_1 : \texttt{unit}$}
+\AxiomC{$\Gamma \vdash e_2 : T$}
+\LeftLabel{(seq)}
+\BinaryInfC{$\Gamma \vdash e_1;e_2 : T$}
+\end{prooftree}
+
+Nel caso della composizione sequenziale, il tipo del secondo termine sarà uguale al tipo del primo, che in questo caso è \texttt{unit}.
+
+Nel caso del ciclo ``while":
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash e_1 : \texttt{bool}$}
+\AxiomC{$\Gamma \vdash e_2 : \texttt{unit}$}
+\LeftLabel{(while)}
+\BinaryInfC{$\Gamma \vdash \texttt{while } e_1 \texttt{ do } e_2 : \texttt{unit}$}
+\end{prooftree}
+
+Considerando la regola di tipizzazione, il tipo del corpo del ciclo "while" sarà anch'esso di tipo \texttt{unit}.
+\section{Proprietà}
+
+\subsection{Teorema della Progressione}
+
+Il Teorema della Progressione afferma che: 
+\begin{tcolorbox}
+Se $\Gamma \vdash e : T$ e $dom(\Gamma) \subseteq dom(s)$, allora $e$ è un
+valore o esiste $e', s'$ tali che $\langle e, s \rangle \rightarrow \langle e', s' \rangle$.
+\end{tcolorbox}
+Quindi, durante l'esecuzione di
+un programma, siamo in grado di fare progressi. Se un'espressione ha un tipo
+valido e il contesto è adeguato, o l'espressione è già un valore (\textit{cioè non può essere valutata ulteriormente}),
+oppure possiamo effettuare una transizione a uno stato successivo.
+
+\subsection{Teorema della Preservazione del Tipo}
+\begin{tcolorbox}
+Il Teorema della Preservazione del Tipo stabilisce che:
+Se $\Gamma \vdash e : T$ e $dom(S) \subseteq dom(s)$,
+e se $\langle e, s \rangle \rightarrow \langle e', s' \rangle$, allora $\Gamma \vdash e' : T$ e $dom( \Gamma)
+\subseteq dom(s')$.
+\end{tcolorbox}
+Questo teorema ci assicura che, durante l'esecuzione di un programma, se un'espressione ha un tipo
+valido e il contesto è adeguato, allora qualsiasi transizione non romperà la coerenza dei tipi. Il tipo
+delle espressioni sarà preservato durante l'esecuzione.
+
+Mettendo insieme i due teoremi, otteniamo un nuovo teorema, il \textbf{Teorema della Safety}.
+
+\subsection{Teorema della Safety}
+\begin{tcolorbox}
+  Il Teorema della Safety ci dice che: 
+Se $\Gamma \vdash e : T$ e $dom(\Gamma) \subseteq dom(s)$, e se $\langle e,
+s \rangle \rightarrow^* \langle v', s' \rangle$, allora $e'$ sarà un valore o esisterà $e'', s''$ tali che
+$\langle e', s' \rangle \rightarrow \langle e'', s'' \rangle$. 
+\end{tcolorbox}
+
+
+In parole povere, se prendiamo una configurazione
+iniziale e la facciamo avanzare attraverso un numero qualsiasi di passi, avremo due possibilità: o raggiungeremo una
+configurazione finale, oppure saremo in grado di effettuare un ulteriore passo.
+
+Quando diciamo che $dom(\Gamma) \subseteq dom(s)$, intendiamo che il dominio dello store (\textit{lo spazio
+in cui sono memorizzati i valori delle variabili}) deve essere contenuto almeno nel dominio del contesto
+(\textit{l'insieme delle variabili dichiarate nel programma}).
+
+Ecco un esempio che illustra questi concetti:
+
+\begin{algorithm}[H]
+  \While{true}
+  {skip}
+\end{algorithm}
+
+In base alle regole di tipizzazione, questo programma avrà il tipo \texttt{unit},
+ma non impedisce al programma di essere in uno stato di blocco infinito,
+in cui continua a eseguire l'istruzione ``skip" all'infinito.
+
+
+\subsection{Type Checking, Typeability e Type Inference}
+
+\begin{tcolorbox}[title = {Problema del Controllo di Tipo}]
+  Dato un type system, un tipo ambiente $\Gamma$, un'espressione $e$, e un tipo $T$, stabilire se $\Gamma \vdash e : T$ è derivabile?
+\end{tcolorbox}
+
+\begin{tcolorbox}[title = {Problema di Type Inference}]
+  Dato un type system, un tipo ambiente $\Gamma$, e un'espressione $e$, trovare un tipo $T$ tale che $\Gamma \vdash e : T$ è
+  derivabile, oppure mostrare che non esiste.
+\end{tcolorbox}
+
+Il secondo problema è più difficile del primo, in quanto devo trovare un tipo $T$ che soddisfi la proprietà, mentre nel primo
+caso devo solo stabilire se esiste un tipo $T$ che soddisfi la proprietà.
+
+\subsection{Type Checking}
+\begin{tcolorbox}
+  Dato $\Gamma$, $e$ e $T$, possiamo trovare un $T$ tale che $\Gamma \vdash e : T$ o mostrare che non esiste.
+\end{tcolorbox}
+Il Teorema del Type Checking afferma che, dati un ambiente di tipi $\Gamma$, un'espressione $e$ e un tipo $T$, siamo in
+grado di determinare se $\Gamma \vdash e : T$ è derivabile. In altre parole, possiamo verificare se un'espressione $e$ è ben
+tipata rispetto a un ambiente di tipi $\Gamma$, e se è così, possiamo anche calcolare il tipo $T$ che la verifica.
+
+\subsection{Preservazione del Tipo}
+\begin{tcolorbox}
+  Dato $\Gamma$, $e$ e $T$, si può decidere se $\Gamma \vdash e : T$.
+\end{tcolorbox}
+Il Teorema della Preservazione del Tipo afferma che, dati un ambiente di tipi $\Gamma$, un'espressione $e$ e un tipo $T$,
+possiamo determinare se $\Gamma \vdash e : T$ è derivabile. In altre parole, questo teorema ci assicura che possiamo verificare
+se il tipo di un'espressione $e$ rimane coerente durante l'esecuzione del programma.
+
+\subsection{Unicità del Tipo}
+\begin{tcolorbox}
+  Se $\Gamma \vdash e: T $ e $\Gamma \vdash e : T'$ allora $T = T'$.
+\end{tcolorbox}
+Il Teorema dell'Unicità del Tipo afferma che se un'espressione $e$ ha due tipi $T$ e $T'$ rispetto a un ambiente di tipi $\Gamma$,
+allora $T$ e $T'$ devono essere identici. In altre parole, non può esistere una situazione in cui un'espressione abbia più di un
+tipo ben formato.

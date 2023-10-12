@@ -42,6 +42,18 @@
 %Nuovi comandi
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \newcommand\prodG{\stackrel{\mathclap{\normalfont\mbox{\tiny{G}}}}{\Longrightarrow}}
+
+\usepackage{syntax}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+% Definizione di uno stile personalizzato per la grammatica
+\setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
+\setlength{\grammarindent}{12em} % increase separation between LHS/RHS 
+% Rimuovi le parentesi angolari attorno al nome delle produzioni
+\renewcommand{\grammarlabel}[2]{\textit{#1}\ \ #2\ \ }
+
+\newcommand{\llbracket}{[\![}
+\newcommand{\rrbracket}{]\!]}
+
 %asmthm
 \newlength{\marginlabelsep}\setlength{\marginlabelsep}{0.5em}
 \newtheoremstyle{italicstyle} %% Name
@@ -95,4 +107,5 @@
 \maketitle
 \tableofcontents
 \input{introduzione}
+\input{modellareprogrammi}
 \end{document}
