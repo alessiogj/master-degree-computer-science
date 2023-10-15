@@ -200,18 +200,162 @@ Con queste regole, possiamo definire la funzione $f$ per ogni possibile albero b
 si basa sui passi precedenti, garantendo che la funzione sia ben definita per tutti gli alberi binari.
 
 \subsection{Dimostrazioni strutturali}
-\dots
-\subsubsection{Funzione che conta il numero di foglie}
+\subsubsection{Normalizzazione della big step semantics}
+\begin{tcolorbox}[title = {Normalizzazione della big step semantics}]
+Per ogni espressione aritmetica $E$ esiste un numero naturale $k$
+t.c. $E \downarrow k$.
+
+\begin{grammar}
+  <$E \in \texttt{expr}$> ::= $n$ | $E_1 + E_2$
+\end{grammar}
+Abbiamo a disposizione due regole di costruzione:
+
+\begin{minipage}{0.40\textwidth}
+  \centering
+  \begin{prooftree}
+    \AxiomC{$-$}
+    \RightLabel{(B-num)}
+    \UnaryInfC{$n \downarrow n$}
+  \end{prooftree}
+\end{minipage}
+\hfill
+\begin{minipage}{0.60\textwidth}
+  \centering
+  \begin{prooftree}
+    \AxiomC{$E_1 \downarrow n_1$}
+    \AxiomC{$E_2 \downarrow n_2$}
+    \RightLabel{$n_3 = \texttt{add}(n_1,n_2)$}
+    \BinaryInfC{$E_1 + E_2 \downarrow n_3$}
+  \end{prooftree}
+\end{minipage}
 \[
-\texttt{leaves}(\texttt{leaf}) = 1
+\texttt{Propr}: \forall E \in \texttt{expr} \exists k \quad numerale \quad \text{ t.c. } E \downarrow k  
 \]
-\[
-\texttt{leaves}(\texttt{tree}(T_1, T_2)) = \texttt{leaves}(T_1) + \texttt{leaves}(T_2)
-\]
-\subsubsection{Funzione che conta il numero di rami}
-\[
-\texttt{branches}(\texttt{leaf}) = 0
-\]
-\[
-\texttt{branches}(\texttt{tree}(T_1, T_2)) = \texttt{branches}(T_1) + \texttt{branches}(T_2) + 1
-\]
+\end{tcolorbox}
+\begin{proof}
+  Per induzione sulla struttura di $E$.
+  \begin{itemize}
+    \item \textbf{Caso base}: Sia $E$ un non terminale $n$, $E\equiv n$, allora il
+    $k$ in questione è proprio $n$. Per la regola (\texttt{B-num}), $n \downarrow n$.
+    \begin{prooftree}
+      \AxiomC{$-$}
+      \RightLabel{(B-num)}
+      \UnaryInfC{$n \downarrow n=k$}
+    \end{prooftree}
+    \item \textbf{Passo induttivo}: $E$ è nella forma $E_1 + E_2$ per qualche $E_1$ e $E_2$ (\textit{sottostrutture di $E$}).
+    Per ipotesi induttiva,
+    essendo $E_1$ e $E_2$ sottostrutture di $E$, vale che:
+    \begin{itemize}
+      \item $\exists k_1 \quad numerale \quad \text{ t.c. } E_1 \downarrow k_1$
+      \item $\exists k_2 \quad numerale \quad \text{ t.c. } E_2 \downarrow k_2$
+    \end{itemize}
+    Usando la regola (\texttt{B-add}) e scegliendo $k_3 = \texttt{add}(k_1, k_2)$, otteniamo che:
+      \begin{prooftree}
+        \AxiomC{$E_1 \downarrow k_1$}
+        \AxiomC{$E_2 \downarrow k_2$}
+        \RightLabel{$k_3 = \texttt{add}(k_1,k_2)$}
+        \BinaryInfC{$E \downarrow k_3$}
+      \end{prooftree}
+      Ho quindi trovato il $k$ t.c. $E \downarrow k$ che cercavo.
+  \end{itemize}
+\end{proof}
+\subsubsection{Small step semantics}
+\begin{tcolorbox}[title = {$E \rightarrow F$ implica $E \rightarrow_{CH} F$ per ogni espressione aritmetica}]
+  Se $E \downarrow n$ e $E \downarrow m$, allora $n \equiv m$.
+\end{tcolorbox}
+\begin{proof}
+  Per induzione sulla struttura di $E$.
+  \begin{itemize}
+    \item \textbf{Caso base}: Sia $E \equiv k$ per qualche $k \in \mathbb{N}$, allora sia 
+    $E \downarrow n$ che $E \downarrow m$ sono derivabili solo per la regola (\texttt{B-num}), dove $m=k=n$.
+
+      \begin{prooftree}
+        \AxiomC{$-$}
+        \RightLabel{(B-num)}
+        \UnaryInfC{$k \downarrow k$}
+      \end{prooftree}
+
+    
+    Ma allora $n \equiv m$.
+
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \begin{prooftree}
+        \AxiomC{$-$}
+        \RightLabel{(B-num)}
+        \UnaryInfC{$m \downarrow k$}
+      \end{prooftree}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+      \centering
+      \begin{prooftree}
+        \AxiomC{$-$}
+        \RightLabel{(B-num)}
+        \UnaryInfC{$n \downarrow k$}
+      \end{prooftree}
+    \end{minipage}
+    \item \textbf{Passo induttivo}: $E$ è nella forma $E_1 + E_2$.
+    \begin{itemize}
+      \item Ne consegue che $E \downarrow m$ è stato derivato usando la regola (\texttt{B-add}).
+      Esistendo $m_1 + m_2 = m$, per ipotesi induttiva, $E_1 \downarrow m_1$ e $E_2 \downarrow m_2$.
+
+      \begin{prooftree}
+        \AxiomC{$E_1 \downarrow m_1$}
+        \AxiomC{$E_2 \downarrow m_2$}
+        \RightLabel{$m = \texttt{add}(m_1,m_2)$}
+        \BinaryInfC{$E \downarrow m$}
+      \end{prooftree}
+      \item Ne consegue che $E \downarrow n$ è stato derivato usando la regola (\texttt{B-add}).
+      Esistendo $n_1 + n_2 = n$, per ipotesi induttiva, $E_1 \downarrow n_1$ e $E_2 \downarrow n_2$.
+
+      \begin{prooftree}
+        \AxiomC{$E_1 \downarrow n_1$}
+        \AxiomC{$E_2 \downarrow n_2$}
+        \RightLabel{$n = \texttt{add}(n_1,n_2)$}
+        \BinaryInfC{$E \downarrow n$}
+      \end{prooftree}
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+\subsubsection{Determinismo forte per la small-step semantics}
+\begin{tcolorbox}[title = {Determinismo forte per la small-step semantics}]
+  Se $E \rightarrow F$ e $E \rightarrow G$, allora $F \equiv G$.
+\end{tcolorbox}
+\begin{proof}
+  Per induzione sulla struttura di $E$.
+  \begin{itemize}
+    \item \textbf{Caso base}: $E \equiv n$ per qualche $n \in \mathbb{N}$. Non 
+    esiste alcuna $E$ e $F$ t.c. $E \rightarrow F$ e $E \rightarrow G$. Quindi 
+    la conclusione  è falsa. 
+    \item \textbf{Passo induttivo}: $E$ è nella forma $E_1 + E_2$.
+    Sia $E \rightarrow F$ per qualche $F$.
+    \begin{itemize}
+      \item Ho usato la regola (\texttt{S-left}), allora $\exists E_1'$ t.c. 
+      $E_1 \rightarrow E_1'$ e $E = E_1 + E_2 \rightarrow E_1' + E_2$.
+      Avendo considerato $E \rightarrow G$ e avendo utilizzato la regola 
+      (\texttt{S-left}), dove $E_1 \rightarrow \text{\^E}_1$ e 
+      $E = E_1 + E_2 \rightarrow \text{\^E}_1 + E_2$, perché $E_1 \rightarrow
+      \text{\^E}_1$ per ipotesi induttiva su $E_1$, $\text{\^E}_1 \equiv E_1'$, 
+      quindi $F=G$.
+      \item Ho usato la regola (\texttt{S-right}), allora $E = m + E_2$ e
+      $E_2'$ t.c $E_2 \rightarrow E_2'$ e $E = m + E_2 \rightarrow m + E_2'$.
+      Avendo considerato $E \rightarrow G$ e avendo utilizzato la regola 
+      (\texttt{S-right}), dove $E_2 \rightarrow \text{\^E}_2$ e 
+      $E = m + E_2 \rightarrow m + \text{\^E}_2$, perché $E_2 \rightarrow
+      \text{\^E}_2$ per ipotesi induttiva su $E_2$, $\text{\^E}_2 \equiv E_2'$,
+      quindi $F=G$.
+      \item Ho usato la regola (\texttt{S-add}), allora $E = E_1 + E_2 = m_1 + m_2$ 
+      per qualche $m_1, m_2$ con $F=m_3 = \texttt{add}(m_1, m_2)$, 
+      inoltre $E \rightarrow G$, ma avendo utilizzato la regola (\texttt{S-add}),
+      ne consegue che $F=G=m_3$.
+      
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+\subsubsection{Determinismo debole per la small-step semantics}
+\begin{tcolorbox}[title = {Determinismo forte per la small-step semantics}]
+  Se $E \rightarrow^* m$ e $E \rightarrow^* n$, allora $F \equiv G$.
+\end{tcolorbox}
+Per dimostrare il determinismo debole, si utilizza la dimostrazione per induzione
+strutturale basata sulla dimostrazione del determinismo forte.
