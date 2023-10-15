@@ -1,0 +1,181 @@
+\chapter{Agile}
+\section{Agile}
+\subsection{Approccio Agile}
+Costruire sistemi safety-critical, governativi o gestire molti team distribuiti sul territorio richiede una
+coordinazione efficace. Verso la fine degli anni '90, il contesto di sviluppo software è cambiato radicalmente.
+I piani rigidi non erano più sempre efficaci, specialmente considerando le richieste di consegne sempre più rapide.
+Con team piccoli, l'overhead generato da processi pesanti sarebbe stato un costo eccessivo, portando così all'adozione
+di un approccio Agile.
+
+Il requisito fondamentale dell'approccio Agile è rispondere rapidamente ai cambiamenti anziché seguire pedissequamente
+un piano preciso. Data l'incertezza sulle esigenze finali e la loro probabile evoluzione nel corso dello sviluppo,
+l'Agile propone una strategia per gestire tali cambiamenti. In questo contesto, si evita di congelare i requisiti
+iniziali, ma si cerca piuttosto di capire meglio cosa si vuole ottenere.
+
+Nell'approccio Agile, la specifica, il design e l'implementazione procedono in parallelo e sono strettamente collegati.
+Il software finale viene gestito attraverso una serie di versioni, con ciascuna versione successiva che rappresenta un
+incremento del prodotto. È cruciale coinvolgere il cliente e gli stakeholder durante tutto il processo di sviluppo Agile
+in modo da assicurare un feedback costante e un allineamento continuo con le aspettative.
+
+Di solito, si stabilisce un intervallo di tempo limitato per lo sviluppo di ciascuna versione, che va da 2 a 4 settimane.
+La documentazione è mantenuta al minimo per evitare discrepanze e inconsistenze tra la documentazione e il codice stesso.
+La comunicazione all'interno del team è spesso informale ma frequente, promuovendo un flusso costante di informazioni.
+
+Per automatizzare il processo di testing, è fondamentale adottare strumenti per il testing automatico, in quanto il testing
+manuale risulterebbe troppo lento e inefficiente data la necessità di coprire numerosi scenari di test. Alcuni strumenti
+chiave per l'approccio Agile includono:
+
+\begin{itemize}
+    \item Testing automatico
+    \item Gestione della configurazione
+    \item Integrazione continua
+    \item Produzione automatica dell'interfaccia utente
+\end{itemize}
+
+L'obiettivo è rilevare e correggere gli errori il prima possibile, in modo da evitare che si propaghino attraverso il sistema.
+
+\subsection{Manifesto Agile}
+L'Agile si basa su alcuni principi chiave che sono riassunti nel Manifesto Agile:
+
+\begin{itemize}
+    \item L'importanza è spostata dal processo formale all'individuo e alle interazioni.
+    \item È più importante avere un software funzionante rispetto a una documentazione esaustiva.
+    \item Si promuove la collaborazione con il cliente, che dovrebbe essere parte integrante del team di sviluppo piuttosto che
+    un soggetto esterno con cui contrattare.
+    \item L'attenzione è posta sulla capacità di rispondere al cambiamento in modo rapido e flessibile, piuttosto che
+    sull'aderenza rigorosa a un piano prestabilito.
+\end{itemize}
+
+\subsection{Implementazione dell'Approccio Agile}
+Per realizzare appieno i principi dell'Agile, è fondamentale coinvolgere attivamente il cliente nel processo di sviluppo.
+Il coinvolgimento del cliente deve andare oltre il semplice fornitore di specifiche, incoraggiando il cliente a partecipare
+attivamente alle discussioni e al processo decisionale. Questo assicura che le funzionalità sviluppate siano allineate con
+le aspettative del cliente e che i feedback siano integrati tempestivamente nel processo di sviluppo.
+
+Un altro aspetto chiave è lo sviluppo incrementale, dove le funzionalità vengono fornite in maniera graduale e integrata
+nel sistema in crescita. In questo contesto, è fondamentale avere team con competenze solide e diversificate, che si fidino
+a vicenda per garantire un flusso di lavoro efficiente e un'efficace condivisione delle responsabilità.
+
+Nell'approccio Agile, è importante prepararsi al cambiamento continuo dei requisiti nel corso del progetto. La capacità di
+adattarsi rapidamente ai nuovi requisiti e di integrarli nel processo di sviluppo è un fattore cruciale per il successo.
+
+Il principio cardine per lo sviluppo Agile è quello di mantenere la semplicità. Ciò implica resistere alla tentazione di
+aggiungere funzionalità non essenziali che potrebbero introdurre una complessità eccessiva nel sistema. L'obiettivo è quello
+di adottare strategie che semplifichino il processo e riducano al minimo il rischio di complicazioni impreviste durante lo
+sviluppo.
+
+\subsection{Applicabilità dell'Approccio Agile}
+L'approccio Agile è particolarmente adatto in contesti in cui il cliente è disponibile e desideroso di partecipare attivamente
+al processo di sviluppo del software. È efficace in ambienti in cui le normative sono meno restrittive e permettono una maggiore
+flessibilità nel processo di sviluppo. I processi di sviluppo Agile sono spesso implementati in combinazione con metodologie di
+gestione progetti agili, come ad esempio Scrum.
+
+\section{Extreme Programming (\texttt{XP})}
+Spesso, nell'ambito dell'approccio Agile, si fa riferimento a \textbf{Extreme Programming}, che spinge all'estremo
+alcune delle caratteristiche fondamentali dell'Agile. Ad esempio, in Extreme Programming, sono comuni varie versioni del software
+consegnate al cliente quotidianamente, con incrementi che vengono immediatamente messi in produzione. Un principio chiave è che i
+casi di test devono superare con successo per ogni build, pertanto è necessario assicurarsi che tutti i casi di test siano funzionanti
+prima di procedere con una nuova build.
+
+Nel contesto di Extreme Programming, viene dato ampio risalto alla pratica di scrivere i test prima di scrivere il codice effettivo.
+Il refactoring è una pratica costante con l'obiettivo di semplificare il codice sorgente per renderlo più leggibile e mantenibile nel
+tempo. Altro aspetto fondamentale di \texttt{XP} include il pair programming, in cui due sviluppatori lavorano insieme su un singolo codice,
+garantendo una maggiore qualità e condivisione delle conoscenze. Inoltre, si mira a mantenere un ritmo di sviluppo sostenibile nel tempo,
+evitando eccessive accelerazioni che potrebbero compromettere la qualità del software.
+
+\section{User Stories}
+Nel contesto dell'Agile, i requisiti vengono spesso raccolti in maniera informale tramite user stories, che sono narrazioni in prosa
+che descrivono le interazioni tra l'utente e il sistema. Questo metodo aiuta a mantenere i requisiti concreti e facilita l'elicitazione
+dei requisiti stessi poiché le user stories sono facili da scrivere e da comprendere.
+
+Le user stories vengono successivamente suddivise in parti più piccole, comunemente chiamate task cards. Per ogni task, è necessario
+fornire una stima temporale per la sua realizzazione. L'obiettivo è quello di coinvolgere attivamente il cliente nella priorizzazione
+delle varie attività, poiché, in un contesto di sviluppo incrementale, non è possibile affrontare tutto contemporaneamente.
+
+Tuttavia, con questo tipo di approccio, non si ha la certezza di implementare tutte le funzionalità richieste, poiché alcune di esse
+potrebbero non emergere in determinati scenari o iterazioni di sviluppo.
+
+\section{Test-Driven Development (\texttt{TDD})}
+Nel Test-Driven Development (\texttt{TDD}), i test vengono scritti prima del codice stesso, e tali test possono essere eseguiti durante la fase
+di scrittura del codice. Questo approccio consente di individuare errori il prima possibile, valutando ogni singola microcomponente
+prima di passare a quella successiva. Il codice risultante è di alta qualità in quanto viene costantemente testato e non presenta bug
+evidenti.
+
+I test, in questo contesto, rappresentano una documentazione degli scenari previsti e consentono di pensare al comportamento del sistema
+prima ancora di implementarlo effettivamente. Ciò porta a una maggiore consapevolezza del sistema e del suo funzionamento da parte del
+team di sviluppo.
+
+Inoltre, è importante coinvolgere attivamente l'utente nella fase di verifica, in modo da sviluppare i cosiddetti acceptance test per le
+varie user stories. Questo è possibile solo grazie all'utilizzo di framework di test automatizzati. Di conseguenza, il numero di test
+generati è notevolmente elevato, garantendo la coerenza e la stabilità del sistema, specialmente in un contesto di sviluppo incrementale.
+
+\subsection{Refactoring}
+Il refactoring rappresenta il processo di riscrittura del codice al fine di renderlo più leggibile e mantenibile nel lungo periodo.
+Spesso, ogni singolo incremento potrebbe richiedere alcuni compromessi che, per essere integrati nel sistema, richiedono una sorta di
+``degradazione" del sistema. Il refactoring permette di affrontare tali problematiche e di mantenere l'integrità del sistema nel tempo,
+assicurandone la stabilità e la longevità. Il refactoring risulta essere una pratica altrettanto valida anche nel contesto di sviluppo
+pianificato (\textit{plan-driven}).
+
+\subsection{Pair Programming}
+Il pair programming è una pratica in cui due persone lavorano insieme su un singolo computer. Mentre una persona scrive il codice,
+l'altra controlla attivamente il lavoro. I ruoli si alternano regolarmente, e le decisioni cruciali vengono prese in modo collaborativo.
+I vantaggi del pair programming sono numerosi, inclusa la condivisione della responsabilità, il controllo continuo e un feedback costante.
+Inoltre, il continuo scambio di conoscenze e la code review continua portano a un miglioramento delle abilità individuali e della qualità
+del codice. Il refactoring continuo contribuisce ulteriormente a migliorare la comunicazione all'interno del team. Contrariamente a ciò
+che si potrebbe pensare, il pair programming non causa una diminuzione significativa della produttività, ma piuttosto conduce a un miglioramento
+generale delle prestazioni del team.
+
+\section{Project Management Agile}
+Nel contesto dell'approccio Agile, il project manager ha la responsabilità di assicurarsi che il software venga consegnato entro i tempi
+previsti, con tutte le funzionalità richieste e nel rispetto del budget stabilito. È responsabile del coordinamento del progetto e del
+monitoraggio dei progressi.
+
+\subsection{Scrum}
+Scrum è un metodo di project management agile che si basa sul lavoro per iterazioni, richiamando così il processo di sviluppo software agile.
+Le sue fasi principali includono:
+
+\begin{enumerate}
+    \item Definizione di obiettivi generali e architettura ad alto livello del sistema.
+    \item Sprint planning, in cui si definiscono gli obiettivi per la prossima iterazione.
+    \item Fase conclusiva, che include la documentazione finale, la code review e la riflessione sulle lezioni apprese.
+\end{enumerate}
+
+\subsection{Terminologia}
+Alcuni termini chiave in Scrum includono:
+
+\begin{itemize}
+    \item Team piccolo, con un massimo di $7$ persone.
+    \item Backlog, che rappresenta la lista di tutte le funzionalità richieste dal cliente.
+    \item Product Owner, responsabile della priorizzazione delle funzionalità e delle decisioni su cosa è più necessario.
+    \item Sprint, che rappresenta un periodo di lavoro di $2$-$4$ settimane.
+    \item Scrum Master, responsabile del monitoraggio e del supporto al processo di sviluppo.
+    \item Velocità, che rappresenta la produttività del team e viene calcolata e aggiornata durante lo sviluppo per la
+    pianificazione dei prossimi sprint.
+    \item Sprint Review, una sessione per riflettere sull'iterazione e fornire input per migliorare i prossimi sprint.
+\end{itemize}
+
+\subsection{Benefici}
+I benefici di Scrum includono la gestione efficiente di funzionalità nel breve termine, una conoscenza approfondita
+dei problemi e delle attività di ogni membro del team, nonché la puntualità delle consegne per il cliente. Scrum favorisce
+un clima di fiducia tra il cliente e il team di sviluppo, poiché il cliente ha la possibilità di visualizzare il sistema software
+funzionante e fornire un feedback continuo. Questo feedback aiuta a chiarire le esigenze del cliente e ad adattare il prodotto
+in modo efficace.
+
+\section{Scrum Distribuito}
+Lo Scrum distribuito si riferisce a situazioni in cui il team di sviluppo è distribuito in più sedi geografiche. In questo contesto,
+la comunicazione tra i membri del team avviene attraverso strumenti come chat in tempo reale, chiamate video e l'utilizzo di sistemi
+di continuous integration per garantire che il software sia sempre funzionante. Un piano di sviluppo comune aiuta a facilitare la
+comunicazione tra i vari team e sedi geografiche.
+
+\subsection{Scalabilità}
+La scalabilità di Scrum si riferisce alla sua capacità di adattarsi a progetti più grandi che coinvolgono più persone e team,
+o che richiedono un'implementazione distribuita. Alcuni punti chiave da considerare includono la necessità di mantenere le pratiche
+chiave come il Test Driven Development (TDD), la comunicazione e la consegna di incrementi funzionanti. La coordinazione tra lo
+sviluppo Agile e la manutenzione del sistema è altrettanto importante, specialmente quando le persone coinvolte potrebbero cambiare
+nel corso del progetto.
+
+\subsection{Problemi e Resistenze}
+Alcuni problemi e resistenze comuni nell'adozione di metodi Agile come Scrum includono la mancanza di esperienza del management nell'ambito
+della metodologia Agile, la necessità di adattarsi a procedure di controllo della qualità preesistenti e le resistenze culturali all'interno
+dell'organizzazione. Il successo della metodologia Agile può essere dimostrato attraverso casi di studio e una maggiore stabilità dei requisiti
+nel tempo.
