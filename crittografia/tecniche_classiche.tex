@@ -864,33 +864,301 @@ di cifratura DES:
 Il processo di decifratura DES è essenzialmente l'operazione inversa della
 cifratura. Le sottochiavi vengono utilizzate in ordine inverso rispetto alla
 cifratura per decifrare il testo cifrato e ottenere il testo in chiaro originale.
-\section{il file \texttt{etc/passwd}}
-Il file \verb|/etc/passwd| contiene le informazioni sugli utenti del sistema.
-Ogni riga del file contiene le informazioni di un utente, separate da due punti
-(:). Le informazioni sono:
-\begin{itemize}
-    \item \textbf{Username}: nome dell'utente.
-    \item \textbf{Password}: password dell'utente, cifrata con DES.
-    \item \dots
-    \item \textbf{Seed}: seed utilizzato per cifrare la password.
-\end{itemize}
-Tale file era pubblicamente disponibile e quindi era possibile mediante ricavare 
-la password mediante il dizionario visto che l'algoritmo era noto, questo senza
-nemmeno effettuare un login sulla macchina.
-\section{Cifrari a blocchi}
-Il plaintext viene diviso in blocchi di $n$ bit. Il blocco di testo in chiaro viene
-cifrato in un blocco di testo cifrato di $n$ bit.
+\section{Cifrari a flusso e a blocchi}
+Un \textbf{cifrario a flusso} crittografa un flusso di dati digitali un bit
+o un byte alla volta. Esempi di cifrari a flusso classici sono il
+cifrario di Vigenère con autochiave e il cifrario di Vernam. Nell'ideale,
+si utilizzerebbe una versione del cifrario di Vernam con one-time pad, in
+cui lo stream di chiavi ha la stessa lunghezza dello stream di bit in chiaro.
+Tuttavia, perché questo sia praticamente realizzabile, lo stream di chiavi deve
+essere fornito in anticipo ad entrambi gli utenti attraverso un canale indipendente
+e sicuro, il che può rappresentare una sfida logistica se il traffico dati
+previsto è di grandi dimensioni.
+
+Di conseguenza, per ragioni pratiche, il generatore di stream di bit deve
+essere implementato come una procedura algoritmica, in modo che lo stream di
+bit crittografico possa essere prodotto da entrambi gli utenti. In questo
+approccio, il generatore di stream di bit è un algoritmo controllato dalla chiave
+e deve produrre uno stream di bit crittograficamente robusto. I due utenti devono
+condividere solo la chiave di generazione, e ognuno può generare lo stream di chiavi.
+
+Un \textbf{cifrario a blocchi} tratta un blocco di testo in chiaro come un'entità
+unica e produce un blocco di testo cifrato della stessa lunghezza. Di solito,
+si utilizza una dimensione di blocco di $64$ o $128$ bit. Allo stesso modo del 
+cifrario a flusso, i due utenti condividono una chiave di crittografia simmetrica.
+Utilizzando alcune delle modalità di funzionamento spiegate in precedenza, un
+cifrario a blocchi può essere usato per ottenere lo stesso effetto di un cifrario
+a flusso.
+
+Molto più sforzo è stato dedicato all'analisi dei cifrari a blocchi, poiché
+sembrano essere applicabili a una gamma più ampia di applicazioni rispetto ai
+cifrari a flusso. La maggior parte delle applicazioni crittografiche simmetriche
+basate su rete fa uso di cifrari a blocchi. Pertanto, le discussioni in questo
+contesto si concentreranno principalmente su di essi.
+
 \subsection{Electronic Code Book}
-Il plaintext viene diviso in blocchi di $n$ bit. Ogni blocco viene cifrato
-indipendentemente dagli altri blocchi. Questo sistema soffre di malleabilità.
+Il ``Electronic Code Book" (\verb|ECB|) è una
+delle modalità di funzionamento di un cifrario a blocchi, utilizzato per
+crittografare un blocco di testo di lunghezza fissa. In questa modalità,
+ogni blocco di testo in chiaro viene crittografato separatamente utilizzando
+la stessa chiave. Non c'è alcuna dipendenza tra i blocchi di testo in chiaro
+durante il processo di crittografia. Pertanto, gli stessi blocchi di testo in
+chiaro generano gli stessi blocchi di testo cifrato. Tuttavia, questo comporta
+il rischio di sicurezza in quanto pattern di testo in chiaro simili generano
+pattern di testo cifrato simili, rendendo il sistema vulnerabile a un'analisi
+statistica. Nonostante questa debolezza, l'\verb|ECB| è ancora utilizzato in alcuni
+scenari in cui la semplicità e la velocità sono prioritarie rispetto alla
+sicurezza, come per la crittografia di dati non sensibili o per applicazioni
+specifiche in cui la perdita di alcuni blocchi non compromette la sicurezza
+complessiva del sistema.
 
+La modalità più semplice è la modalità di codifica elettronica (\verb|ECB|), in cui
+il testo in chiaro viene gestito un blocco alla volta e ogni blocco di testo
+in chiaro viene crittografato utilizzando la stessa chiave. Il termine ``codice"
+è utilizzato perché, per una data chiave, esiste un testo cifrato univoco per
+ogni blocco di testo in chiaro di b bit. Pertanto, possiamo immaginare un'enorme
+tabella di corrispondenza in cui vi è una voce per ogni possibile modello
+di testo in chiaro di $b$ bit che mostra il relativo testo cifrato corrispondente.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/electriccodeblock.png}
+    \caption{Electronic Code Book}
+\end{figure}
 
-Senza sapere cosa c'è dentro, possiamo frare trasformazioni note. sappiamo quello che facciamo sul
-plaintext.
 \subsection{Cipher Block Chaining}
-Non riusciamo a spedire stream, dobbiamo sempre lavorare a blocchi. Senza l'intero messaggio 
-non calcolo $c_1$. Vorrei lavorare in maniera indipendente senza per forza aver tutto il messaggio.
+
+La modalità di funzionamento ``Cipher Block Chaining'' (\verb|CBC|) è un metodo
+di crittografia a blocchi che introduce un certo grado di indipendenza tra i
+blocchi di testo in chiaro durante il processo di crittografia. Funziona come
+segue:
+
+\begin{enumerate}
+    \item Prima di crittografare, viene generato un vettore di inizializzazione
+    casuale noto come vettore di inizializzazione (\texttt{IV}). Questo vettore
+    è combinato con il primo blocco di testo in chiaro tramite un'operazione di
+    \texttt{XOR}.
+    
+    \item Il risultato di questa operazione \texttt{XOR} viene quindi
+    crittografato utilizzando l'algoritmo di cifratura a blocchi insieme
+    alla chiave.
+    
+    \item Il blocco di testo cifrato risultante viene poi combinato con il
+    blocco di testo successivo prima della crittografia. Questo collegamento
+    tra i blocchi di testo in chiaro aiuta a rompere la correlazione tra i
+    blocchi di testo in chiaro, migliorando la sicurezza rispetto alla modalità
+    di Electronic Code Book (\texttt{ECB}).
+    
+    \item Questo processo continua per tutti i blocchi di testo in chiaro
+    successivi, garantendo che ciascun blocco di testo cifrato dipenda dal
+    blocco di testo in chiaro precedente, oltre che dalla chiave.
+\end{enumerate}
+
+La decodifica avviene seguendo lo stesso processo in ordine inverso,
+utilizzando il vettore di inizializzazione e la chiave per ottenere il
+testo in chiaro originale.
+
+La modalità \texttt{CBC} è considerata più sicura dell'\texttt{ECB} poiché
+introduce una
+dipendenza tra i blocchi di testo in chiaro, rendendo più complessa l'analisi
+statistica e aumentando la resistenza agli attacchi crittoanalitici.
+Tuttavia, è importante gestire correttamente il vettore di inizializzazione
+per garantire la sicurezza e l'integrità del sistema di crittografia.
+\[ C_j = E(K, [C_{j-1} \oplus P_j]) \]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/CBC.png}
+    \caption{Cipher Block Chaining}
+\end{figure}
+\subsection{Cipher Feedback}
+Per \verb|AES|, \verb|DES| o qualsiasi altro cifrario a blocchi, la crittografia viene eseguita
+su un blocco di \(b\) bit. Nel caso di \verb|DES|, \(b = 64\), e nel caso di \verb|AES|,
+\(b = 128\). Tuttavia, è possibile convertire un cifrario a blocchi in un cifrario
+a flusso utilizzando una delle modalità di funzionamento: la modalità di
+Feedback di Cifratura (\verb|CFB|) e la modalità di Feedback di Output (\verb|OFB|).
+
+Un cifrario a flusso elimina la necessità di aggiungere padding a un messaggio
+per renderlo un numero intero di blocchi. Inoltre, può funzionare in tempo reale.
+Pertanto, se viene trasmesso uno stream di caratteri, ogni carattere può essere
+cifrato e trasmesso immediatamente utilizzando un cifrario a flusso orientato
+ai caratteri.
+
+Una proprietà desiderabile di un cifrario a flusso è che il testo cifrato abbia
+la stessa lunghezza del testo in chiaro. Pertanto, se vengono trasmessi caratteri
+di $8$ bit, ogni carattere dovrebbe essere cifrato per produrre un output di
+testo cifrato di $8$ bit. Se vengono prodotti più di $8$ bit, la capacità di
+trasmissione viene sprecata.
+
+La modalità \verb|CFB| è illustrata nello schema. In questa modalità, il testo in chiaro
+è diviso in segmenti di \(s\) bit, dove \(s\) è la dimensione dell'unità di
+trasmissione. Durante la crittografia, viene utilizzato un registro a scorrimento
+di \(b\) bit inizializzato con un vettore di inizializzazione (\verb|IV|). I
+primi \(s\) bit più significativi dell'output della funzione di crittografia
+vengono combinati con il primo segmento di testo in chiaro \(P_1\) tramite
+l'operazione XOR per produrre l'unità di testo cifrato \(C_1\), che viene quindi
+trasmessa. Il contenuto del registro a scorrimento viene spostato a sinistra di
+\(s\) bit e \(C_1\) viene inserito nei \(s\) bit meno significativi del registro
+a scorrimento. Questo processo continua fino a quando tutti i segmenti di testo
+in chiaro sono stati crittografati.
+
+Per la decifratura, viene utilizzato lo stesso schema, ad eccezione che l'unità
+di testo cifrato ricevuta viene combinata tramite \verb|XOR| con l'output della funzione
+di crittografia per produrre l'unità di testo in chiaro. È importante notare che
+viene utilizzata la funzione di crittografia e non quella di decifratura. Questo
+è facilmente spiegabile. Sia \(MSBs(X)\) definita come i \(s\) bit più significativi
+di \(X\). Quindi
+
+\[ C_1 = P_1 \oplus MSBs[E(K, IV)] \]
+
+Di conseguenza, riarrangiando i termini:
+
+\[ P_1 = C_1 \oplus MSBs[E(K, IV)] \]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/cipherFeedback.png}
+    \caption{Cipher Feedback}
+\end{figure}
+\subsection{Output Feedback}
+La modalità di Feedback di Output (\verb|OFB|) ha una struttura simile a
+quella di \verb|CFB|. Per \verb|OFB|, l'output della funzione di crittografia viene
+retroalimentato e diventa l'input per crittografare il blocco successivo
+di testo in chiaro. In \verb|CFB|, l'output dell'unità \verb|XOR| viene
+retroalimentato e diventa l'input per crittografare il blocco successivo.
+L'altra differenza è che la modalità \verb|OFB| opera su blocchi completi
+di testo
+in chiaro e testo cifrato, mentre \verb|CFB| opera su un sottoinsieme di \(s\) bit.
+La crittografia \verb|OFB| può essere espressa come:
+
+\[ C_j = P_j \oplus E(K, O_{j-1}) \]
+\[ O_{j-1} = E(K, O_{j-2}) \]
+
+Un po' di riflessione dovrebbe convincerti che possiamo riscrivere
+l'espressione di crittografia come:
+
+\[ C_j = P_j \oplus E(K, [C_{j-1} \oplus P_{j-1}]) \]
+
+Riarrangiando i termini, possiamo dimostrare che la decifratura funziona:
+
+\[ P_j = C_j \oplus E(K, [C_{j-1} \oplus P_{j-1}]) \]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/outputFeedback.png}
+    \caption{Output Feedback}
+    \label{fig:outputFeedback}
+\end{figure}
+I blocchi di output della cifratura, \(O_i\), dipendono solo dalla chiave
+e dal vettore di inizializzazione (\verb|IV|) e non dipendono dal testo
+in chiaro. Pertanto, per una data chiave e \verb|IV|, lo stream di bit di
+output utilizzato per l'operazione XOR con lo stream di bit in chiaro è fisso.
+Se due messaggi diversi avessero un blocco identico di testo in chiaro
+nella stessa posizione, un attaccante sarebbe in grado di determinare
+quella parte dello stream \(O_i\).
+
+Un vantaggio del metodo \verb|OFB| è che gli errori di bit nella trasmissione non
+si propagano. Ad esempio, se si verifica un errore di bit in \(C_1\), solo
+il valore ripristinato di \(P_1\) viene influenzato; i blocchi di testo in
+chiaro successivi non vengono corrotti. Con \verb|CFB|, \(C_1\) serve anche come
+input al registro a scorrimento e quindi causa corruzioni aggiuntive a valle.
+
+Lo svantaggio di \verb|OFB| è che è più vulnerabile a un attacco di modifica dello
+stream di messaggi rispetto a \verb|CFB|. Considera che complementare un bit nel
+testo cifrato complementa il bit corrispondente nel testo in chiaro
+ripristinato. Pertanto, possono essere effettuate modifiche controllate
+al testo in chiaro ripristinato. Questo potrebbe rendere possibile per un
+avversario, apportando le modifiche necessarie alla parte di checksum del
+messaggio e alla parte di dati, modificare il testo cifrato in modo che non
+sia rilevato da un codice di correzione degli errori.
+
+\verb|OFB| ha la struttura di un tipico cifrario a flusso, poiché il cifrario
+genera uno stream di bit come funzione di un valore iniziale e di una chiave,
+e questo stream di bit viene operato con \verb|XOR| con i bit del testo in chiaro.
+Lo stream generato che viene operato con \verb|XOR| con il testo in chiaro è
+indipendente dal testo in chiaro stesso; questo è evidenziato da riquadri
+tratteggiati in Figura (\ref{fig:outputFeedback}). Una differenza rispetto
+ai cifrari a flusso è che \verb|OFB| crittografa il testo in chiaro un blocco
+intero alla volta, dove tipicamente un blocco è di $64$ o $128$ bit. Molti
+cifrari a flusso crittografano un byte alla volta.
 
 \section{Feistel}
-\section{Crittografia a chiave pubblica}
-Ha un grosso difetto, il tempo di calcolo è molto alto.
+L'algoritmo di Feistel è una tecnica di cifratura a blocchi che
+opera dividendo il testo in chiaro in due metà e applicando una serie
+di round che modificano iterativamente il testo in chiaro. È progettato
+per essere efficiente e facilmente invertibile per la decifratura. Il suo
+funzionamento può essere descritto nei seguenti passaggi:
+
+\begin{enumerate}
+  \item \textbf{Inizializzazione}: Il testo in chiaro di lunghezza \(2n\)
+  viene diviso in due metà di lunghezza \(n\) ciascuna, solitamente denotate
+  come \(L\) e \(R\) (per sinistra e destra). Questi blocchi vengono
+  inizialmente caricati come input nell'algoritmo.
+  \item \textbf{Rounds di Cifratura}: L'operazione di cifratura si compone
+  di più round, ognuno dei quali esegue le seguenti operazioni:
+    \begin{itemize}
+      \item La metà destra \(R\) del testo in chiaro passa attraverso una
+      funzione di trasformazione che dipende da una sottochiave specifica
+      del round. La funzione è progettata per introdurre una complessità
+      tale da rendere il processo di crittoanalisi complesso e costoso.
+      \item L'output della funzione di trasformazione viene poi combinato
+      con la metà sinistra \(L\) del testo in chiaro utilizzando
+      l'operazione XOR (eXclusive OR). L'output di questa operazione
+      diventa la nuova metà destra \(R\) per il round successivo.
+      \item Nel frattempo, la vecchia metà destra \(R\) diventa la nuova
+      metà sinistra \(L\) per il prossimo round.
+    \end{itemize}
+  \item \textbf{Conclusione}: Dopo un numero prefissato di round, il processo
+  si conclude scambiando le due metà. Quindi, l'output finale dell'ultimo
+  round diventa il testo cifrato.
+\end{enumerate}
+
+L'algoritmo di Feistel è considerato sicuro a causa della sua struttura
+iterativa e dell'uso di funzioni di trasformazione complesse all'interno
+di ogni round. La sua reversibilità semplifica anche il processo di
+decifratura, rendendolo altrettanto efficiente. Questa struttura offre
+un equilibrio tra sicurezza e efficienza, che lo rende adatto per un'ampia
+gamma di applicazioni di crittografia. È stato ampiamente utilizzato come
+base per diversi algoritmi di cifratura di successo, come il Data Encryption
+Standard (\verb|DES|).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/feister.png}
+    \caption{Funzionamento di Feistel}
+    \label{fig:feistel}
+\end{figure}
+L'efficacia dell'algoritmo di Feistel con una funzione \(F\)
+arbitraria deriva dalla sua capacità di confondere e diffondere
+il testo in chiaro attraverso l'uso di operazioni matematiche e logiche
+complesse. Anche se \(F\) può essere scelta in modo flessibile per svolgere
+una vasta gamma di operazioni crittografiche, ci sono alcune proprietà
+fondamentali che permettono a questo tipo di cifrario di essere robusto e
+sicuro:
+
+\begin{enumerate}
+  \item \textbf{Confusione}: La funzione \(F\) introduce confusione nel
+  testo in chiaro, in modo che la relazione tra il testo cifrato e la
+  chiave sia complessa e non lineare. Questo rende difficile per un
+  crittoanalista estrarre informazioni significative sulla chiave o sul
+  testo in chiaro anche se conoscono la relazione tra il testo cifrato
+  e la chiave.
+  \item \textbf{Diffusione}: Le operazioni all'interno dell'algoritmo di
+  Feistel assicurano che anche piccoli cambiamenti nel testo in chiaro
+  si propaghino in modo significativo attraverso i vari round, garantendo
+  che piccole modifiche nel testo in chiaro producano cambiamenti
+  significativi nel testo cifrato.
+  \item \textbf{Reversibilità}: L'architettura di Feistel consente di
+  effettuare facilmente l'operazione inversa (\textit{decifratura}) con
+  gli stessi
+  componenti dell'algoritmo di cifratura. Questa proprietà di reversibilità
+  semplifica notevolmente il processo di decifratura senza compromettere
+  la sicurezza del sistema.
+  \item \textbf{Complessità computazionale}: La scelta di una \(F\) complessa
+  e sufficientemente caotica rende la crittoanalisi computazionalmente
+  costosa e difficile, richiedendo risorse computazionali significative
+  per eseguire con successo un attacco di crittoanalisi.
+\end{enumerate}
+
+Tuttavia, è importante notare che l'efficacia del cifrario di Feistel
+dipende fortemente anche dalla scelta di una \(F\) robusta e ben progettata.
+Una funzione debole o prevedibile potrebbe compromettere la sicurezza
+complessiva del sistema, pertanto la scelta di una buona funzione di
+trasformazione è fondamentale per garantire la sicurezza del cifrario di
+Feistel.
