@@ -404,3 +404,291 @@ Notiamo che:
 \[
   \mathcal{F}_{\neg B}(\textit{lfp}_M F) \textit{ dove }F : M' \mapsto M \cup \llbracket C \rrbracket_\wp  \circ (\mathcal{F}_B(M'))
 \]
+
+\section{Il Control Flow Graph}
+Il \textit{Control Flow Graph} (CFG) è un grafo diretto che rappresenta il
+flusso di controllo di un programma. Il grafo è generato dalla 
+sintassi del programma. Lo scopo principale di tale grafo è quello di 
+permettere di capire facilmente la struttura del codice rilevando 
+codice morto, cicli infiniti, e altre caratteristiche del programma.
+È quindi utile per l'analisi statica del codice.
+
+Il \texttt{CFG} è un grafo diretto $G = (N,E)$ dove:
+\begin{itemize}
+  \item un nodo $n \in N$ rappresenta un blocco di codice, ovvero è una sequenza massimale
+  di istruzioni con un singolo punto di ingresso, 
+  un singolo punto di uscita e senza diramazioni interne.
+  Per semplicità, assumiamo un unico nodo d'ingresso $n_0$ e un unico nodo di uscita $n_f$.
+  \item Un arco $e=(n_i,n_j) \in E$ rappresenta un possibile flusso di controllo tra due blocchi di codice.
+\end{itemize}
+\begin{figure}[H]
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=3cm,
+      thick,block/.style={rectangle, draw, text width=2cm, text centered, minimum height=1cm}]
+    
+    \node[block] (1) {if(x == y)};
+    \node[block] (2) [below left of=1] {then \{...\}};
+    \node[block] (3) [below right of=1] {else \{...\}};
+    \node[block] (4) [below right of=2] {...};
+    
+    \path[every node/.style={font=\sffamily\small}]
+    (1) edge node {} (2)
+    edge node {} (3)
+    (2) edge node {} (4)
+    (3) edge node {} (4);
+    \end{tikzpicture}
+    \caption{Esempio di CFG}
+  \end{subfigure}
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \begin{verbatim}
+      if(x == y)
+          then
+              ...
+          else
+              ...
+      ...
+      \end{verbatim}
+  \end{subfigure}
+  \caption{La figura generale}
+\end{figure}
+\subsection{Blocchi di base}
+\begin{tcolorbox}[title=Blocco di base]
+  Un blocco di base è la massima sequenza consecutiva di istruzioni senza 
+  diramazioni interne, con un singolo punto di ingresso, un singolo punto di uscita
+  e senza salti all'interno del blocco.
+\end{tcolorbox}
+Si tratta dell'unità di base per la costruzione del \verb|CFG| e per l'analisi del flusso.
+
+Le ottimizzazioni che è possibile attuare includono
+l'eliminazione della ridondanza e l'allocazione dei registri.
+\subsection{Identificare i blocchi di base}
+Questo è un processo di analisi del flusso di controllo per identificare i blocchi di base. Di seguito è riportata una spiegazione dettagliata basata sull'input fornito:
+
+\textbf{Identificazione dei leader:}
+\begin{itemize}[label=--,topsep=0pt,itemsep=0pt]
+  \item Il primo statement nella sequenza (\textit{punto di ingresso}) è un leader.
+  \item Ogni statement ``s" che è la destinazione di un salto
+  (\textit{condizionale o incondizionale}) è un leader (\textit{cioè esiste un ``goto s"}).
+  \item Ogni statement immediatamente successivo a un salto
+  (\textit{condizionale o incondizionale}) o a un return è un leader.
+\end{itemize}
+
+\textbf{Creazione dei blocchi di base:}
+\begin{itemize}
+  \item Per ogni leader identificato, il suo blocco di base include
+  il leader stesso e tutte le istruzioni fino al prossimo leader
+  (\textit{senza includerlo}) o fino alla fine del programma.
+\end{itemize}
+
+Questo processo consente di identificare i blocchi di base e di definire
+il flusso di controllo all'interno del programma.
+
+\subsection{Esempio}
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[node distance=0.3cm and 6cm]
+    \node (1) {1. \texttt{i := m - 1}};
+    \node [below=of 1] (2) {2. \texttt{j := n}};
+    \node [below=of 2] (3) {3. \texttt{t1 := 4 * n}};
+    \node [below=of 3] (4) {4. \texttt{v := a[t1]}};
+    \node [below=of 4] (5) {5. \texttt{i := m + 1}};
+    \node [below=of 5] (6) {6. \texttt{t2 := 4 * i}};
+    \node [below=of 6] (7) {7. \texttt{t3 := a[t2]}};
+    \node [below=of 7] (8) {8. \texttt{if t3 < v goto (5)}};
+    \node [below=of 8] (9) {9. \texttt{j:= j - 1}};
+    \node [below=of 9] (10) {10. \texttt{t4 := 4 * j}};
+    \node [below=of 10] (11) {11. \texttt{t5 := a[t4]}};
+    \node [below=of 11] (12) {12. \texttt{if t5 > v goto (9)}};
+    \node [below=of 12] (13) {13. \texttt{if i >= j goto (23)}};
+    \node [below=of 13] (14) {14. \texttt{t6 := 4 * i}};
+    \node [below=of 14] (15) {15. \texttt{x := a[t6]}};
+  
+    \node [right=of 1]  (16) {16. \texttt{t7 := 4 * i}};
+    \node [below=of 16] (17) {17. \texttt{t8 := 4 * j}};
+    \node [below=of 17] (18) {18. \texttt{t9 := a[t8]}};
+    \node [below=of 18] (19) {19. \texttt{a[t7] := t9}};
+    \node [below=of 19] (20) {20. \texttt{t10 := 4 * j}};
+    \node [below=of 20] (21) {21. \texttt{a[t10] := x}};
+    \node [below=of 21] (22) {22. \texttt{goto (5)}};
+    \node [below=of 22] (23) {23. \texttt{t11 := 4 * i}};
+    \node [below=of 23] (24) {24. \texttt{x := a[t11]}};
+    \node [below=of 24] (25) {25. \texttt{t12 := 4 * i}};
+    \node [below=of 25] (26) {26. \texttt{t13 := 4 * n}};
+    \node [below=of 26] (27) {27. \texttt{t14 := a[t13]}};
+    \node [below=of 27] (28) {28. \texttt{a[t12] := t14}};
+    \node [below=of 28] (29) {29. \texttt{t15 := 4 * n}};
+    \node [below=of 29] (30) {30. \texttt{a[t15] := x}};
+    \node [fit=(current bounding box), draw, inner sep=0.5cm] (box) {};
+  \end{tikzpicture}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[node distance=0.1cm and 6cm]
+    \node (1) {1. \texttt{i := m - 1}};
+    \node [below=of 1, draw=red, thick, minimum width=1.5cm] (2) {2. \texttt{j := n}};
+    \node [below=of 2] (3) {3. \texttt{t1 := 4 * n}};
+    \node [below=of 3] (4) {4. \texttt{v := a[t1]}};
+    \node [below=of 4, draw=red, thick, minimum width=1.5cm] (5) {5. \texttt{i := m + 1}};
+    \node [below=of 5] (6) {6. \texttt{t2 := 4 * i}};
+    \node [below=of 6] (7) {7. \texttt{t3 := a[t2]}};
+    \node [below=of 7] (8) {8. \texttt{if t3 < v goto (5)}};
+    \node [below=of 8, draw=red, thick, minimum width=1.5cm] (9) {9. \texttt{j:= j - 1}};
+    \node [below=of 9] (10) {10. \texttt{t4 := 4 * j}};
+    \node [below=of 10] (11) {11. \texttt{t5 := a[t4]}};
+    \node [below=of 11] (12) {12. \texttt{if t5 > v goto (9)}};
+    \node [below=of 12, draw=red, thick, minimum width=1.5cm] (13) {13. \texttt{if i >= j goto (23)}};
+    \node [below=of 13, draw=red, thick, minimum width=1.5cm] (14) {14. \texttt{t6 := 4 * i}};
+    \node [below=of 14] (15) {15. \texttt{x := a[t6]}};
+  
+    \node [right=of 1]  (16) {16. \texttt{t7 := 4 * i}};
+    \node [below=of 16] (17) {17. \texttt{t8 := 4 * j}};
+    \node [below=of 17] (18) {18. \texttt{t9 := a[t8]}};
+    \node [below=of 18] (19) {19. \texttt{a[t7] := t9}};
+    \node [below=of 19] (20) {20. \texttt{t10 := 4 * j}};
+    \node [below=of 20] (21) {21. \texttt{a[t10] := x}};
+    \node [below=of 21] (22) {22. \texttt{goto (5)}};
+    \node [below=of 22, draw=red, thick, minimum width=1.5cm] (23) {23. \texttt{t11 := 4 * i}};
+    \node [below=of 23] (24) {24. \texttt{x := a[t11]}};
+    \node [below=of 24] (25) {25. \texttt{t12 := 4 * i}};
+    \node [below=of 25] (26) {26. \texttt{t13 := 4 * n}};
+    \node [below=of 26] (27) {27. \texttt{t14 := a[t13]}};
+    \node [below=of 27] (28) {28. \texttt{a[t12] := t14}};
+    \node [below=of 28] (29) {29. \texttt{t15 := 4 * n}};
+    \node [below=of 29] (30) {30. \texttt{a[t15] := x}};
+  
+    \node [fit=(current bounding box), draw, inner sep=0.5cm] (box) {};
+  \end{tikzpicture}
+\end{figure}
+
+La partizione del codice intermedio in blocchi di base coinvolge diversi passaggi
+importanti per rappresentare il flusso di controllo in un programma. I passaggi
+chiave sono i seguenti:
+
+\begin{itemize}
+  \item Aggiunta di archi corrispondenti ai flussi di controllo tra i blocchi.
+  \item Trattamento dei costrutti come:
+  \begin{itemize}
+    \item \textbf{Goto incondizionale}: Questo genera un collegamento diretto a
+    un blocco specifico.
+    \item \textbf{Branch condizionale}: Può generare più archi uscenti da un blocco,
+    a seconda delle possibili condizioni.
+    \item \textbf{Flusso sequenziale}: Se non ci sono ramificazioni alla fine di un blocco,
+    il controllo passa semplicemente al blocco successivo.
+  \end{itemize}
+  \item Aggiunta di nodi finti e archi, se necessario, per rappresentare i nodi di ingresso
+  e di uscita nel caso in cui non siano unici.
+  \item L'obiettivo è di semplificare al massimo gli algoritmi di analisi e trasformazione,
+  assicurando che non ci siano archi che entrano nel nodo di ingresso $n_0$ o che escono dal
+  nodo di uscita $n_f$.
+\end{itemize}
+
+Questi passaggi sono cruciali per modellare accuratamente il flusso di controllo all'interno
+di un programma e facilitare ulteriori analisi e ottimizzazioni.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{img/cfg.png}
+\end{figure}
+Dato un \verb|CFG| = $\langle N, E\rangle$, 
+è definito come un insieme di nodi e archi,
+dove ogni arco rappresenta il flusso di controllo
+tra due nodi. Nel contesto di un $\texttt{CFG} = <N, E>:$
+\begin{itemize}
+  \item Se esiste un arco $n_i$ $\rightarrow$ $n_j$ $\in$ $E$:
+  \begin{itemize}
+    \item $n_i$ è un predecessore di $n_j$
+    \item $n_j$ è un successore di $n_i$
+  \end{itemize}
+  \item Per qualsiasi nodo $n \in N$:
+  \begin{itemize}
+    \item \texttt{Pred(n)}: l'insieme dei predecessori di $n$
+    \item \texttt{Succ(n)}: l'insieme dei successori di $n$
+    \item Un nodo di diramazione (\texttt{branch node}) è un nodo che ha più di un successore
+    \item Un nodo di unione, (\texttt{join node}) è un nodo che ha più di un predecessore
+  \end{itemize}
+\end{itemize}
+\section{Il linguaggio \texttt{imp-CFG}}
+Spostando la caratteristica di controllo sulla struttura del grafo,
+il linguaggio non è più \verb|IMP|, ma una versione leggermente modificata:
+\begin{itemize}
+    \item I vertici corrispondono ai punti del programma
+    \item Gli archi sono passi del calcolo etichettati con l'azione del programma corrispondente
+    \item Le etichette delle istruzioni diventano etichette dei nodi
+\end{itemize}
+\[
+  \begin{array}{lcl}
+    \textbf{test:} & \texttt{NonZero(e)} \text{ or } \texttt{Zero(e)} \\
+    \textbf{assignment:} & x \leftarrow e \\
+    \textbf{empty statement:} & ; \\
+    \textbf{input:} & \texttt{input(x)} \\
+    \end{array}
+\]
+\subsubsection{Esempio}
+\begin{figure}[H]
+  \begin{subfigure}{0.5\textwidth}
+    \begin{verbatim}
+      input(x);
+      y := 2;
+      while(x > 0) {
+        y := y + 2;
+        x := x - 1;
+      }
+    \end{verbatim}
+  \end{subfigure}
+  \begin{subfigure}{0.5\textwidth}
+    \begin{tikzpicture}[node distance={22mm}, main/.style = {draw, circle}] 
+      \node[main] (0) {$0$}; 
+      \node[main] (1) [below =of 0] {$1$};
+      \node[main] (2) [below =of 1] {$2$};
+      \node[main] (5) [right =of 2] {$5$};
+      \node[main] (4) [below right =of 5] {$4$};
+      \node[main] (3) [below left =of 4] {$3$};
+      %%cerchio doppio per il 6
+      \node[main] (6) [below =of 2] {$6$};
+      \draw[->] (0) to node[left] {\small\texttt{input(x)}} (1);
+      \draw[->] (1) to node[left] {$y \leftarrow 2$} (2);
+      \draw[->] (2) to node[above right] {\small \texttt{NonZero(x > 0)}} (3);
+      \draw[->] (2) to node[left] {\small \texttt{Zero(x > 0)}} (6);
+      \draw[->] (3) to node[below right] {$y \leftarrow y + 2$} (4);
+      \draw[->] (4) to node[above right] {$x \leftarrow x - 1$} (5);
+      \draw[->] (5) to node[above] {;} (2);
+      \end{tikzpicture}
+  \end{subfigure}
+\end{figure} 
+
+Una dichiarazione condizionale o un ciclo all'interno di un grafo di flusso di controllo
+presenta due archi corrispondenti: l'arco etichettato con \texttt{NonZero} viene percorso se
+la condizione ``e" è verificata (cioè se ``e" viene valutata come un valore diverso da $0$).
+L'arco etichettato con \texttt{Zero}, invece, viene percorso se la condizione non è soddisfatta.
+
+Un arco è definito come $k=(u,\texttt{lab},v)$, dove $u$ rappresenta il vertice di partenza,
+$v$ rappresenta il vertice di destinazione e \texttt{lab} rappresenta l'etichetta dell'arco.
+Questo arco rappresenta l'effetto della dichiarazione, ovvero la trasformazione dello stato prima
+dell'esecuzione dell'azione di etichettatura in uno stato successivo: \textbf{effetto dell'arco}.
+\subsection{Semantica del linguaggio \texttt{imp-CFG}}
+La semantica del linguaggio descrive la trasformazione dello stato prima e dopo l'esecuzione di
+un'azione del linguaggio, che viene riflessa nell'effetto complessivo della dichiarazione all'interno
+del programma.
+\[
+\begin{array}{lcl}
+  \llbracket ; \rrbracket(m) & = & m \\
+  \llbracket \texttt{NonZero(e)} \rrbracket(m) & = & m \qquad \textit{if } \llbracket e \rrbracket(m) = \texttt{true} \\
+  \llbracket \texttt{Zero(e)} \rrbracket(m) & = & m \qquad \textit{if } \llbracket e \rrbracket(m) = \texttt{false} \\
+  \llbracket x \leftarrow e \rrbracket(m) & = & m[x \mapsto \llbracket e \rrbracket(m)] \\
+  \llbracket \texttt{input(x)} \rrbracket(m) & = & m[x \mapsto m(x)] \\
+\end{array}
+\] 
+\subsection{Computazione del linguaggio \texttt{imp-CFG}}
+Una computazione è un percorso nel grafo di flusso di controllo, ovvero una sequenza di archi
+che iniziano dal nodo iniziale $u$ e terminano in un nodo finale $v$. Il percorso è quindi 
+una sequenza di archi:
+\[
+  \pi = k_1, k_2, \dots, k_n = (u_i, \texttt{lab}_i, u_{i+1}), i = 1, \dots, n - 1, u = u_1, v = v_n
+\]
+La trasformazione di stato corrispondente alle computazioni ottenuta dalla
+composizione degli effetti degli archi della computazione:
+\[
+  \llbracket \pi \rrbracket = \llbracket k_n \rrbracket \circ \dots \circ \llbracket k_1 \rrbracket
+\]

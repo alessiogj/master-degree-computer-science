@@ -359,3 +359,178 @@ Abbiamo a disposizione due regole di costruzione:
 \end{tcolorbox}
 Per dimostrare il determinismo debole, si utilizza la dimostrazione per induzione
 strutturale basata sulla dimostrazione del determinismo forte.
+\section{Induzione delle regole}
+Il comportamento delle espressioni aritmetiche $E$ è completamente definito 
+dalle regole dei suoi componenti. Per questa ragione l'induzione strutturale è sufficientemente 
+potente per dimostrare proprietà per differenti semantiche di \texttt{Exp}.
+Però, in linguaggi più complessi, con operatori di controllo ricorsivi o induttivi, 
+abbiamo bisogno di strumenti più sofisticati. L'idea di base della \textbf{induzione delle regole}
+è di ignorare la struttura degli oggetti e concentrarsi nella \textbf{dimensione delle derivazioni} 
+\subsection{Dimensione delle derivazioni}
+Per esempio, consideriamo le seguenti regole, che definiscono una relazione binaria sui 
+numeri naturali:
+
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(Ax)}
+    \UnaryInfC{$n \texttt{ Div }0$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$n \texttt{ Div } m$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$n \texttt{ Div }(m + n)$}
+  \end{prooftree}
+\end{minipage}
+
+Derivazioni:
+
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(Ax)}
+    \UnaryInfC{$7 \text{ Div } 0$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$7 \text{ Div } 7$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$7 \text{ Div } 14$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$7 \text{ Div } 21$}
+\end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(Ax)}
+    \UnaryInfC{$2 \text{ Div } 0$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$2 \text{ Div } 2$}
+    \LeftLabel{(Plus)}
+    \UnaryInfC{$2 \text{ Div } 4$}
+\end{prooftree}
+\end{minipage}
+
+Notimo che la derivazione a sinistra è più lunga di quella a destra, infatti \texttt{2 Div 4} è più
+piccolo di \texttt{7 Div 21}.
+
+Supponiamo di voler dimostrare una dichiarazione della forma:
+\[
+  n \texttt{ Div } m \rightarrow P(n,m)
+\]
+Dove possiamo utilizzare l'induzione sulla dimensione della derivazione di $n \texttt{ Div } m$.
+Supponiamo quindi che $n \texttt{ Div } m$, dove $m = n \cdot k$ per qualche $k \in \mathbb{N}$.
+Ciò significa effettivamente che le regole \texttt{(Ax)} e \texttt{(Plus)} catturano correttamente
+il concetto di divisione. 
+Quindi, dimostriamo che $n \, \text{Div} \, m \rightarrow P(n, m)$ per
+
+induzione matematica sulla dimensione della derivazione della valutazione $n \, \text{Div} \, m$
+dalle regole \texttt{(Ax)} e \texttt{(Plus)}.
+
+Ciò significa effettivamente che le regole  \texttt{(Ax)} e \texttt{(Plus)} catturano correttamente
+il concetto di divisione. Quindi, supponiamo di avere una derivazione di $n \, \text{Div} \, m$.
+Utilizzare l'induzione matematica significa avere un'ipotesi induttiva che afferma che $P(k_1, k_2)$
+è vera per qualsiasi $k_1$, $k_2$ per i quali esiste una derivazione $k_1 \, \text{Div} \, k_2$ la cui
+dimensione è inferiore alla dimensione della derivazione di $n \, \text{Div} \, m$.
+
+Quindi $n \texttt{ Div } m$ può essere derivato solo da \texttt{(Ax)} o \texttt{(Plus)}.
+
+Abbiamo due possibilità:
+\begin{itemize}
+  \item Abbiamo l'applicazione di un assioma \texttt{(Ax)}: 
+  \begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(Ax)}
+    \UnaryInfC{$n \texttt{ Div }0$}
+  \end{prooftree}
+  Solo se $m = 0$, quindi $P(n, 0)$ è vera, ma $k$ deve essere $0$.
+  \item Abbiamo l'applicazione di una regola \texttt{(Plus)}:
+    \begin{prooftree}
+      \AxiomC{...}
+      \LeftLabel{(...)}
+      \UnaryInfC{$n \texttt{ Div } m_1$}
+      \LeftLabel{(Plus)}
+      \UnaryInfC{$n \texttt{ Div }(m_1 + n)$}
+    \end{prooftree}
+    Dove $m = m_1 + n$.
+\end{itemize}
+Però questo significa che la valutazione di $n \texttt{ Div } m$ ha anche una derivazione mediante regole.
+La dimensione della derivazione è minore della dimensione della derivazione di $n \texttt{ Div } m$.
+Quindi per ipotesi induttiva, sappiamo che esiste un $k_1$ tale che $m_1 = n \cdot k_1$.
+
+Ora, $P(n, m)$ è una immediata conseguenza di $m = n \cdot (K_1 + 1)$.
+\section{Definizione formale di induzione delle regole}
+Per dimostrare una proprietà $P(D)$ per ogni derivazione $D$, è sufficiente fare quanto segue:
+
+\begin{enumerate}
+    \item[(a)] \textbf{Caso base:} dimostra che $P(A)$ è vera per ogni assioma
+    $A$ (utilizzando fatti matematici noti).
+    \item[(b)] \textbf{Caso induttivo:} per ogni regola della forma 
+    
+    \begin{prooftree}
+      \AxiomC{$h_1, \dots, h_n$}
+      \LeftLabel{(Rule)}
+      \UnaryInfC{$c$}
+    \end{prooftree}
+
+    dimostra che ogni derivazione che termina con
+    l'uso di questa regola soddisfa la proprietà. Tale derivazione ha sottoderivazioni
+    $D_1, \dots, D_n$ con conclusioni $h_1, \dots, h_n$. Per ipotesi induttiva,
+    assumiamo che $P(D_i)$ valga per ogni sotto-derivazione $D_i$, $1 \leq i \leq n$.
+\end{enumerate}
+\begin{theorem}[Progress]
+  Se $\Gamma \vdash e : T$ e $dom(\Gamma) \subseteq dom(s)$ allora $e$ è
+  un valore o esistono $e'$, $s'$ tali che $\langle e, s \rangle \rightarrow \langle e', s' \rangle$.
+\end{theorem}
+%\begin{proof}
+%  Supponiamo che $\phi$ sia una relazione ternaria definita come segue:
+%  \[
+%    \phi (\Gamma, e, T) \stackrel{\text{def}}{=} \forall s. dom(\Gamma) \subseteq dom(s) \implies 
+%    valore(e) \lor (\exists e', s'. \langle e, s \rangle \rightarrow \langle e', s' \rangle)
+%  \]
+%  Lo dimostriamo per ogni:
+%  \[
+%    \Gamma, e, T, \texttt{ if } \Gamma \vdash e : T \texttt{ then } \phi(\Gamma, e, T)
+%  \]
+%  Per dimostrare per induzione sulle regole il perché $\Gamma \vdash e : T$,
+%  ciò significa che facciamo un'analisi dei casi sulla ``ultima" regola di
+%  tipizzazione applicata per derivare $\Gamma \vdash e : T$. Ci sono
+%  \begin{itemize}
+%    \item[(a)] 4 casi base: gli assiomi (int), (bool), (deref) e (skip);
+%    \item[(b)] 6 casi induttivi: le regole $(\texttt{op}\, +)$ e $(\texttt{op}\, \geq)$
+%    , (\texttt{if}), (\texttt{assign}), (\texttt{seq}) e (\texttt{while}).
+%  \end{itemize}
+%\end{proof}
+\subsubsection{Example}
+Come esempio, dimostriamo che se $\Gamma \supseteq \{I, \texttt{intref}\}$, allora 
+$\Gamma \vdash (!l + 2) + 3 : \texttt{int} \implies \phi (\Gamma, (!l + 2) + 3, \texttt{int})$.
+\begin{prooftree}
+  \AxiomC{$-$}
+  \LeftLabel{(\texttt{deref})}
+  \UnaryInfC{$\Gamma \vdash !l : \texttt{int}$}
+  \AxiomC{$-$}
+  \LeftLabel{(\texttt{int})}
+  \UnaryInfC{$\Gamma \vdash 2 : \texttt{int}$}
+  \LeftLabel{(\texttt{op} +)}
+  \BinaryInfC{$\Gamma \vdash (!l + 2) : \texttt{int}$}
+  \AxiomC{$-$}
+  \LeftLabel{(\texttt{int})}
+  \UnaryInfC{$\Gamma \vdash 3 : \texttt{int}$}
+  \LeftLabel{(\texttt{op} +)}
+  \BinaryInfC{$\Gamma \vdash (!l + 2) + 3 : \texttt{int}$}
+\end{prooftree}
+
+\subsection{Preservazione del tipo}
+\begin{lemma}
+  Se $\langle e, s \rangle \rightarrow \langle e', s' \rangle$ allora $\text{dom}(s) = \text{dom}(s')$.
+\end{lemma}
+\begin{proof}
+  Per induzione sulle regole su perché $\langle e, s \rangle \rightarrow \langle e', s' \rangle$. Sia $\Phi(e, s, e', s') = (\text{dom}(s) = \text{dom}(s'))$. Tutte le regole sono utilizzi immediati dell'ipotesi induttiva, tranne la regola (assign1), per la quale notiamo che se $l \in \text{dom}(s)$ allora $\text{dom}(s[l \mapsto n]) = \text{dom}(s)$. $\Box$
+\end{proof}
+
+\begin{theorem}
+  [Conservazione del tipo] Se $\Gamma \vdash e : T$ e $\text{dom}(\Gamma) \subseteq \text{dom}(s)$ e
+  $\langle e, s \rangle \rightarrow \langle e', s' \rangle$ allora $\Gamma \vdash e' : T$ e
+  $\text{dom}(\Gamma) \subseteq \text{dom}(s')$.
+\end{theorem}

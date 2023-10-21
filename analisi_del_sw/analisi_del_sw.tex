@@ -35,8 +35,10 @@
 \fancyhf{}% Clear header/footer
 \fancyhead[L]{\nouppercase\leftmark}
 \fancyhead[R]{\thepage}
-\usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,decorations.pathreplacing,shapes.multipart,calc,snakes}
-\usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart}
+\usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,
+decorations.pathreplacing,shapes.multipart,calc,snakes}
+\usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart, graphs, graphs.standard}
+
 \tcbuselibrary{skins}
 \counterwithin{figure}{section}
 %Nuovi comandi
@@ -97,6 +99,13 @@
     #1,
     listing options= {escapechar=|}
 }
+
+\newcommand{\mybox}[3]{
+  \begin{tcolorbox}[colback=#2!10, colbacktitle=#2!30!black, colframe=black, title=#1]
+    #3
+    \ignorespaces
+  \end{tcolorbox}
+}
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%
 %%======================================================================
@@ -108,4 +117,5 @@
 \tableofcontents
 \input{introduzione}
 \input{modellareprogrammi}
+\input{approx}
 \end{document}

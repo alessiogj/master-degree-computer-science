@@ -1,2 +1,70 @@
 \chapter{Teoria dei numeri}
-TODO
+\section{Proprietà dei numeri}
+
+La teoria dei numeri è una branca fondamentale della matematica che studia le proprietà degli interi e delle loro relazioni. Nel contesto della teoria dei numeri, diversi concetti chiave emergono dall'analisi delle operazioni e degli insiemi numerici.
+
+\begin{tcolorbox}[title={Operazioni chiuse}]
+Un'operazione si dice chiusa se l'operazione applicata a due numeri naturali restituisce un numero naturale.
+\[
+  \mathbb{N} \, \texttt{op} \, \mathbb{N} \to \mathbb{N}  
+\]
+Ad esempio, l'addizione e la moltiplicazione sono operazioni chiuse sugli interi.
+\end{tcolorbox}
+
+Quando un'operazione non è chiusa? La divisione, non produce sempre un numero naturale. Gli insiemi sono inoltre caratterizzati da proprietà che li rendono unici.
+
+\begin{tcolorbox}[title={Proprietà commutativa}]
+  \[
+    a \, \texttt{op} \, b = b \, \texttt{op} \, a
+  \]
+L'addizione e la moltiplicazione sono esempi di operazioni che soddisfano la proprietà commutativa.
+\end{tcolorbox}
+
+\begin{tcolorbox}[title={Proprietà associativa}]
+  \[
+    \forall a, b, c \in A \qquad a \, \texttt{op} \, (b \, \texttt{op} \, c) = (a \, \texttt{op} \, b) \, \texttt{op} \, c
+  \]
+La proprietà associativa è verificata dall'addizione e dalla moltiplicazione su diversi insiemi numerici.
+\end{tcolorbox}
+
+\begin{tcolorbox}[title={Elemento neutro}]
+  \[
+    a \, \texttt{op} \, e = a
+  \]
+  quindi 
+  \[
+    \exists e \in A \texttt{ t.c. }\forall a \in A \, a \, \texttt{op} \, e = e \, \texttt{op} \, a = a
+  \]
+L'elemento neutro per l'addizione è lo zero, mentre per la moltiplicazione è l'unità.
+\end{tcolorbox}
+
+\begin{tcolorbox}[title={Elemento inverso}]
+  \[
+    \forall a \in A \, \exists a^{-1} \in A \texttt{ t.c. } a \, \texttt{op} \, a^{-1} = a^{-1} \, \texttt{op} \, a = e
+  \]
+Alcuni esempi di elementi inversi includono l'opposto di un numero per l'addizione e il reciproco di un numero non nullo per la moltiplicazione.
+\end{tcolorbox}
+
+Ogni volta che definiamo delle strutture matematiche che soddisfano tali proprietà, si parla di gruppi. Un \textbf{gruppo} è
+una struttura algebrica che rispetta determinate regole, tra cui chiusura, associatività, presenza di un elemento neutro e di un elemento inverso.
+
+Prendiamo in considerazione i numeri naturali rispetto all'operazione di somma. Hanno l'inverso? No, quindi non è un gruppo. Tuttavia,
+se aggiungessimo altri elementi e arrivassimo ai numeri interi, allora avremmo un gruppo rispetto alla somma. Allo stesso modo, se
+considerassimo i numeri interi rispetto alla moltiplicazione (\textit{senza lo zero}), non avremmo l'inverso. In questo caso, dovremmo aggiungere
+gli inversi e arrivare ai numeri razionali, che costituiscono un gruppo rispetto alla moltiplicazione.
+
+Capita spesso di avere strutture che non sono gruppi. In questi casi, si possono seguire due approcci: ridurre la struttura eliminando
+gli elementi che non soddisfano le proprietà del gruppo o espandere la struttura aggiungendo elementi in modo da soddisfare tali proprietà.
+
+Vorremmo lavorare su un'algebra diversa, possibilmente con gruppi finiti. In particolare, ci concentreremo su gruppi che costituiscono
+l'algebra alla base dei nostri algoritmi crittografici. Utilizzeremo funzioni che sono facili da calcolare ma difficili da invertire,
+comunemente conosciute come \textbf{one-way function}. Queste funzioni si basano sull'algebra moltiplicativa.
+
+Successivamente, esamineremo anche la crittografia ellittica, che si basa su un'algebra diversa, operando su curve ellittiche. Tuttavia,
+gli algoritmi fondamentali rimarranno gli stessi, utilizzando però un'algebra additiva.
+
+\section{Classe di equivalenza $\mathbb{Z}_n$}
+Possiamo dire che:
+\[
+  \mathbb{Z}_n \equiv \mathbb{Z}_n \qquad a \equiv b \pmod{n} \iff (a \mod n) = (b \mod n)
+\]
