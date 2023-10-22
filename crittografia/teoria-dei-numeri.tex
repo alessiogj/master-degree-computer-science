@@ -68,3 +68,200 @@ Possiamo dire che:
 \[
   \mathbb{Z}_n \equiv \mathbb{Z}_n \qquad a \equiv b \pmod{n} \iff (a \mod n) = (b \mod n)
 \]
+Quindi due numeri sono equivalenti se hanno lo stesso resto nella divisione per $n$.
+Ad esempio, $5 \equiv 11 \pmod{3}$, perché entrambi hanno resto 2 nella divisione per 3.
+
+Quando abbiamo una relazione di equivalenza possiamo costruire l'insieme degli oggetti equivalenti tra loro. 
+L'insieme degli insiemi di oggetti equivalenti forma una \textbf{partizione}, gli elementi di tale 
+partizione sono detti \textbf{classi di equivalenza} e si denotano mediante parentesi quadre di un elemento di tale classe.
+Ogni singola classe di equivalenza può essere rappresentata da un qualsiasi elemento della classe stessa. 
+\[
+  \mathbb{Z}_n = \{0,1,2,3,\dots, n-1\}
+\]
+
+Un'analogia può essere fatta con le ore. Se sono le 10:00, allora sono anche le 22:00,
+perché entrambe sono equivalenti a 10:00 $\pmod{12}$, o con le frazioni. È l'insieme 
+delle classi di equivalenza tra numeri naturali dove due coppie sono 
+equivalenti se hanno lo stesso prodotto incrociato, quindi il prodotto 
+dei medi è uguale al prodotto degli estremi. Ad esempio, $2 \times 3 = 1 \times 6$. 
+\[
+  \frac{1}{2} \equiv \frac{3}{6}
+\]
+La rappresentazione canonica di una classe di equivalenza in $\mathbb{Z}_n$ è il suo
+rappresentante minimo, ovvero un numero naturale compreso tra 0 e $n-1$.
+
+Su tale insieme voglio definire delle operazioni.
+\subsection{Somma}
+La somma di due classi di equivalenza è definita come la classe di
+equivalenza della somma dei rappresentanti. Ad esempio, se voglio
+calcolare $[2] + [3]$, allora calcolo $2 + 3 = 5$ e la classe di equivalenza
+di 5 è $[5]$. In generale, la somma di due classi di equivalenza è la classe
+di equivalenza della somma dei rappresentanti.
+\[
+  [a] + [b] \stackrel{\Delta}{=} [a + b]
+\]
+Tale rappresentazione è buona solo se il risultato è indipendente dagli elementi 
+delle due classi originali.
+\subsubsection{Proprietà}
+\begin{itemize}
+  \item \textbf{Commutativa}: $\forall a, b \,[a] + [b] = [b] + [a]$.
+  \item \textbf{Associativa}: $\forall a, b, c \,[a] + ([b] + [c]) = ([a] + [b]) + [c]$.
+  \item \textbf{Elemento neutro}: $\exists e \in \mathbb{Z}_n \, \forall a \, [a] + [a] = [a] + [a] = [a]\qquad e = 0$.
+  \item \textbf{Elemento inverso}: $\forall a \, \exists a^{-1} \in \mathbb{Z}_n \,
+  \text{t.c.} \, [a] + [a^{-1}] = [a^{-1}] + [a] = [e] \qquad a^{-1} = -a$.
+\end{itemize}
+L'insieme $\mathbb{Z}_n$ con l'operazione di somma forma un \textbf{gruppo abeliano}, (
+\textit{abeliano} perché commutativo).
+\subsection{Moltiplicazione}
+La moltiplicazione di due classi di equivalenza è definita come la classe di
+equivalenza del prodotto dei rappresentanti. Ad esempio, se voglio
+calcolare $[2] \cdot [3]$, allora calcolo $2 \cdot 3 = 6$ e la classe di equivalenza
+di 6 è $[6]$. In generale, la moltiplicazione di due classi di equivalenza è la classe
+di equivalenza del prodotto dei rappresentanti.
+\[
+  [a] \cdot [b] \stackrel{\Delta}{=} [a \cdot b]
+\]
+Tale rappresentazione è buona solo se il risultato è indipendente dagli elementi
+delle due classi originali.
+\subsubsection{Proprietà}
+\begin{itemize}
+  \item \textbf{Commutativa}: $\forall a, b \,[a] \cdot [b] = [b] \cdot [a]$.
+  \item \textbf{Associativa}: $\forall a, b, c \,[a] \cdot ([b] \cdot [c]) = ([a] \cdot [b]) \cdot [c]$.
+  \item \textbf{Elemento neutro}: $\exists e \in \mathbb{Z}_n \, \forall a \, [a] \cdot [a] = [a] \cdot [a] = [a]\qquad e = 1$.
+\end{itemize}
+L'insieme $\mathbb{Z}_n$ con l'operazione di moltiplicazione forma un \textbf{semigruppo}, 
+ovvero un gruppo senza l'elemento inverso.
+Per ottenere un gruppo, devo aggiungere l'elemento inverso. Per ottenere tale elemento,
+quindi passare da un semigruppo ad un gruppo, 
+posso seguire diverse strade; arricchire l'insieme con nuovi elementi, oppure
+eliminare elementi.
+
+Consideriamo l'insieme $\mathbb{Z}_n - \{0\}$ con l'operazione di moltiplicazione e consideriamo 
+un esempio con $n = 15$.
+\[
+  \mathbb{Z}_{15} - \{0\} = \{1,2,3,4,5,6,7,8,9,10,11,12,13,14\}
+\]
+\begin{itemize}
+  \item L'inverso moltiplicativo di $1$ è $1$.
+  \item L'inverso moltiplicativo di $2$ è $8$ ($2 \cdot 8 = 16 \equiv 1 \pmod{15}$).
+  \item L'inverso moltiplicativo di $3$ non c'è.
+  \item \dots
+\end{itemize}
+Notiamo che non tutti gli elementi hanno un inverso moltiplicativo, quindi non 
+posso costruire un gruppo. Per ottenere un gruppo, devo eliminare gli elementi
+che non hanno un inverso moltiplicativo.
+L'insieme $\mathbb{Z}_{15} - \{0, 3, 5, 6, 9, 10, 12\}$ che sarà quindi:
+\[
+  \mathbb{Z}_{15}^* = \{1,2,4,7,8,11,13,14\}
+\]
+Abbiamo quindi definito l'insieme $\mathbb{Z}_n^*$:
+\[
+  \mathbb{Z}_n^* = \{a \in \mathbb{Z}_n \, | \, \texttt{mcd}(a, n) = 1\}
+\]
+Ovvero l'insieme dei numeri che sono relativi primi con $n$.
+Moltiplicando due numeri relativamente primi con $n$, ottengo un numero
+relativamente primo con $n$. L'operazione di moltiplicazione è chiusa in $\mathbb{Z}_n^*$.
+\begin{theorem}[Teorema di Eulero]
+  Per ogni $a, b \, \exists x,y \, ax + by = \texttt{mcd}(a,b)$
+\end{theorem}
+Se $a \in \mathbb{Z}_n^*$ allora $\texttt{mcd}(a, n) = 1$ per definizione e quindi
+\[
+  ax + ny = 1
+\] 
+\[
+  ax = 1 - ny
+\]
+\[
+  ax \equiv 1 \pmod{n}
+\]
+Quindi la classe di equivalenza di $x$ è l'inverso moltiplicativo di $a$.
+La necessità di lavorare con gruppi nasce dal fatto che in informatica
+è necessario lavorare con insiemi finiti, in questo caso algebre su insiemi 
+finiti, in particolare sui gruppi, in modo da manipolare gli elementi in 
+base alle proprietà.
+\section{Gruppi e generatori}
+Sia $\mathcal{G}$ un gruppo, un operatore $\otimes$. Sia $g$ un elemento di $\mathcal{G}$.
+\[
+  g = g^1 \qquad g \otimes g = g^2 \qquad g \otimes g \otimes g = g^3 \qquad \dots \qquad g \otimes g 
+  \otimes g \otimes \dots \otimes g = g^n
+\]
+Continuando a moltiplicare $g$ per se stesso, non arriverò ad un qualsiasi $n$ generico, poiché 
+il gruppo è finito. Quindi, supponiamo  che arrivi a $g \otimes g 
+\otimes g \otimes \dots \otimes g = g^{\lvert \mathcal{G} \rvert}$ e che l'esponente successivo 
+sia $g^{\lvert \mathcal{G} \rvert + 1}$. Per il \textbf{pumping lemma} avrò sicuramente 
+almeno un elemento ripetuto.
+\begin{theorem}
+  Per ogni gruppo $\mathcal{G}$ finito, per ogni $a \in \mathcal{G}$, 
+  \[
+    a^{\lvert \mathcal{G} \rvert} = 1
+  \]
+\end{theorem}
+Da questo teorema segue che se sicuramente $a^{\lvert \mathcal{G} \rvert} = 1$ ovvero l'elemento neutro,
+ma per un gruppo $\mathcal{G}$ finito, potrei avere anche che per un qualche
+$a^i = 1$.
+
+Se prendo tutte le potenze di $g$ ottengo un sottogruppo dell'insieme $\mathcal{G}$, un sottogruppo 
+continua ad essere un gruppo. Se quello che ottengo è un sottogruppo proprio, ovvero 
+un sottogruppo che non è tutto l'insieme $\mathcal{G}$, allora $G$ è ciclico e $g$ è un 
+\textbf{generatore} di $\mathcal{G}$.
+\begin{theorem}
+  Sia $\mathcal{G}'$ è sottogruppo di $\mathcal{G}$, allora $\lvert \mathcal{G}' \rvert \mid
+  \lvert \mathcal{G} \rvert$.
+\end{theorem}
+\subsubsection{Esempio}
+\[
+  \mathbb{Z}_{15}^* = \{1,2,4,7,8,11,13,14\}
+\]
+\begin{itemize}
+  \item $1$
+  \item $2 \cdot 2 = 4 \cdot 2 = 8 \cdot 2 = 16$ quindi $2^4 \equiv 1 \pmod{15}$
+  \item $4 \cdot 4 = 16 \equiv 1 \pmod{15}$
+  \item $7 \cdot 7 = 49 \equiv 4, 4 \cdot 7 = 28 \equiv 13, 13 \cdot 7 = 91 \equiv 1 \pmod{15}$
+  \item $8 \cdot 8 = 64 \equiv 4, 4 \cdot 8 = 32 \equiv 2, 2 \cdot 8 = 16 \equiv 1 \pmod{15}$
+  \item $11 \cdot 11 = 121 \equiv 1 \pmod{15}$
+  \item $13 \cdot 13 = 169 \equiv 4, 4 \cdot 13 = 52 \equiv 7, 7 \cdot 13 = 91 \equiv 1 \pmod{15}$
+  \item $14 \cdot 14 = 196 \equiv 1 \pmod{15}$
+\end{itemize}
+La cardinalità di $\mathbb{Z}_{15}^*$ è $8$, ma questo gruppo non è ciclico, poiché non esiste un
+elemento generatore che generi tutto il gruppo.
+\subsection{Generatori primi}
+Se prendo $\mathbb{Z}_{n}^*$ con $n$ primo, allora $\mathbb{Z}_{n}^*$ è ciclico, poiché
+ogni elemento di $\mathbb{Z}_{n}^*$ è un generatore di $\mathbb{Z}_{n}^*$.
+In generale un numero primo non può essere scomposto in fattori, quindi:
+\[
+  \mathbb{Z}_{p}^* = \{1,2,3,\dots,p-1\}
+\]
+\subsubsection{Esempio}
+\[
+  \mathbb{Z}_{7}^* = \{1,2,3,4,5,6\}
+\]
+\begin{itemize}
+  \item $1$
+  \item $2 \cdot 2 = 4 \cdot 2 = 8 \equiv 1 \pmod{7}$
+  \item $3 \cdot 3 = 9 \equiv 2, 2 \cdot 3 = 6, 6 \cdot 3 = 18 \equiv 4, 4 \cdot 3 = 12 \equiv 5, 5 \cdot 3 = 15 \equiv 1 \pmod{7}$
+  \item $4 \cdot 4 = 16 \equiv 2, 2 \cdot 4 = 8 \equiv 1 \pmod{7}$
+  \item $5 \cdot 5 = 25 \equiv 4, 4 \cdot 5 = 20 \equiv 6, 6 \cdot 5 = 30 \equiv 2, 2 \cdot 5 = 10 \equiv 3, 3 \cdot 5 = 15 \equiv 1 \pmod{7}$
+  \item $6 \cdot 6 = 36 \equiv 1 \pmod{7}$
+\end{itemize}
+Abbiamo che $\mathbb{Z}_{7}^*$ è ciclico, poiché esiste un generatore che genera tutto il gruppo, in questo 
+caso $3$ e $5$.
+
+\subsection{Probabilità dei numeri primi}
+\begin{theorem}[Densità dei numeri primi]
+  La densità dei numeri primi è proporzionale al numero di bit che compongono il numero.
+\end{theorem}
+Suppongo di avere un numero casuale $n$ di $k$ bit, allora la probabilità che $n$ sia primo è 
+$\frac{1}{k}$. Supponiamo di voler comporre un numero $n$ di $k$ bit, utilizzo un algoritmo
+che mi generi tale numero. 
+
+Per verificare che tale numero sia primo, utilizzo una algoritmo casuale 
+che sceglie casualmente un numero $a$ tra $1$ e $n-1$ e verifica che il numero 
+scelto sia primo. Statisticamente circa la metà dei numeri scelti sono testimoni del fatto 
+che un numero non sia primo. Se il test fallisce e mi dice che il numero non è primo, allora
+termino. Se il test ha esito positivo allora scelgo un altro numero $a$ e ripeto il test di 
+primalità.
+Se tutte le volte che scelgo un numero $a$ il test ha esito positivo, allora la probabilità 
+di accettare la primalità di $n$ è $\frac{1}{2^t}$, dove $t$ è il numero di volte che ho
+ripetuto il test (\textit{eventi indipendenti}), abbassando la probabilità di errore notevolmente.
+
+Sulla base di questo ragionamento, siamo in grado di generare numeri primi molto grandi.
