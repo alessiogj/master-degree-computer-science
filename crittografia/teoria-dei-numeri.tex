@@ -310,9 +310,9 @@ Se consideriamo un generatore $g$ di $\mathbb{Z}_p^*$ e generiamo l'intero grupp
 è chiaro che tutti gli elementi che sono potenze pari di $g$ sono quadrati.
 Di conseguenza tutti gli elementi che sono potenze dispari di $g$ non sono quadrati.
 
-L'elemento $g?{2i}$ ha due radici quadrate, $g^{2i}$ e $g^{2i + \frac{p-1}{2}}$.
+L'elemento $g^{2i}$ ha due radici quadrate, $g^{2i}$ e $g^{2i + \frac{p-1}{2}}$.
 \[
-  g^{}2i =
+  g^{2i} =
 \begin{cases}
   g^{2i} \\
   g^{2i + \frac{p-1}{2}} 
@@ -512,8 +512,76 @@ ad oggetti con la stessa quadraticità di $a$.
 
 Quadrati diversi vengono mappati con la moltiplicazione di $a$ in quadrati 
 diversi e quindi la distribuzione è uniforme.
-Perché ho una funzione iniettiva e suriettiva, una biezione, quindi la distribuzione 
+Perché ho una funzione iniettiva e suriettiva (una biezione), quindi la distribuzione 
 del risultato sarà la stessa della sorgente.
 
 In questo modo se non conosciamo la natura casuale degli oggetti possiamo 
 generare oggetti con la stessa natura, ma casuali (\textit{con quadraticità}).
+
+\section{Turing riduzione}
+\begin{lemma}
+  Siano $x$ e $y$ due radici quadrate di uno stesso quadrato di $\mathbb{Z}_n^*$, tali che 
+  $x \not \equiv \pm y$. Allora il \texttt{mcd} tra $x + y$ e $n$ è un fattore di $n$.
+\end{lemma}
+\begin{proof}
+  Sia $n=p\cdot q$, visto che $x$ e $y$ sono radici quadrate di uno stesso numero 
+  sappiamo che $x^2 \equiv y^2 \mod n$. Quindi:
+  \[
+    x^2 \equiv y^2 \mod n \Rightarrow x^2 - y^2 \equiv 0 \mod n 
+  \]
+  \[
+    \Rightarrow (x-y)(x+y) = k \cdot n \qquad \text{per qualche $k$}
+  \]
+  Supponiamo che $p$ divida $x+y$, ma è possibile che $q$ divida $x-y$?
+  Se fosse possibile allora $n$ divide $x +y$, ma ciò vorrebbe dire che $x+y \equiv 0 \mod n$,
+  ovvero $x \equiv -y \mod n$ e ciò è assurdo perché $x \not \equiv \pm y$.
+  Quindi $\texttt{mcd}(x+y, n) = p$.
+  
+  Supponiamo che $q$ divida $x+y$, ma è possibile che $p$ divida $x-y$?
+  Se fosse possibile allora $n$ divide $x +y$, ma ciò vorrebbe dire che $x+y \equiv 0 \mod n$,
+  ovvero $x \equiv -y \mod n$ e ciò è assurdo perché $x \not \equiv \pm y$.
+  Quindi $\texttt{mcd}(x+y, n) = q$.
+
+  Supponiamo che $p$ non divida $x+y$ e che $q$ non divida $x+y$, ma $p$ e $q$ sono 
+  fattori del prodotto $(x-y)(x+y)$, quindi $p$ e $q$ devono essere fattori di almeno 
+  uno dei due fattori. Se $p$ non divide $x+y$ allora $q$ deve dividere $x+y$, allora 
+  $p$ e $q$ sono fattori di $x-y$, ma allora $x \equiv y \mod n$ e ciò è assurdo.
+   
+\end{proof}
+Se abbiamo due radici quadrate distinte allora riusciamo a trovare la fattorizzazione di $n$. Il 
+problema ora è come faccio a trovare due radici distinte di un numero se mi viene fornito l'algoritmo 
+per il calcolo della radice quadrata?
+Supponiamo che esista un algoritmo $A\in \texttt{PPT}$ (\textit{probabilistic polynomial time})
+che calcoli la radice quadrata di un numero in $\mathbb{Z}_n^*$. Allora:
+\begin{algorithmic}[1]
+  \Procedure{Factorial}{$n$}
+    \State $x \in_R \mathbb{Z}_n^*$
+    \State $y \gets A(x^2)$
+    \State $z \gets \texttt{mcd}(x-y, n)$
+    \If{$z \neq n$}
+      \Return $z$
+    \Else
+
+      \Return \texttt{Factorial}($n$)
+    \EndIf
+  \EndProcedure
+\end{algorithmic}
+Prendo un quadrato a caso, di questo quadrato conosco una radice scelta uniformemente 
+tra le quattro possibili. L'algoritmo $A$ mi restituisce una radice quadrata di $x^2$,
+l'algoritmo sceglierà la radice quadrata in qualche modo, sicuramente indipendente dalla 
+scelta fatta su $x$. La probabilità che la radice scelta sia $x$ o l'opposto di $x$ è
+$\frac{1}{2}$, quindi il test che verifica se $z$ è un fattore di $n$ avrà successo con
+probabilità $\frac{1}{2}$, quindi ripeto l'algoritmo $A$ un numero costante di volte
+poiché la probabilità di successo è costante. Quindi l'algoritmo è polinomiale.
+
+Il numero di esperimenti da eseguire per aver successo è data dalla distribuzione geometrica,
+e il valore atteso è il reciproco della ragione di successo, quindi in media devo eseguire
+due volte l'algoritmo $A$ per avere successo.
+
+Ciò ci porta a dire che calcolare la radice quadrata è verosimilmente difficile, perché 
+se qualcuno ci riuscisse allora potremmo fattorizzare in tempo polinomiale.
+
+L'idea di dimostrare la sicurezza di un crittosistema è quella di dimostrare che esista un algoritmo 
+che utilizzi come sottoprocedura un algoritmo che risolve un problema difficile.
+I problemi difficili sono quelli che non si riescono a risolvere in tempo polinomiale, quindi
+il calcolo della radice quadrata, il logaritmo discreto e la fattorizzazione di numeri primi.

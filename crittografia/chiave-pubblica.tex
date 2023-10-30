@@ -1,0 +1,362 @@
+\chapter{Crittografia a chiave pubblica}
+\section{Crittografia a chiave pubblica}
+L'idea di crittografia a chiave pubblica è quella di avere due chiavi, una
+pubblica $P_k$ e una privata $S_k$. La chiave pubblica è nota a tutti, mentre
+quella privata è nota solo al proprietario. 
+Con codifica avviene con la chiave pubblica, mentre la decodifica avviene con la
+chiave privata.
+
+Ovviamente l'idea di fondo è avendo in mano il testo cifrato non si riesce a
+risalire al testo in chiaro senza la chiave privata. Chiunque può cifrare un
+messaggio, ma solo il proprietario della chiave privata può decifrarlo.
+
+In un sistema a chiave pubblica abbiamo i seguenti algoritmi:
+\begin{itemize}
+    \item Un algoritmo di generazione delle chiavi:
+    \[
+        \mathcal{G}: 1^k \to (P_k, S_k) 
+    \]
+    Dove $1^k$ è un parametro che indica la lunghezza della chiave, ovvero il \textit{security parameter}.
+    \item Un algoritmo di encription:
+      \[
+        \mathcal{E}: m, P_k \to \mathcal{E}(m, P_k)
+    \]
+    \item Un algoritmo di decription:
+    \[
+          \mathcal{D}: C, S_k \to D(C, P_k)
+    \]
+\end{itemize}
+Ovviamente vale la seguente relazione:
+\begin{equation}
+    \forall m \quad \mathcal{D}(\mathcal{E}(m, P_k), S_k) = m
+\end{equation}
+Oltre al fatto che decriptare un messaggio a partire dal testo cifrato senza 
+la chiave privata è computazionalmente intrattabile. L'idea è che più la chiave
+è lunga più è difficile rompere il sistema. L'idea è che il security parameter
+$k$ è proporzionale alla lunghezza della chiave e al crescere di $k$ cresce
+la sicurezza del sistema.
+
+Gli algoritmi citati sono algoritmi probabilistici polinomiali. Se voglio 
+affermare che tali algoritmi sono polinomiali l'input che rappresenta la 
+lunghezza della chiave non può essere 
+rappresentato in binario, perché la lunghezza della chiave sarebbe
+esponenziale nel numero di bit utilizzati per rappresentare il numero. 
+Sulle macchine di Turing la dimensione del problema è data dal numero di 
+celle del nastro di input. Utilizzando la teoria della complessità 
+basata su tali macchine, o in ogni caso su sistemi dove la dimensione 
+dell'input è lo spazio che occupa nella nostra rappresentazione. Per 
+voler dire che un algoritmo è polinomiale nel \textbf{valore del 
+security parameter} e non nel modo in cui è rappresentato, imponiamo 
+che il security parameter sia rappresentato in \textbf{unario}, ovvero 
+tanti uni quanti la lunghezza della chiave.
+
+\section{Diffie-Hellman}
+Il problema di Diffie-Hellman è il seguente: Alice e Bob vogliono
+scambiarsi un segreto senza che Eve lo possa intercettare. Lo strumento 
+utilizzato per risolvere il problema è del logaritmo discreto.
+
+Si fissa a priori un numero primo $p$ e un generatore $g$ di $\mathbb{Z}_p^*$.
+Un agente A sceglie un numero $x \in_R \{1, \dots, p-1\}$ e calcola $g^x \mod p$. 
+Un agente B sceglie un numero $y \in_R \{1, \dots, p-1\}$ e calcola $g^y \mod p$.
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}[H]{l|l|l}
+        & \textbf{Public} & \textbf{Private} \\
+        \hline
+        A & $g^x \mod p$ & $x$ \\
+        \hline
+        B & $g^y \mod p$ & $y$ \\
+    \end{tabular}
+\end{figure}
+
+A questo punto A e B possono calcolare $g^{xy} \mod p$ e $g^{yx} \mod p$, che coincidono.
+
+Il sistema è sicuro perché calcolare $g^{xy} \mod p$ è computazionalmente intrattabile. Avendo 
+a disposizione $g^x$ e $g^y$ non è possibile calcolare $g^{xy}$. Se sappiamo rispondere al problema 
+del logaritmo discreto, allora possiamo risolvere il problema di Diffie-Hellman, tale algoritmo 
+potrebbe esistere, ma non è stato ancora trovato.
+
+Sia $\mathcal{A} \in \texttt{PPT}$ che calcola $g^{xy} \mod p$ a partire da $g^x \mod p$ e $g^y \mod p$. 
+Usiamo $\mathcal{A}$ per costruire un algoritmo $\mathcal{B}$ che risolve il problema del logaritmo discreto,
+ma tale dimostrazione non è ancora stata data, perciò non l'algoritmo di Diffie-Hellman non è dimostrabilmente 
+sicuro. non siamo in grado di dire che rompere Diffie-Hellman è almeno difficile quanto risolvere il problema
+del logaritmo discreto.
+
+\subsection{Ipotesi di Diffie-Hellman}
+Qualcuno potrebbe costruire un algoritmo che si basa sull'ipotesi che l'algoritmo di Diffie-Hellman sia sicuro.
+\begin{tcolorbox}[title = Ipotesi di Diffie-Hellman]
+    Siano $x, y, z$ dei numeri causali scelti in $\{1, \dots, p-1\}$, allora è difficile 
+    distinguere ($g^x, g^y, g^{xy}$) da ($g^x, g^y, g^z$).
+\end{tcolorbox}
+
+Il concetto di distinguibilità è un concetto probabilistico, ovvero che la possibilità di poter 
+distinguere due insiemi di elementi è trascurabile. Ovvero che la probabilità di distinguere 
+sia inferiore a $1/2 + \epsilon$, dove $\epsilon$ è trascurabile. Quindi l'attaccante non abbia 
+alcun vantaggio rispetto ad un attaccante che non ha alcuna informazione.
+Se un attaccante avesse anche un minimo vantaggio, allora potrebbe utilizzare tale vantaggio per
+ottenere informazioni sul segreto. Tale vantaggio può essere utilizzato per ottenere l'informazione 
+totale mediante esperimenti ripetuti.
+
+\section{Rivest Shamir Adleman - RSA}
+$g^x$ è una funzione che è facile da calcolare, ma è difficile da invertire, ovvero calcolare $x$
+a partire da $g^x$. Una funzione con questa proprietà è detta \textbf{one-way function}. Il protocollo di 
+Diffie-Hellman è sicuro se e solo se esiste una one-way function.
+Vorremmo che la one-way function sia anche \textbf{trapdoor}, ovvero che esista un algoritmo 
+efficiente che permetta di invertire la funzione. Tale algoritmo è detto \textbf{trapdoor algorithm}.
+La trapdoor è una informazione aggiuntiva che permette di invertire la funzione.
+
+Siano $p, q$ due numeri primi molto grandi, $n = pq$. Sia $e$ un numero casuale tale che 
+\texttt{mcd}(e, $\varphi(n)$) = 1, dove $\varphi(n) = (p-1)(q-1)$, ovvero il numero di Eulero. Scegliamo 
+une elemento $d$ co-primo con $\varphi(n)$ tale che $de \equiv 1 \mod \varphi(n)$.
+La chiave pubblica è la coppia $(n, e)$, mentre la chiave privata è la coppia $(n, d)$.
+\subsubsection{Algoritmo di cifratura}
+\[
+  \mathcal{E}: m, (n, e) \mapsto m^e \mod n  
+\]
+\subsubsection{Algoritmo di decifratura}
+\[
+  \mathcal{D}: c, (n, d) \mapsto c^d \mod n
+\]
+\subsection{Funzionamento}
+Proviamo a prendere un messaggio $m$ e a cifrarlo con la chiave pubblica $(n, e)$,
+e proviamo a decodificarlo con la chiave privata $(n, d)$.
+\[
+  (m^e)^d = m^{ed} = m^{k\varphi(n) + 1} = m \cdot (m^{\varphi(n)})^k \equiv m \mod n  
+\]
+Infatti $d\cdot e$ è congruo a 1 modulo $\varphi(n)$, quindi $d\cdot e = k\varphi(n) + 1$.
+Per il teorema del resto cinese, $m^{k\varphi(n) + 1} \equiv m$, e non solo per gli elementi 
+di $\mathbb{Z}_n^*$.
+
+La funzione one way è la funzione di codifica, quindi $m^e$, l'inversa di 
+$m^e$ è la radice $e$-esima, ovvero $m = c^{1/e}$, ma per calcolare la radice $e$-esima
+ad oggi non esiste un algoritmo efficiente. L'unico modo per calcolare la radice $e$-esima
+è calcolare $d$ e decifrare il messaggio, quindi $d$ è l'informazione trapdoor.
+
+Ci piacerebbe dimostrare che se fossimo in grado di invertire la radice 
+e-esima di un numero allora saremmo in grado di fattorizzare $n$, o di calcolare 
+il residuo quadratico. Se fosse vero, allora RSA sarebbe sicuro, ma non è stato ancora
+dimostrato ad oggi. L'unica sicurezza di RSA è l'esistenza dell'ipotesi di RSA.
+\subsection{Attacchi a RSA}
+Ci sono casi in cui RSA è stato attaccato, il motivo però era legato alla cattiva 
+implementazione dell'algoritmo, e non all'algoritmo in sé.
+Quando parliamo di un crittosistema in realtà parliamo di un insieme di algoritmi,
+e non di un singolo algoritmo. L'algoritmo di generazione delle chiave impone 
+la scelta \textbf{casuale} di $e$ in modo uniforme con gli elementi 
+primi con $\varphi(n)$, ma se non fosse casuale, allora potremmo avere dei problemi.
+\subsubsection{Attacco sulla base di messaggi piccoli}
+Inoltre, in caso di messaggi piccoli, quindi se $m^e < n$, vuol dire che 
+non applico nemmeno l'operazione di modulo, e vuol dire in particolare che 
+la radice $e$-esima di $m^e$ è una normale radice $e$-esima nell'aritmetica 
+dei numeri interi, e quindi è facile da calcolare.
+Lavorando con messaggi che a livello numerico sono piccoli, allora 
+invertiamo tutto facilmente, più è piccola $e$, più è facile avere 
+messaggi che elevati a $e$ sono più piccoli di $n$. Bisogna quindi
+star attenti a scenari in cui $m^e < n$.
+\subsubsection{Attacco sulla base di messaggi sparsi}
+Altri problemi che potrebbe avere RSA sono legati allo spargimento dei 
+messaggi.
+Immaginiamo di avere un messaggio:
+
+\begin{center}
+  \texttt{Buongiorno, il suo voto è 30L}\\
+  \texttt{Buongiorno, il suo voto è 30}\\
+  \texttt{Buongiorno, il suo voto è 29}\\
+  \dots\\
+  \texttt{Buongiorno, il suo voto è 0}\\
+\end{center}
+Uno che vuole decifrare il messaggio può prendere i $32$ messaggi e
+cifrarli tutti, per poi distinguerli.
+Se con RSA devo codificare messaggi che sono presi da un insieme piccolo,
+devo far attenzione perché potrei venir attaccato da qualcuno che utilizza 
+la stessa chiave pubblica.
+\subsubsection{Attacco sulla informazione parziale}
+Siamo sicuri che tutti i bit di questa inversa siano difficili da calcolare?
+Non è che sulla radice $e$-esima di $m^e$ ci sono dei bit che sono più facili 
+da calcolare? Ai fini di dire che il sistema è sicuro, non è 
+sufficiente dire che il cypertext non si sappia ricavare il plaintext,
+vorremmo dire che dal cypertext non si riesca a ricavare nessuna informazione 
+binaria sul plaintext. Ma come possiamo definire tale proprietà?
+\subsubsection{Attacco sulla base di messaggi ripetuti}
+Per difendersi da tale problema, aggiungo un po' di rumore al messaggio,
+ovvero aggiungo un po' di bit casuali al messaggio, in modo tale che con 
+alta probabilità il messaggio non sia mai uguale. In questo modo, anche se
+il messaggio è sempre lo stesso, il cypertext è sempre diverso, utilizzando 
+quindi la probabilistic encryption.
+\section{Sicurezza di un crittosistema}
+RSA è sicuro perché non conosciamo un algoritmo probabilistico polinomiale 
+per calcolare la radice $e$-esima di un numero. Ma cosa vuol dire?
+Se esistesse un algoritmo probabilistico polinomiale per calcolare la radice 
+$e$-esima di un numero con probabilità $\frac{1}{k}$, sarebbe un problema,
+perché reiterando l'algoritmo $k$ volte, avrei una probabilità di successo.
+
+Se fossimo nello scenario in cui con un $a\in_R \mathbb{Z}_n^*$, l'algoritmo 
+mi dia risposta corretta con probabilità $\frac{1}{k}$, potremmo dichiararci 
+tranquilli? No, perché potrebbero attaccare sempre.
+
+Fissando $a$ e scegliendo $r \in_R \mathbb{Z}_n^*$, calcolo $(a\cdot r)^e \mod n$,
+se prendo un elemento casuale di $\mathbb{Z}_n^*$ e lo elevo ad $e$, ottengo
+l'oggetto che è distribuito uniformemente in $\mathbb{Z}_n^*$. Sappiamo che
+l'elevamento di $r$ alla $e$-esima è distribuito uniformemente in $\mathbb{Z}_n^*$, 
+perché $e$ è stata scelta in maniera tale che la radice $e$-esima dia esattamente 
+$r$. Quindi $r^e$ è una funzione invertibile, di conseguenza la funzione che mappa $r$ in 
+$r^e$ è una funzione biettiva, quindi un elemento scelto uniformemente in $\mathbb{Z}_n^*$
+viene mappato da $r^e$ in un elemento scelto uniformemente scelto in $\mathbb{Z}_n^*$.
+Ogni volta che prendiamo un elemento e creiamo una suriezione dello stesso insieme, 
+se l'elemento di partenza è scelto uniformemente, il risultato della suriezione, che nella 
+sostanza è una permutazione, è scelto uniformemente.
+
+Se prendiamo $r^e$ e lo moltiplichiamo per $a$, otteniamo un elemento che è distribuito
+uniformemente in $\mathbb{Z}_n^*$, perché $a$ è scelto uniformemente in $\mathbb{Z}_n^*$, 
+poiché la moltiplicazione per $a$ è una funzione biettiva, perché $a$ ammette inverso.
+
+Siamo partiti da un elemento fissato e abbiamo costruito un elemento distribuito uniformemente
+e causale, se a quell'elemento applichiamo l'algoritmo della radice $e$-esima, otteniamo
+$\frac{1}{k}$ di probabilità di successo, ma se ripetiamo l'algoritmo $k$ volte, abbiamo
+una probabilità di successo di $1$, rendendo quindi l'algoritmo indipendente dalla $a$ di 
+partenza.
+\[
+  ar^e \rightarrow \sqrt[e]{ar^e} = r \sqrt[e]{a}
+\]
+Quindi se prendo il risultato e lo divido per $r$, ottengo $\sqrt[e]{a}$,
+che è distribuito uniformemente in $\mathbb{Z}_n^*$, perché $r$ è distribuito uniformemente.
+
+Ed ecco che abbiamo un algoritmo che a partire da una blackbox che con $a$ causale 
+calcola correttamente la radice $e$-esima di $a$ una volta su $k$, abbiamo una macchina 
+che con $a$ fissato calcola la radice $e$-esima di $a$ con probabilità $1$.
+
+La macchina che calcola la radice $e$-esima di $a$ darà una sequenza di bit, che
+potrebbe essere la radice $e$-esima di $a$, oppure no. Bisognerebbe riconoscere la risposta
+corretta, rielevando il risultato ad $e$, se ottengo l'input allora la risposta è 
+corretta, altrimenti no.
+
+Quindi abbiamo trasformato un algoritmo che funziona una volta su $k$ in un algoritmo
+che funziona in un tempo medio di $k$.
+\begin{tcolorbox}[title=Definizione di sicurezza]
+  Diciamo che un sistema è attaccabile se il tempo medio per attaccarlo è polinomiale.
+\end{tcolorbox}
+Se esistesse un qualsiasi algoritmo in grado di attaccare la radice $e$-esima di $a$,
+con una probabilità polinomiale in $k$, riusciamo a costruire un algoritmo che calcola
+la stessa cosa con un tempo medio polinomiale in $k$.
+
+Visto che partiamo  dall'idea che non esista un algoritmo probabilistico polinomiale 
+in grado di calcolare la radice $e$-esima di $a$, allora non esiste un algoritmo
+che sia in grado di calcolarlo con una probabilità che sia polinomialmente piccola.
+Quindi la \textbf{probabilità di successo è più piccola di qualsiasi polinomio}, dove per polinomio 
+si intende:
+\[
+  \probP[\texttt{attacco}] < \frac{1}{k}\quad \forall c
+\]
+Fissando un polinomio, con chiavi corte, però, la possibilità di trovare un polinomio esiste, 
+perciò bisogna correggere tale definizione.
+\begin{equation}
+  \forall c \exists \bar{k} \forall k > \bar{k}\quad\probP[\texttt{attacco}] < k^{-c}
+\end{equation}
+Per attacco non intendiamo solo il fatto di non poter essere in grado di poter calcolare la 
+radice $e$-esima di $a$, ma anche il fatto di non essere in grado di capire 
+\textbf{informazioni binarie}.
+
+L'algoritmo che calcola la radice $e$-esima di $a$ è l'algoritmo che calcola la
+la fattorizzazione di $n$, la fattorizzazione di $n$ è l'informazione 
+binaria che vogliamo proteggere.textbf{trapdoor} che permette di risolvere 
+il problema.
+\begin{tcolorbox}[title=Fattorizzazione di $n$]
+  Si pensa che non esista un algoritmo \texttt{PPT} che dati $n$, $e$ e $a$,
+  calcola $\sqrt[e]{a} \in \mathbb{Z}_n^*$ con probabilità polinomiale.
+\end{tcolorbox}
+\subsection{Utilizzo pratico di RSA}
+Nel caso pratico il costo computazionale di RSA è molto alto, infatti codificare 
+un blocco di $k$ bit con RSA richiede $k$ esponenziazioni modulari, ovvero $k^3$, 
+un costo computazionale molto alto. Per questo motivo RSA viene utilizzato per
+codificare una chiave di sessione, che viene utilizzata per codificare
+il messaggio con un algoritmo simmetrico, che è molto più veloce di RSA.
+Tipicamente l'algoritmo utilizzato è l'algoritmo simmetrico \texttt{AES} (\ref{section:des}).
+
+Tra l'altro vi è una notevole differenza con Diffie-Hellman, infatti in Diffie-Hellman
+riesco a scambiarmi un'unica chiave, a meno che non faccia un nuovo scambio di chiavi,
+ogni volta.
+
+Se si parte dall'idea che la crittografia simmetrica sia meno sicura della crittografia
+asimmetrica, allora si può pensare di utilizzare una chiave di sessione diversa dopo 
+un certo periodo. Con RSA è possibile fare questo, perché è possibile scambiarsi
+chiavi diverse, mentre con Diffie-Hellman non è possibile, perché si dovrebbero scambiare
+chiavi diverse ogni volta, e questo è molto costoso. La generazione della chiave di sessione 
+per Diffie-Hellman è molto costosa, per via delle Certification Authority, che devono
+essere coinvolte nel processo di generazione della chiave di sessione per certificare 
+le chiavi pubbliche.
+
+\section{Crittosistema di Micali per la codifica di un singolo bit}
+\subsubsection{Algoritmo di generazione delle chiavi}
+Si sceglie un numero primo $p_1$ e un numero $p_2$ tale che moltiplicati tra loro
+diano un numero $n$ tale che $n = p_1p_2$. I due numeri devono essere scelti in modo
+casuale con $\frac{k}{2}$ bit ciascuno, dove $k$ è la lunghezza della chiave. Sia 
+$y \in_R$ ai non quadrati con simbolo di Jacobi $1$ modulo $n$. Ricordiamo che per 
+costruire un numero non quadrato causale con simbolo di Jacobi $1$ basta scegliere un numero
+casuale e verificare che il simbolo di Jacobi sia $1$, ovvero che appartenga 
+a $\mathbb{Z}_n^*$, se non lo è si sceglie un altro
+numero casuale e si ripete il procedimento. A questo punto verifico che il simbolo 
+di Legendre rispetto a $p_1$ e $q_1$ sia $-1$. 
+
+La chiave pubblica è:
+\[
+  P_k = (n, y)
+\]
+La chiave privata è:
+\[
+  S_k = (p_1, p_2)
+\]
+L'ipotesi di base è che sia difficile fattorizzare $n$, ma il problema di 
+riferimento sarà il problema del residuo quadratico, ovvero il problema di
+calcolare la radice quadrata di un numero modulo $n$.
+\subsubsection{Algoritmo di codifica}
+L'algoritmo di codifica prende un bit $b$, sia $x \in_R \mathbb{Z}_n^*$, se 
+$b$ è $0$ allora $c = x^2 \mod n$, altrimenti $c = xy^2 \mod n$. 
+$x^2$ è un quadrato casuale di $\mathbb{Z}_n^*$, mentre $xy^2$ è un 
+non quadrato con simbolo di Jacobi $1$. Se prendo un quadrato con simbolo di 
+Jacobi $1$ e lo moltiplico per un non quadrato con simbolo di Jacobi $1$ ottengo
+un non quadrato con simbolo di Jacobi $1$. Se il quadrato è casuale, allora 
+ottengo un non quadrato casuale con simbolo di Jacobi $1$ distribuito uniformemente
+tra tutti i non quadrati con simbolo di Jacobi $1$.
+
+Il risultato è che la codifica di $0$ è un quadrato a caso, mentre la codifica di $1$ è
+un non quadrato a caso con simbolo di Jacobi $1$.
+\[
+  \mathcal{E}: \{0, 1\} \to x \in_R \mathbb{Z}_n^*
+\]
+\[
+  f(x) = \begin{cases}
+    x^2 \mod n & \text{se } b = 0\\
+    xy^2 \mod n & \text{se } b = 1
+  \end{cases}
+\]
+\subsubsection{Algoritmo di decodifica}
+L'algoritmo di verifica prende in input $c$ e verifica se $c$ è un quadrato 
+rispetto a $p_1$ e $p_2$, ovvero se $c$ è un residuo quadratico modulo $p_1$ e
+modulo $p_2$. Se $c$ è un quadrato rispetto a $p_1$ e $p_2$ allora $b = 0$,
+se entrambe le verifiche falliscono allora $b = 1$, in altri casi non siamo in presenza 
+di un cypertext valido.
+\[
+  \left(\frac{c}{p_1}\right) = \left(\frac{c}{p_2}\right) = 1 \qquad \text{allora } b = 0
+\]
+\[
+  \left(\frac{c}{p_1}\right) = \left(\frac{c}{p_2}\right) = -1 \qquad \text{allora } b = 1
+\]
+\subsection{Rompere il crittosistema di Micali}
+Rompere tale protocollo significherebbe disporre di un algoritmo $A$ che preso in 
+input in cyphertext $c$ e la chiave pubblica $P_k$ restituisce $b$ con probabilità
+diversa da $\frac{1}{2}$, poiché siamo in un contesto binario.
+
+Un attaccante quindi dovrebbe essere in grado di ottenere un vantaggio rispetto 
+a qualcuno che non conosce nulla, ovvero che indovini con probabilità $\frac{1}{2}$.
+Il vantaggio consiste nell'allontanarsi da $\frac{1}{2}$, sia in positivo che in negativo, 
+poiché se si allontana in negativo basta invertire il risultato per ottenere
+un vantaggio positivo.
+
+Il numero di esperimenti deve essere tale che la differenza delle probabilità sia
+maggiore di $\frac{1}{2}$, ma il numero di esperimenti deve essere un numero 
+polinomiale, in modo tale da poter osservare tali esperimenti in tempo polinomiale.
+\begin{tcolorbox}[title = Sicurezza]
+  \begin{equation}
+    \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \quad \mid p - \frac{1}{2} \mid k^{-c}
+  \end{equation}
+\end{tcolorbox}
