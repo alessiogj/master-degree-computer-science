@@ -523,7 +523,7 @@ binaria.
   (\ref{limite_chernoff}), altrimenti tale differenza non sarebbe distinguibile.
 \end{tcolorbox}
 Sia $\probP_k^{\mathcal{D}, m}$ la probabilità che il distinguisher $\mathcal{D}$ restituisca $1$ su input, una codifica 
-di $m$ quando il security parameter vale $k$. Un sistema di codifica nascone $m_1$ a $m_2$ a $\mathcal{D}$ quando:
+di $m$ quando il security parameter vale $k$. Un sistema di codifica nascone $m_1$ e $m_2$ a $\mathcal{D}$ quando:
 \begin{equation}
   \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \qquad
   |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-c}
@@ -532,8 +532,8 @@ Ovvero:
 \begin{equation}
   |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-\omega(1)}
 \end{equation}
-$E$ nasconde informazioni a $\mathcal{D}$ se per ogni $m_1$ a $m_2$ $E$ nasconde $m_1$ a $m_2$ a $\mathcal{D}$. 
-$E$ nasconde se per ogni $\mathcal{D} \in \texttt{PPT}$ $E$ nasconde $m_1$ a $m_2$ a $\mathcal{D}$.
+$E$ nasconde informazioni a $\mathcal{D}$ se per ogni $m_1$ e $m_2$ $E$ nasconde $m_1$ e $m_2$ a $\mathcal{D}$. 
+$E$ nasconde se per ogni $\mathcal{D} \in \texttt{PPT}$ $E$ nasconde $m_1$ e $m_2$ a $\mathcal{D}$.
 \begin{proof}
   Supponiamo per assurdo che $\exists \mathcal{D} \in \texttt{PPT}$ tale che 
   \[
@@ -582,5 +582,35 @@ elemento di $\mathbb{Z}_n^*$ con $\left( \frac{z}{n} \right) = 1$, quindi $z$ po
 $0$ o di un $1$.
 
 Dato $z$ viene costruito $E(\beta_1)E(\beta_2)\dots E(\beta_i)zE(\alpha_{i+2})\dots E(\alpha_l)$ e viene lanciato 
-l'algoritmo $\mathcal{D}$ sul risultato.
+l'algoritmo $\mathcal{D}$ sul risultato. La probabilità con cui $\mathcal{D}$ restituisce $1$ è \probP(i) se $z$
+codifica $0$ e $\probP(i+1)$ se $z$ codifica $1$ se in input viene data la codifica di $m(i)$ secondo 
+l'algoritmo per codificare il messaggio $m_i$, ovvero applicando $E$ a tutti i bit del messaggio.
+Avendo però aggiunto $z$ in mezzo al messaggio non ho codificato secondo l'algoritmo che il distinguisher
+si aspetta, quindi bisogna codificare il messaggio $m(i)$ in maniera corretta:
+\[
+  E(\beta_1)E(\beta_2)\dots E(\beta_i)\,\textcolor{red}{z \cdot x^2}\,E(\alpha_{i+2})\dots E(\alpha_l)\qquad \text{con } 
+  x \in \mathbb{Z}_n^*
+\]
+A questo punto il distinguisher restituisce $1$ con probabilità $\probP(i)$ se $z$
+codifica $0$ e $\probP(i+1)$ se $z$.
+
+Chiamiamo $\mathcal{P}_0$ la probabilità che il distinguisher restituisca $0$ (\textit{quindi $\probP(i)$}) e 
+$\mathcal{P}_1$ la probabilità che il distinguisher restituisca $1$ (\textit{ovvero $\probP(i+1)$}) se in input dato è costruito come sopra.
+
+Se si riceve la codifica di un bit scelto a caso, con quale probabilità si riesce a distinguere se è $0$ o $1$?
+Si utilizza il risultato del distinguisher $\mathcal{D}$ come tentativo.
+\[
+  \probP[\texttt{indovinare}] = \frac{1}{2} \cdot (1 - \mathcal{P}_0) + \frac{1}{2} \cdot \mathcal{P}_1 = 
+  \frac{1}{2} + \frac{1}{2} \cdot (\mathcal{P}_1 - \mathcal{P}_0)
+\]
+Se sottraiamo $\frac{1}{2}$ otteniamo:
+  \begin{align*}
+    \probP[\texttt{non indovinare}] &= \frac{1}{2} + \frac{1}{2} \cdot (\mathcal{P}_1 -
+  \mathcal{P}_0) - \frac{1}{2} \\
+  &= \frac{1}{2} \cdot (\mathcal{P}_1 - \mathcal{P}_0) \\
+  &= \frac{1}{2} \cdot |\probP(i) - \probP(i+1)| \\
+  &\geq \frac{1}{2} \cdot k^{-c'}
+  \end{align*}
+L'algoritmo ha quindi un vantaggio di almeno $\frac{1}{2} \cdot k^{-c'}$, quindi tale algoritmo è 
+un attaccante.
 \end{proof}
