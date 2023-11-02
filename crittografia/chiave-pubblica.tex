@@ -342,7 +342,7 @@ di un cypertext valido.
   \left(\frac{c}{p_1}\right) = \left(\frac{c}{p_2}\right) = -1 \qquad \text{allora } b = 1
 \]
 \subsection{Rompere il crittosistema di Micali}
-Rompere tale protocollo significherebbe disporre di un algoritmo $A$ che preso in 
+Rompere tale protocollo significherebbe disporre di un algoritmo $\mathcal{A}$ che preso in 
 input in cyphertext $c$ e la chiave pubblica $P_k$ restituisce $b$ con probabilità
 diversa da $\frac{1}{2}$, poiché siamo in un contesto binario.
 
@@ -357,6 +357,230 @@ maggiore di $\frac{1}{2}$, ma il numero di esperimenti deve essere un numero
 polinomiale, in modo tale da poter osservare tali esperimenti in tempo polinomiale.
 \begin{tcolorbox}[title = Sicurezza]
   \begin{equation}
-    \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \quad \mid p - \frac{1}{2} \mid k^{-c}
+    \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \quad \mid \probP[\texttt{Successo}] - \frac{1}{2} \mid  > k^{-c}
   \end{equation}
 \end{tcolorbox}
+Supponiamo che la probabilità di successo sia maggiore di $\frac{1}{2} + \epsilon$ e vorrei che la probabilità di successo sia quindi 
+prossima a $1$. Per farlo eseguo due tipologie di esperimenti, il primo ripete l'esperimento $k$ volte e mediante l'algoritmo che 
+ha a disposizione il vantaggio è $\frac{1}{2} + \epsilon$, mentre il secondo esperimento ripete l'esperimento $k$ volte e mediante
+esperimenti casuali, ovvero senza l'algoritmo, ottiene un vantaggio di $\frac{1}{2}$. Ripetendo l'esperimento un numero abbastanza grande di 
+volte si ottiene il risultato desiderato, poiché basterebbe visualizzare le due distribuzioni per vedere in cosa differiscono. L'algoritmo 
+quindi indovina con probabilità $1$. Più $\epsilon$ è piccolo, più esperimenti sono necessari per ottenere il risultato desiderato. 
+Servirebbe quindi stimare, dato un $\epsilon$ fissato, il numero di esperimenti necessari per ottenere il risultato desiderato.
+\subsubsection{Limite di Chernoff} \label{limite_chernoff}
+\begin{tcolorbox}[title = Limite di Chernoff]
+  Siano $X_1, \dots, X_n$ variabili casuali e binarie indipendenti con probabilità 
+  di successo $\probP[X_i = 1] > \frac{1}{2}$ e $\probP[X_i = 0] = 1 - \probP[X_i = 1]$.
+  La probabilità che più della metà delle variabili casuali siano $1$ è:
+  \[
+    \mathcal{P} = \sum_{i = \frac{n}{2} + 1}^n \binom{n}{i} \probP[X_i = 1]^i \probP[X_i = 0]^{n - i}
+  \]
+  \[
+    \mathcal{P} \geq 1 - e^{-2n\left(p - \frac{1}{2}\right)^2}
+  \]
+  Tale formula dice che la probabilità che più della metà degli eventi dia $1$ è 
+  esponenzialmente vicina a $1$, dove l'eponenzialmente è in funzione di $n$.
+  \[
+    \probP[\texttt{errore}] = e^{-2 \epsilon n}
+  \]
+  Dove $\epsilon$ è il vantaggio.
+\end{tcolorbox}
+Supponiamo di volere $e^{-2 \epsilon n} < \frac{1}{2^k}$, quindi:
+\[
+  e^{-2c\epsilon^2 n} < 2^{-k}
+\]
+\[
+  -2\epsilon^2 n < c' - k 
+\]
+\[
+  n > \frac{c' - k}{2\epsilon^2}
+\]
+Se $\epsilon$ è polinomiale in $k$ allora $n$ è polinomiale in $k$.
+Di conseguenza, se il vantaggio è polinomiale in qualche security parameter, allora
+si riesce ad ottenere una quantità di errore nel security parameter che è
+esponenzialmente piccola, scegliendo una quantità di esperimenti polinomiale in esso.
+
+Un sistema è attaccato nel momento in cui esiste un algoritmo polinomiale in 
+grado di romperlo.
+
+Nel momento in cui $\epsilon$ è un $k^{-c}$, allora $n$ (\textit{dove $n$ è il numero di
+esperimenti}) è polinomiale in $k$.
+
+Visto che l'ipotesi di partenza è che non esistano algoritmi probabilistici polinomiali in grado
+di rompere il sistema (\textit{vero}) e visto che abbiamo dimostrato che esiste tale algoritmo (\textit{falso}), allora
+l'algoritmo di Micali è sicuro.
+\subsubsection{Costruzione degli esperimenti indipendenti}
+
+Una volta capito che la costruzione di $n$ esperimenti indipendenti funziona, bisogna 
+capire come costruirli. Supponiamo che la probabilità di successo sia $\frac{1}{2} + \epsilon$ e
+di disporre di un algoritmo $\mathcal{A}$ che prende in input un numero $z$ 
+con $\left(\frac{z}{n}\right) = 1$, in output restituisce che $z$ è quadrato oppure no.
+
+Per farlo si sceglie $r_1, \dots, r_n \in_R \mathbb{Z}_n^*$ e
+si calcola $w_i = z \cdot r_i^2$. L'algoritmo quindi prende in input $w_i$ e restituisce
+$b_i$.
+\[
+  b_i = \mathcal{A}(w_i)
+\]
+
+In sostanza si prende in input un numero (\textit{cyphertext}) e l'algoritmo lo moltiplica per una 
+quadrato a caso, quindi l'algoritmo restituisce $1$ se il risultato è un quadrato casuale e $0$
+altrimenti.
+
+Tale algoritmo però ha un difetto, ovvero che se $z$ è un quadrato, allora $w_i$ è un quadrato
+sempre, quindi l'algoritmo restituisce sempre $1$, se invece $z$ non è un quadrato, allora
+$w_i$ è un quadrato con probabilità $\frac{1}{2} + \epsilon$.
+\subsubsection{Costruzione di un controesempio}
+Supponiamo che $\mathcal{A}$ dica correttamente che il $40\%$ dei numeri quadrati sono quadrati e 
+che il $62\%$ dei non quadrati sono non quadrati. Sostanzialmente l'algoritmo $\mathcal{A}$
+ha una probabilità di successo a seconda dell'input che gli viene dato. 
+\[
+  \probP[\mathcal{A}(\texttt{n})\texttt{ successo}] = \frac{1}{2} \cdot \frac{40}{100} + 
+  \frac{1}{2} \cdot \frac{62}{100} = \frac{51}{100} = 51\%
+\]
+L'approccio di costruzione degli esperimenti indipendenti non è corretto, perché 
+non fornisce all'algoritmo $\mathcal{A}$ un input secondo la misura di probabilità
+che $\mathcal{A}$ si aspetta, quando diciamo che ha una certa probabilità di successo.
+L'esperimento corretto avviene solamente quando ad $\mathcal{A}$ viene dato un input
+un oggetto che sia distribuito uniformemente tra gli oggetti con simbolo di Jacobi $1$.
+\subsubsection{Costruzione degli esperimenti indipendenti corretta}
+L'idea di base è quella di lanciare una moneta per decidere se invertire o meno la 
+quadraticità di $z$ in modo da ottenere un input che sia distribuito uniformemente.
+Siano $r_1, \dots, r_n \in_R \mathbb{Z}_n^*$ e siano $s_1, \dots, s_n \in_R \{0,1\}$.
+\[
+  \forall i \quad w_i = 
+  \begin{cases}
+    z \cdot r_i^2 & \text{se } s_i = 0 \\
+    y \cdot z \cdot r_i^2 & \text{se } s_i = 1
+  \end{cases}
+\]
+Sia $b_i = \mathcal{A}(w_i)$. In questo modo lasciamo una moneta $s_i$ che decide se mantenere 
+la quadraticità di $z$ oppure no. Quindi $z \cdot r_i^2$ è un oggetto a caso tra gli oggetti con stessa 
+quadraticità di $z$, mentre $y \cdot z \cdot r_i^2$ è un oggetto a caso tra gli oggetti con quadraticità 
+opposta di $z$, di conseguenza $w_i$ è un oggetto a caso distribuito
+uniformemente tra gli oggetti con simbolo di Jacobi $1$.
+In questo caso quindi $\mathcal{A}$ ha una probabilità di successo di $\frac{1}{2} + \epsilon$, ma 
+$b_i$ è la risposta al problema trasformato, ma non è la stessa del problema originale.
+\[
+  \forall i \qquad b_i' = 
+  \begin{cases}
+    b_i & \text{se } s_i = 0 \\
+    \bar{b_i} & \text{se } s_i = 1
+  \end{cases}
+\]
+perché se $s_i = 1$ allora nell'input ho invertito la quadraticità di $z$, di conseguenza la risposta deve essere 
+a sua volta invertita per avere una risposta corretta nei confronti di $z$.
+
+Tale costruzione funziona, poiché è possibile passare dall'algoritmo $\mathcal{A}'$
+all'algoritmo $\mathcal{A}$, semplicemente invertendo la risposta quando $s_i = 1$, ma non
+sempre ciò è attuabile, perché non sempre è possibile invertire la risposta.
+
+L'algoritmo che calcola il residuo quadratico prende in input $z$ e restituisce $1$ se $z$ è un quadrato
+e $0$ altrimenti, ma a tale algoritmo abbiamo dato in input $y$, ovvero un non quadrato con simbolo di Jacobi
+$1$. Ma siamo davvero capaci di costruire un algoritmo che calcola un non quadrato con simbolo di Jacobi $1$
+senza usare la fattorizzazione di $n$? La risposta è no, perché se fosse possibile allora sarebbe possibile
+fattorizzare $n$.
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    % rettangolo con due input e un output
+    \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$\mathcal{A}'$};
+    \draw[->] (-5, 0.5) -- (-2, 0.5) node[midway, above] {$z$};
+    \draw[->] (-3, -0.5) -- (-2, -0.5) node[midway, below] {$y$};
+    \draw[->] (2, 0) -- (5, 0) node[midway, above] {$\{0,1\}$};
+    \node[draw, rectangle, minimum width=8cm, minimum height=5cm] (B) at (0,0) {};
+    \node (AS) at (-3.2, 2) {$\mathcal{A}''$};
+  \end{tikzpicture}
+\end{figure}
+Sappiamo quindi che la macchina funziona correttamente dato $y$, ma non disponiamo di tale valore.
+Perché non prendere un $y$ a caso e verificare se è un quadrato? 
+
+Sia $x \in_R \mathbb{Z}_n^*$ e sia $s \in_R \{0,1\}$, allora 
+\[
+  w =
+  \begin{cases}
+    x^2 & \text{se } s = 0 \\
+    y \cdot x^2 & \text{se } s = 1
+  \end{cases}
+\]
+Sia $b$ la risposta da utilizzare per l'algoritmo. Se per puro caso però $y$ fosse un quadrato, non riuscirei 
+a cambiare la quadraticità di $w$ nel caso $s = 1$. Quindi nel caso in cui $s$ fosse 
+uguale a $1$ e $y$ fosse un quadrato, allora $w$ sarebbe un quadrato, quindi la risposta dell'algoritmo sarebbe
+sempre sbagliata, poiché verrebbe complementata la risposta pensando che $w$ non sia un quadrato. In ogni caso 
+però è possibile sorvolare tale problema, poiché basta vedere come si comporta statisticamente 
+la macchina in presenza di non quadrati e di quadrati. Il comportamento della macchina è per forza diverso di fronte 
+alle due situazioni, perché altrimenti non sarebbe capace di distinguere i due input.
+\section{Distinguisher}
+Codificare $b_1, \dots, b_l$ in $E(b_1), \dots, E(b_l)$ può essere fatto facendo si che dal testo cifrato non si risalga 
+al testo in chiaro. Dimenticandoci del problema della malleabilità, vorremmo che dal cyphertext non si possa risalire
+ad alcuna informazione binaria sul plaintext, ma dobbiamo capire cosa vuol dire non poter risalire ad alcuna informazione
+binaria.
+\begin{tcolorbox}[title = Distinguisher]
+  Un \textbf{distinguisher} è un algoritmo binario $\mathcal{D} \in \texttt{PPT}$ che restituisce $0$ o $1$. Il distinguisher prende in input un evento che soddisfa o meno una certa proprietà e 
+  un altro evento che soddisfa o meno la stessa proprietà. Il distinguisher deve essere in grado di distinguere
+  se i due eventi si comportano in modo diverso o meno.
+  Statisticamente il distinguisher verifica che i due eventi si comportino in modo polinomialmente diverso
+  (\ref{limite_chernoff}), altrimenti tale differenza non sarebbe distinguibile.
+\end{tcolorbox}
+Sia $\probP_k^{\mathcal{D}, m}$ la probabilità che il distinguisher $\mathcal{D}$ restituisca $1$ su input, una codifica 
+di $m$ quando il security parameter vale $k$. Un sistema di codifica nascone $m_1$ a $m_2$ a $\mathcal{D}$ quando:
+\begin{equation}
+  \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \qquad
+  |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-c}
+\end{equation}
+Ovvero:
+\begin{equation}
+  |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-\omega(1)}
+\end{equation}
+$E$ nasconde informazioni a $\mathcal{D}$ se per ogni $m_1$ a $m_2$ $E$ nasconde $m_1$ a $m_2$ a $\mathcal{D}$. 
+$E$ nasconde se per ogni $\mathcal{D} \in \texttt{PPT}$ $E$ nasconde $m_1$ a $m_2$ a $\mathcal{D}$.
+\begin{proof}
+  Supponiamo per assurdo che $\exists \mathcal{D} \in \texttt{PPT}$ tale che 
+  \[
+    \exists m_1, m_2, \,\forall \bar{k} \, \exists k \geq \bar{k} \qquad
+    |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| \geq k^{-c}
+  \]
+   Allora $\mathcal{D}$ può distinguere su due messaggi $m_1$ e $m_2$ che differiscono di un solo bit.
+   \begin{equation*}
+    m_1 = \alpha^1 \alpha^2 \dots \alpha^l \qquad
+    m_2 = \beta^1 \beta^2 \dots \beta^l 
+   \end{equation*}
+
+Definisco $\forall i \in \{0,\dots,l\} \,m(i) = \beta^1 \dots \beta^{i-1} \beta^i \alpha^{i+1} \dots \alpha^l$, 
+ovvero una serie di bit intermedi per poter passare da $m_1$ a $m_2$ variando un solo bit per volta.
+Quindi $m(0) = m_1$, $m(l) = m_2$, di conseguenza $\probP_k^{\mathcal{D}, m(i)} = \probP(i)$, ovvero la probabilità 
+che il distinguisher restituisca $1$ se viene data in input una codifica del messaggio $m_i$.
+  \[
+    \probP(0) = \probP_k^{\mathcal{D}, m_1} \qquad \probP(l) = \probP_k^{\mathcal{D}, m_2}
+  \]
+Scopriamo quindi che l'ipotesi diventa:
+\[
+  k^{-c} \leq |\probP(0) - \probP(l)| = |\sum_{i=0}^{l - 1} \probP(i) - \probP(i+1)| 
+  \leq \sum_{i=0}^{l - 1} |\probP(i) - \probP(i+1)|
+\]
+Poiché sappiamo che $\probP(0) - \probP(1) + \probP(1) - \probP(2) + \dots + \probP(l-1) - \probP(l) = \probP(0) - \probP(l)$. 
+Quindi:
+\[
+  \sum_{i=0}^{l - 1} |\probP(i) - \probP(i+1)| \geq k^{-c}
+\]
+Avendo la somma di numeri che eccede un determinato valore allora so che esiste almeno un elemento che è maggiore o uguale 
+della media.
+\[
+  \exists i \in \{0,\dots,l-1\}\qquad \textit{t.c.} \qquad |\probP(i) - \probP(i+1)| \geq \frac{k^{-c}}{l} \geq k^{-(c+1)} = k^{-c'}
+\]
+Abbiamo quindi trovato un polinomio $c'$ tale per cui il distinguisher è in grado di distinguere due messaggi che differiscono
+di un solo bit.
+I due messaggi $m_1$ e $m_2$ differiscono di un solo bit, quindi:
+\begin{align*}
+  \begin{array}{r c lllllllll}
+  m(i) & = & \beta^1 &\dots &\beta^{i-1} & \beta^i &\textcolor{red}{\alpha^{i+1}} & \alpha^{i+2} &\dots &\alpha^l \\
+  m(i+1) & = & \beta^1 &\dots &\beta^{i-1} & \beta^i &\textcolor{red}{\beta^{i+1}} & \alpha^{i+2} &\dots &\alpha^l \\
+  \end{array}
+\end{align*}
+A questo punto supponiamo senza perdita di generalità che $\alpha^{i+1} = 0$ e $\beta^{i+1} = 1$. Sia $z$ un 
+elemento di $\mathbb{Z}_n^*$ con $\left( \frac{z}{n} \right) = 1$, quindi $z$ potrebbe essere la codifica di uno 
+$0$ o di un $1$.
+
+Dato $z$ viene costruito $E(\beta_1)E(\beta_2)\dots E(\beta_i)zE(\alpha_{i+2})\dots E(\alpha_l)$ e viene lanciato 
+l'algoritmo $\mathcal{D}$ sul risultato.
+\end{proof}
