@@ -100,6 +100,9 @@
 }
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%
+
+\newcommand\defeq{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+
 %%======================================================================
 \title{Fondamenti di Linguaggi di Programmazione e Specifica}
 \author{\textit{Alessio Gjergji}}
@@ -110,5 +113,6 @@
 \input{introduzione}
 \input{linguaggioimp}
 \input{induzione}
+\input{fun.tex}
 
 \end{document}
