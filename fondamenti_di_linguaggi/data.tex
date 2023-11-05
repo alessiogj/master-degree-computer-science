@@ -1,0 +1,316 @@
+\chapter{Dati e store mutabili}
+Sino ad ora abbiamo considerato solo tipi di dati molto semplici e di base:
+\texttt{int}, \texttt{bool}, \texttt{unit} e funzioni su di essi. Ora esploreremo
+dati più strutturati, mantenendoli nella forma più semplice possibile, e rivisiteremo
+la semantica dello storage mutabile. Iniziamo con due tipi di dati strutturati di base:
+il tipo prodotto e il tipo somma. Il tipo prodotto $T1 \times T2$ ci permette di raggruppare
+insieme valori di tipo $T1$ e $T2$. In \texttt{C} ciò è realizzato con le strutture, mentre in \texttt{Java}
+si può usare una classe. Il tipo somma $T1 + T2$ consente di formare un'unione disgiunta,
+con un valore del tipo somma che può essere un valore di tipo $T1$ o un valore di
+tipo $T2$. In C ciò si realizza con l'\texttt{union}, mentre in \texttt{Java} una classe può
+implementare più interfacce (\textit{sebbene possa estenderne solo una}).
+
+Nella maggior parte dei linguaggi queste caratteristiche compaiono in forme più complesse:
+record con etichette invece che semplici prodotti, o varianti etichettate, o in \texttt{ML} tipi di dati 
+con costruttori denominati, anziché semplici somme.
+\section{Prodotto}
+Estendiamo la grammatica con le espressioni e i tipi prodotto:
+\begin{grammar}
+    <e> ::= \dots ($e_1, e_2$) | $\#1 e$ | $\#2 e$
+
+    <T> ::= \dots $T_1 * T_2$
+\end{grammar}
+Scelte progettuali per semplicità:
+\begin{itemize}
+    \item abbiamo sia \texttt{int * (bool * unit)}
+    che \texttt{(int * bool) * unit}, ma non abbiamo \texttt{int * bool * unit};
+    \item abbiamo le proiezioni $\#1$ e $\#2$, non il pattern matching;
+    \item non abbiamo $\#e \ e'$ (\textit{non può essere tipizzato}).
+\end{itemize}
+\subsection{Tipizzazione del prodotto}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : T_1$}
+    \AxiomC{$\Gamma \vdash e_2 : T_2$}
+    \LeftLabel{(pair)}
+    \BinaryInfC{$\Gamma \vdash (e_1, e_2) : T_1 * T_2$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : T_1 * T_2$}
+    \LeftLabel{(proj1)}
+    \UnaryInfC{$\Gamma \vdash \#1 \ e : T_1$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : T_1 * T_2$}
+    \LeftLabel{(proj2)}
+    \UnaryInfC{$\Gamma \vdash \#2 \ e : T_2$}
+\end{prooftree}
+\subsection{Semantica operazionale del prodotto}
+Estendiamo i possibili valori come segue:
+\begin{grammar}
+    <v> ::= \dots  | ($v_1, v_2$)
+\end{grammar}
+e le regole di valutazione:
+
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$\langle e_1 , s \rangle \rightarrow \langle e_1' , s' \rangle$}
+        \LeftLabel{(pair1)}
+        \UnaryInfC{$\langle (e_1, e_2) , s \rangle \rightarrow \langle (e_1', e_2) , s' \rangle$}
+    \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$\langle e_2 , s \rangle \rightarrow \langle e_2' , s' \rangle$}
+        \LeftLabel{(pair2)}
+        \UnaryInfC{$\langle (v, e_2) , s \rangle \rightarrow \langle (v, e_2') , s' \rangle$}
+    \end{prooftree}
+\end{minipage}
+
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$-$}
+        \LeftLabel{(proj1)}
+        \UnaryInfC{$\langle \#1 \ (v_1, v_2) , s \rangle \rightarrow \langle v_1 , s \rangle$}
+    \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$-$}
+        \LeftLabel{(proj2)}
+        \UnaryInfC{$\langle \#2 \ (v_1, v_2) , s \rangle \rightarrow \langle v_2 , s \rangle$}
+    \end{prooftree}
+\end{minipage}
+
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$\langle e, s \rangle \rightarrow \langle e', s' \rangle$}
+        \LeftLabel{(proj3)}
+        \UnaryInfC{$\langle \#1 \ e , s \rangle \rightarrow \langle \#1 \ e' , s' \rangle$}
+    \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$\langle e, s \rangle \rightarrow \langle e', s' \rangle$}
+        \LeftLabel{(proj4)}
+        \UnaryInfC{$\langle \#2 \ e , s \rangle \rightarrow \langle \#2 \ e' , s' \rangle$}
+    \end{prooftree}
+\end{minipage}
+
+Abbiamo scelto la valutazione da sinistra a destra per mantenere consistenza.
+\section{Records}
+Una generalizzazione del prodotto è il record, dove ogni campo ha associato un'etichetta.
+\[
+    \textit{Labels lab} \in \mathbb{LAB} \textit{ per un insieme } \mathbb{LAB} = \{q, p, \dots\}
+\]
+Estendiamo nuovamente la sintassi delle espressioni e dei tipi:
+\begin{grammar}
+    <e> ::= \dots | $\{lab_1 = e_1, \dots , lab_k = e_k\}$ | $\# lab \ e$
+
+    <T> ::= \dots | $\{lab_1 : T_1, \dots , lab_k : T_k\}$
+\end{grammar}
+Dove in ogni record le etichette sono distinte, e non ci sono campi duplicati.
+\subsection{Tipizzazione dei record}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1:T_1$}
+    \AxiomC{$\dots$}
+    \AxiomC{$\Gamma \vdash e_k:T_k$}
+    \LeftLabel{(record)}
+    \TrinaryInfC{$\Gamma \vdash \{lab_1 = e_1, \dots , lab_k = e_k\} : \{lab_1 : T_1, \dots , lab_k : T_k\}$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : \{lab_1 : T_1, \dots , lab_k : T_k\}$}
+    \LeftLabel{(recordproj)}
+    \UnaryInfC{$\Gamma \vdash \# lab \ e : T_i$}
+\end{prooftree}
+Qui l'ordine dei campi conta, per esempio:
+\[
+    (\texttt{fn }x : \{l_1 : \texttt{int}, l_2 : \texttt{bool}\} \implies x) \{l_2 = \texttt{true}, 
+    l_1 = 17\}
+\]
+È mal tipato.
+\subsection{Semantica operazionale dei record}
+Estendiamo nuovamente la grammatica dei valori come segue:
+\begin{grammar}
+    <v> ::= \dots | $\{lab_1 = v_1, \dots , lab_k = v_k\}$
+\end{grammar}
+E la semantica operazionale:
+\begin{prooftree}
+    \AxiomC{$\langle e_i , s \rangle \rightarrow \langle e_i' , s' \rangle$}
+    \LeftLabel{(record1)}
+    \UnaryInfC{$\langle \{lab_1 = e_1, \dots , lab_k = e_k\} , s \rangle \rightarrow \langle \{lab_1 = e_1', \dots , lab_k = e_k\} , s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(record2)}
+    \UnaryInfC{$\langle \{lab_1 = v_1, \dots , lab_k = v_k\} , s \rangle \rightarrow \langle v_i , s \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e , s \rangle \rightarrow \langle e' , s' \rangle$}
+    \LeftLabel{(record3)}
+    \UnaryInfC{$\langle \# lab \ e , s \rangle \rightarrow \langle \# lab \ e' , s' \rangle$}
+\end{prooftree}
+\section{Store mutabili}
+La maggior parte dei linguaggi hanno alcuni tipi di store mutabili. Ci sono due scelte principali:
+\begin{enumerate}
+    \item Quello che abbiamo visto fino ad ora nel nostro linguaggio è:
+    \begin{grammar}
+        <e> ::= \dots | $l := e$ | $!l$ | $x$
+    \end{grammar}
+    \begin{itemize}
+        \item le \textbf{locazioni} memorizzano valori mutabili: utilizziamo il
+        costrutto di assegnazione per modificare il valore associato a una locazione.
+        \item le \textbf{variabili} si riferiscono a un valore precedentemente calcolato: una
+        volta che associamo un valore a una variabile, non possiamo più cambiarlo.
+        \item la \textbf{deferenziazione} è esplicita solo per le locazioni.
+        \[
+            \texttt{fn }x : \texttt{int} \implies l := !l + x; \dots
+        \]
+    \end{itemize}
+    \item In altri linguaggi, come \texttt{C} e \texttt{Java}, le variabili possono 
+    riferirsi a valori precedentemente calcolati ed è possibile sovrascrivere tale valore. Inoltre 
+    la deferenziazione è implicita. La funzione precedentemente descritta in \texttt{Java} è:
+    \[
+      \texttt{void }foo (x : \texttt{int}) \{ l := l + x; \dots \}
+    \]
+\end{enumerate}
+Nel nostro linguaggio ci fermiamo alla prima scelta.
+\subsection{Estensione dello store}
+Di seguito superiamo alcune limitazioni sui riferimenti del nostro linguaggio.
+In particolare, ricordiamo che al momento possiamo solo memorizzare valori interi,
+non possiamo creare nuove posizioni (\textit{sono staticamente determinate}), non possiamo
+scrivere funzioni che agiscano su posizioni, 
+come ad esempio 
+\[
+  \texttt{fn }l : \texttt{intref} \implies !l  
+\]
+Estendiamo la sintassi e i tipi per superare tali limitazioni:
+\begin{grammar}
+    <e> ::= \dots | $\textcolor{red}{\cancel{l:=e}}$ |  $\textcolor{red}{\cancel{!l}}$ | 
+    $e_1 := e_2$ | $!e$ | ${\texttt{ref }e}$ | $l$
+
+    <T> ::= \dots | \texttt{ref }T
+
+    <$T_{loc}$> ::= $\textcolor{red}{\cancel{\texttt{intref}}}$ | $\texttt{ref }T$
+\end{grammar}
+\subsection{Tipizzazione dei riferimenti}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : T$}
+    \LeftLabel{(ref)}
+    \UnaryInfC{$\Gamma \vdash \texttt{ref }e : \texttt{ref }T$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : \texttt{ref }T$}
+    \AxiomC{$\Gamma \vdash e_2 : T$}
+    \LeftLabel{(assign)}
+    \BinaryInfC{$\Gamma \vdash (e_1 := e_2) : \texttt{unit}$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : \texttt{ref }T$}
+    \LeftLabel{(deref)}
+    \UnaryInfC{$\Gamma \vdash !e : T$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(intref)}
+    \RightLabel{$\Gamma(l) = \texttt{ref }T$}
+    \UnaryInfC{$\Gamma \vdash l : \texttt{ref }T$}
+\end{prooftree}
+\subsection{Semantica operazionale dei riferimenti}
+Una locazione è un valore:
+\begin{grammar}
+    <v> ::= \dots | $l$
+\end{grammar}
+Fino ad ora, lo store \(s\) era una mappa parziale finita da $\mathbb{L}$ a $\mathbb{Z}$.
+Da ora in poi:
+\[
+  s: \mathbb{L} \to \mathbb{V}  
+\]
+Vediamo le regole della semantica:
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(ref1)}
+    \RightLabel{$l \notin dom(s)$}
+    \UnaryInfC{$\langle \texttt{ref }v, s \rangle \rightarrow \langle l, s[l \mapsto v] \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e_1 , s \rangle \rightarrow \langle e_1' , s' \rangle$}
+    \LeftLabel{(ref2)}
+    \UnaryInfC{$\langle \texttt{ref } e, s \rangle \rightarrow \langle \texttt{ref } e', s' \rangle$}
+\end{prooftree}
+Notiamo che la regola (ref1) rappresenta l'\textbf{allocazione dinamica della memoria}.
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(deref1)}
+    \RightLabel{$\textit{se }l \in dom(s) \textit{ e }s(l) = v$}
+    \UnaryInfC{$\langle !l, s \rangle \rightarrow \langle s(l), s \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e , s \rangle \rightarrow \langle e' , s' \rangle$}
+    \LeftLabel{(deref2)}
+    \UnaryInfC{$\langle !e , s \rangle \rightarrow \langle !e' , s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(assign1)}
+    \RightLabel{$\textit{se }l \in dom(s)$}
+    \UnaryInfC{$\langle l := v, s \rangle \rightarrow \langle \texttt{unit}, s[l \mapsto v] \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e , s \rangle \rightarrow \langle e' , s' \rangle$}
+    \LeftLabel{(assign2)}
+    \UnaryInfC{$\langle l := e , s \rangle \rightarrow \langle l := e' , s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e_1 , s \rangle \rightarrow \langle e_1' , s' \rangle$}
+    \LeftLabel{(assign3)}
+    \UnaryInfC{$\langle e_1 := e_2 , s \rangle \rightarrow \langle e_1' := e_2 , s' \rangle$}
+\end{prooftree}
+\subsection{Cambiamenti avvenuti}
+Un'espressione della forma \(ref(v)\) deve fare qualcosa durante l'esecuzione:
+dovrebbe restituire una nuova (\textit{fresh}) posizione associata al valore \(v\).
+
+Le funzioni possono astrarre sulle locazioni: \(\texttt{fn }x: \texttt{ref }T \Rightarrow !x\).
+Quando i programmi iniziano, non hanno locazioni: devono creare nuove locazioni durante l'esecuzione.
+La tipizzazione e la semantica operazionale consentono alle locazioni di contenere altre locazioni,
+ad esempio \(ref(ref3)\). In questa semantica, la proprietà del determinismo è persa per una ragione
+tecnica: le nuove posizioni vengono scelte in modo arbitrario. Per ripristinare il determinismo,
+dovremmo lavorare ``fino alla alpha conversion per le posizioni". All'interno del nostro linguaggio
+non è consentito eseguire operazioni aritmetiche sulle posizioni, solo assegnazioni
+(\textit{che possono essere fatte in \texttt{C} ma non in \texttt{Java}}) o testare se una posizione
+è più grande di un'altra. La nostra memoria cresce durante il calcolo; in un linguaggio di programmazione
+reale avremmo bisogno di un raccoglitore di rifiuti.
+\subsection{Controllo dei tipi}
+Prima di introdurre i riferimenti nelle nostre proprietà dei tipi, usiamo la condizione:
+\[
+  dom(\Gamma) \subseteq dom(s)  
+\]
+Per esprimere che tutte le locazioni menzionate nel contesto sono presenti nello store.
+
+Ora, con l'introduzione dei riferimenti, abbiamo bisogno di una nuova condizione:
+\[
+  \textit{per ogni } l \in dom(s) \textit{, abbiamo che } s(l) \textit{ è tipabile}
+\]
+Ciò significa che $s(l)$ può contenere funzioni o altri riferimenti ad altre locazioni.
+\subsection{Proprietà dei tipi}
+\begin{tcolorbox}[title = Store ben tipato]
+    Scriviamo $\Gamma \vdash s$ se:
+    \begin{itemize}
+        \item $dom(\Gamma) = dom(s) e$
+        \item per ogni $l \in dom(s)$, se $\Gamma(l) = \texttt{ref }T$ allora $\Gamma \vdash s(l) : T$.
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[title = Progress (\textit{riformulata})]
+    Se $e$ è chiuso e $\Gamma \vdash e : T$ e $\Gamma \vdash s$ allora:
+    \begin{itemize}
+        \item o $e$ è un valore, oppure
+        \item esistono $e', s'$ tale che $\langle e, s \rangle \rightarrow \langle e', s' \rangle$
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[title = Preservazione dei tipi]
+    Se $e$ è chiuso e $\Gamma \vdash e : T$ e $\Gamma \vdash s$ e
+    $\langle e, s \rangle \rightarrow \langle e', s' \rangle$ allora 
+    $e'$ è chiuso per qualche $\Gamma'$ con un dominio disgiunto a di $\Gamma$, abbiamo quindi 
+    $\Gamma', \Gamma \vdash e' : T$ e $\Gamma', \Gamma \vdash s'$. 
+\end{tcolorbox}

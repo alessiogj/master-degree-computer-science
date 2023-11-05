@@ -453,17 +453,311 @@ $x \notin \text{dom}(\Gamma)$ allora $\Gamma \vdash e'\{e/x\} : T'$.
 
 \begin{theorem}[Normalizzazione]
 Nei sotto-linguaggi senza cicli while o operazioni di store,
-se $\Gamma \vdash e : T$ e $e$ è chiuso, allora c'è un valore $v$
+se $\Gamma \vdash e : T$ ed $e$ è chiuso, allora c'è un valore $v$
 tale che, per ogni store, $\langle e,s \rangle \rightarrow^* \langle
 v,s \rangle$. In altre parole, se consideriamo un linguaggio funzionale
 puro, come il calcolo lambda, la sua versione tipizzata non è più Turing-completa.
 \end{theorem}
 \section{Dichiarazioni locali}
+Per la leggibilità, vogliamo essere in grado di nominare le
+espressioni e di limitarne la loro portata.
+
+Consideriamo infatti: 
+\[((1+2) \geq (1+2)+4)\]
+
+Questa è una caratteristica molto comune di molti linguaggi di programmazione.
+Nuova costruzione: 
+\[\texttt{let y:int} = 1+2 \texttt{ in } y \geq (y+4)\]
+
+\textbf{Intuizione}: prima valutiamo $1+2$ per ottenere $3$.
+Poi valutiamo $y \geq (y+4)$ con $y$ sostituito da $3$.
+Qui, $y$ è un \textit{binder}, lega ogni occorrenza libera di $y$ in $y \geq (y+4)$.
 \subsection{Sintassi e tipi}
+
+Estendiamo la sintassi delle nostre espressioni: 
+\begin{grammar}
+    <e> ::= ... | $\texttt{ let  }x : T = e_1 \texttt{ in } e_2$
+\end{grammar}
+
+Forniamo la regola di tipizzazione del nuovo costrutto:
+
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : T$}
+    \LeftLabel{(let)}
+    \AxiomC{$\Gamma, x:T \vdash e_2 : T'$}
+    \BinaryInfC{$\Gamma \vdash \texttt{let } x:T=e_1 \texttt{ in } e_2 : T'$}
+\end{prooftree}
+
+
+Si noti che, poiché $x$ è una variabile locale, $\Gamma$ non contiene una voce per la variabile
+$x$. Ciò significa che, come per \texttt{fn}, la tipizzazione di un costrutto \texttt{let} può
+richiedere un'alpha conversione .
+
 \subsection{Intuizione}
+In un costrutto \texttt{let}, le variabili sono segnaposto per quantità sconosciute.
+
+\textbf{Problema 1:} Molte espressioni non hanno senso
+\[
+\begin{aligned}
+    \texttt{let } y:T = 2+3 \texttt{ in } y+\textcolor{red}{z} \\
+    \texttt{let } z:T = 2+\textcolor{red}{x} \texttt{ in } z \times z
+\end{aligned}
+\]
+
+\textbf{Problema 2:} Le variabili possono essere usate in più ruoli
+\[ \text{let } z:T = 2+\textcolor{red}{z} \texttt{ in } \textcolor{red}{z} \times y \]
+
+\textbf{Problema 3:} Dichiarazioni multiple per lo stesso valore
+\[ \texttt{let } \textcolor{red}{y}:T = 1 \texttt{ in let }
+\textcolor{red}{y}:T' = (1+2) \texttt{ in } y \times (y+4) \]
+
 \subsection{Variabili legate e libere}
+Intuizione: Nel costrutto \texttt{let}, $\textcolor{blue}{y}:T = 2+3$ \texttt{in} $\textcolor{blue}{y}+
+\textcolor{red}{z}$
+\begin{itemize}
+    \item $\textcolor{blue}{y}$ è legato, rappresenta l'espressione $2+3$.
+    \item $\textcolor{red}{z}$ è libero, non rappresenta alcuna espressione.
+\end{itemize}
+
+Nel costrutto \texttt{let}, $\textcolor{blue}{z}:T = 2+\textcolor{red}{x}$ \texttt{in} $\textcolor{blue}{z} \times
+(\textcolor{blue}{z}+\textcolor{red}{y})$
+\begin{itemize}
+    \item $\textcolor{blue}{z}$ è legato, rappresenta l'espressione $2+x$
+    \item $\textcolor{red}{x}$ e $\textcolor{red}{y}$ sono libere, non rappresentano alcuna espressione.
+\end{itemize}
+
+Nel costrutto \texttt{let}, $\textcolor{blue}{z}:T = 2+\textcolor{red}{z}$ \texttt{in} $\textcolor{blue}{z} \times
+(\textcolor{blue}{z}+\textcolor{red}{y})$
+\begin{itemize}
+    \item $\textcolor{blue}{z}$ è legato, rappresenta l'espressione $2+\textcolor{red}{z}$
+    \item $\textcolor{red}{z}$ e $\textcolor{red}{y}$ sono libere, non rappresentano alcuna espressione.
+\end{itemize}
 \subsection{Alpha conversion}
+Come il costrutto \texttt{let} è un binder per la variabile locale, possiamo utilizzare
+l'alfa conversion quando necessario. 
+
+Convenzione: ci permetteremo ogni volta, in qualsiasi espressione
+\texttt{let} $x:T=e_1 \texttt{ in } e_2$ di sostituire il legame $x$ e tutte le
+occorrenze di $x$ in $e_2$ che sono legate a tale binder, con qualsiasi altra variabile
+fresh che non compare altrove: 
+
+\[
+    \texttt{let } x:T=e1 \texttt{ in } e_2 \equiv_\alpha \text{let } y:T=e_1 \texttt{ in } e_2\{y/x\}
+\]
+
+dove $y$ è una variabile fresh, ovvero non compare né in $e_1$ né in $e_2$.
+
+La definizione delle variabili libere per il costrutto \texttt{let} è come ci si potrebbe aspettare:
+
+\[
+    \text{fv}(\text{let } x:T=e1 \text{ in } e2) \equiv \text{fv}(e1) \cup (\text{fv}(e2) \setminus \{x\})
+\]
+
+Per quanto riguarda la sostituzione, dobbiamo fare attenzione in quanto potremmo
+aver bisogno di lavorare fino all'alfa conversion:
+\[
+\begin{array}{lll}
+(\texttt{let } x:T=e_1 \texttt{ in } e_2)\{e/z\} & \defeq & 
+(\texttt{let } x:T=e_1\{e/z\} \texttt{ in } e_2\{e/z\}) \\
+& & \text{se }x \notin \texttt{fv}(e)\\
+(\texttt{let } x:T=e_1 \texttt{ in } e_2)\{e/z\} & \defeq & 
+(\texttt{let } y:T=e_1\{e/z\} \texttt{ in } (e_2\{y/x\}\{e/z\}))  \\
+& &  \text{se }x \in \texttt{fv}(e) \text{ and } y \texttt{ fresh}\\
+(\texttt{let } x:T=e_1 \texttt{ in } e_2)\{e/z\} & \defeq & 
+(\texttt{let } x:T=e_1\{e/z\} \texttt{ in } e_2)\\
+\end{array}
+\]
+Le nostre definizioni utilizzano variabili e non meta-variabili: quindi $x\not=z$!
 \subsection{Small-step semantics}
+Per quanto riguarda l'applicazione di funzione, possiamo avere almeno un paio di
+semantica differenti per il costrutto \texttt{let}.
+\subsubsection{Call-by-value}
+\begin{prooftree}
+    \AxiomC{$\langle e_1, s \rangle \rightarrow \langle e_1', s' \rangle$}
+    \LeftLabel{(CBV-let1)}
+    \UnaryInfC{$\langle \texttt{let } x:T=e_1 \texttt{ in } e_2, s \rangle
+    \rightarrow \langle \texttt{let } x:T=e_1' \texttt{ in } e_2, s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(CBV-let2)}
+    \UnaryInfC{$\langle \texttt{let } x:T=v \texttt{ in } e_2, s \rangle
+    \rightarrow \langle \texttt{let } x:T=e_2\{v / x\}, s \rangle$}
+\end{prooftree}
+\subsubsection{Call-by-name}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(CBN-let)}
+    \UnaryInfC{$\langle \texttt{let } x:T=e_1 \texttt{ in } e_2, s \rangle
+    \rightarrow \langle e_2\{e_1 / x\}, s \rangle$}
+\end{prooftree}
 \section{Ricorsione}
+Nel contesto del nostro linguaggio, la modellazione delle funzioni ricorsive solleva
+importanti questioni sulle loro proprietà e sulla loro presenza libera. È innegabile che,
+grazie al teorema di normalizzazione, abbiamo acquisito la consapevolezza che senza istruzioni
+di ciclo o memorizzazione non possiamo sostenere calcoli infiniti, rendendo così impossibile
+la presenza diretta di meccanismi di ricorsione.
+
+Tuttavia, possiamo notare che mediante l'uso combinato di costrutti come \texttt{if}, \texttt{while}
+e la memorizzazione, siamo in grado di implementare la ricorsione all'interno del nostro linguaggio.
+È importante sottolineare che, pur offrendo questa possibilità, l'utilizzo di tali costrutti può
+diventare complesso e richiedere una pianificazione attenta.
+
+D'altra parte, è interessante osservare che abbiamo già intrapreso questa strada. Pertanto, per garantire
+un'implementazione efficiente e strutturata delle funzioni ricorsive, è auspicabile prendere 
+come ispirazione il $\lambda$-calcolo.
+
 \subsection{Punto fisso}
+In matematica, un punto fisso $p$
+(\textit{noto anche come punto invariante}) di una funzione $f$ è un punto che viene
+mappato su se stesso, cioè $f(p) = p$. I punti fissi rappresentano il cuore di
+ciò che è noto come teoria della ricorsione.
+
+\begin{tcolorbox}[title = Teoremi di ricorsione di Kleene]
+I teoremi di ricorsione di Kleene
+sono un paio di risultati fondamentali sull'applicazione di funzioni calcolabili
+alle proprie descrizioni. I due teoremi di ricorsione possono essere applicati per
+costruire punti fissi di determinate operazioni su funzioni calcolabili, per generare
+quines e per costruire funzioni definite tramite definizioni ricorsive.
+\end{tcolorbox}
+
+\begin{theorem}[Rice]
+per ogni proprietà non
+banale delle funzioni parziali, non esiste un metodo generale ed efficace per decidere
+se un algoritmo calcoli una funzione parziale con tale proprietà.
+\end{theorem}
+Quindi, è molto importante dimostrare che il $\lambda$-calcolo può esprimere i punti fissi. Utilizziamo il combinatorio di Turing per derivare i punti fissi:
+
+\[A \defeq \lambda x. \lambda y. y(xxy)\]
+
+\[\texttt{fix} \defeq AA\]
+
+$\texttt{fix}$ è una funzione ricorsiva che, dato un termine $M$,
+restituisce un punto fisso di $M$, indicato con $\text{fix}M$.
+Infatti, per qualsiasi termine $M$, utilizzando una valutazione call-by-name, abbiamo:
+
+\[
+  \begin{array}{lll}
+    \textcolor{red}{\texttt{fix }M} & \rightarrow & (\lambda y.y(AAy))M \\
+    & \rightarrow & M(\textcolor{red}{\texttt{fix }M}) \\
+  \end{array}                
+\]
+Ora, se scegliamo $M$ nella forma $\lambda f.\lambda x.B$, per qualche
+corpo $B$, allora, in una semantica call-by-name, abbiamo:
+\[
+  \begin{array}{lll}
+    \textcolor{red}{\texttt{fix}} (\lambda f.\lambda x.B) & \rightarrow^* &
+    (\lambda f.\lambda y(B))(\textcolor{red}{\texttt{fix}} (\lambda f. \lambda x.B)) \\
+    & \rightarrow & \lambda y.B\{\textcolor{red}{\texttt{fix}} (\lambda f. \lambda x.B) / f\}\\
+  \end{array}  
+\]
+\subsubsection{Definizioni ricorsive}
+Quindi, se definiamo:
+
+\[\textcolor{red}{\texttt{rec} f.B} \textit{ come abbreviazione per }
+\textcolor{red}{\texttt{fix}(\lambda f.\lambda x.B)}\]
+
+allora possiamo riscrivere la riduzione precedente come:
+
+\[
+    \textcolor{red}{\texttt{rec} f.B} \rightarrow^* \lambda x.B\{\textcolor{red}{\texttt{rec} f.B}/f\}
+\]
+\subsubsection{Punto fisso nella semantica call-by-name}
+Abbiamo quindi trovato un modo per esprimere funzioni ricorsive nel $\lambda$-calcolo,
+secondo la semantica call-by-name. Questo meccanismo funziona anche con la semantica
+call-by-value? Proviamo a vedere:
+
+\[
+\begin{array}{lcl}
+    \texttt{rec} f.B & \defeq & \texttt{fix}(\lambda f.\lambda x.B) \\
+    & \rightarrow^* & (\lambda f.\lambda x.B)(\texttt{fix}(\lambda f.\lambda x.B)) \\
+    & \rightarrow^* & (\lambda f.\lambda x.B)(\lambda f.\lambda x.B)(\texttt{fix}(\lambda f.\lambda x.B)) \\
+    & \rightarrow^* & (\lambda f.\lambda x.B)(\lambda f.\lambda x.B)(\lambda f.\lambda x.B)(\texttt{fix}(\lambda f.\lambda x.B)) \\
+    & \rightarrow^* & \text{... all'infinito!} \\
+\end{array}
+\]
+Dobbiamo quindi fermare l'espansione indefinita di $\texttt{fix}(\lambda f.\lambda x.B)$.
+
+Redifiniamo quindi il combinatore di punto fisso come:
+\begin{tcolorbox}[title = Call-by-name fixed-point combinator]
+    \[
+      \begin{array}{lll}
+        A \defeq \lambda x. \lambda y. y(xxy) & \texttt{fix} \defeq AA 
+        & \textcolor{red}{\texttt{fix }M \rightarrow^* M(\texttt{fix }M)}\\
+      \end{array}  
+    \]
+\end{tcolorbox}
+\begin{tcolorbox}[title = Call-by-value fixed-point combinator]
+    \[
+      \begin{array}{lll}
+        A_v \defeq \lambda x. \lambda y. y(\lambda z .(xxy)z) & \texttt{fix}_v \defeq A_vA_v 
+        & \textcolor{red}{\texttt{fix}_vM \rightarrow^* M(\lambda z.(\texttt{fix}_vM)z)}\\
+      \end{array}  
+    \]
+\end{tcolorbox}
+\begin{tcolorbox}[title = Call-by-value nelle funzioni ricorsive]
+Sia $\texttt{rec}_v f.B$ un'abbreviazione per $\texttt{fix}_v(\lambda f.\lambda x.B)$, allora
+\[
+  \textcolor{red}{\texttt{rec}_v f.B} \rightarrow^* \lambda x.B\{
+    \textcolor{red}{\lambda z .(\texttt{rec}_v f.B)z}/f\}  
+\]
+Notiamo che non diverge più.
+\end{tcolorbox}
 \section{Punto fisso nel linguaggio funzionale}
+Dobbiamo adottare uno dei combinatori di punto fisso precedenti? No, nessuno dei combinatori
+precedenti è ben tipizzato per il teorema di Normalizzazione.
+\subsubsection{Sintassi}
+\begin{grammar}
+    <e> ::= \dots | \texttt{fix} e
+\end{grammar}
+\subsubsection{Tipizzazione}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : (T_1 \rightarrow T_2) \rightarrow (T_1 \rightarrow T_2)$}
+    \LeftLabel{(T-Fix)}
+    \UnaryInfC{$\Gamma \vdash \texttt{fix }e : T_1 \rightarrow T_2$}
+\end{prooftree}
+\subsubsection{Semantica}
+\begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+        \AxiomC{$-$}
+        \LeftLabel{(Fix-cbn)}
+        \UnaryInfC{$\texttt{fix}.e \rightarrow e(\texttt{fix}.e)$}
+    \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.55\textwidth}
+    \begin{prooftree}
+        \AxiomC{$e \equiv \texttt{fn } f: T_1 \rightarrow T_2 \implies e_2$}
+        \LeftLabel{(Fix-cbv)}
+        \UnaryInfC{$\texttt{fix }e \rightarrow e(\texttt{fn }x: T_1 \implies (\texttt{fix}.e)x)$}
+    \end{prooftree}
+\end{minipage}
+\subsection{La regola (\textit{Fix-cbv}) non funziona per la semantica call-by-value}
+Se utilizziamo la regola (\textit{Fix-cbv}) per la semantica call-by-value, otteniamo:
+\[
+  \begin{array}{lll}
+    \texttt{fact }1 & \rightarrow & \texttt{Fact}(\texttt{fact})1 \\
+    & \rightarrow & \texttt{Fact}(\texttt{Fact}(\texttt{fact}))1 \\
+    & \rightarrow & \dots \\
+    & \rightarrow & \texttt{Fact}(\texttt{Fact}(\texttt{Fact}(\dots\texttt{fact})))1 \\
+  \end{array}  
+\]
+La ricorsione call-by-value ha bisogno di un meccanismo per interrompere
+la valutazione della iterazione successiva. Ecco perché abbiamo definito una
+regola diversa (\texttt{Fix-cbv}) da utilizzare nella semantica call-by-value.
+\subsection{Decodifica del \texttt{while}}
+Avendo definito la ricorsione come primitiva, potremmo rimuovere il costrutto \texttt{while}
+se lo volessimo:
+\[
+    \begin{array}{lll}
+        W & \defeq & \texttt{fn w : unit} \rightarrow 
+        \texttt{unit}.\texttt{fn }y:\texttt{unit} \text{ se } e_1 \text{ allora }
+        (e_2;(w \texttt{ skip})) \text{ altrimenti } \texttt{skip} \\
+    \end{array}
+    \]
+Per $w$ e $y$ non presenti in $\texttt{fv}(e_1) \cup \texttt{fv}(e_2)$.
+
+Allora
+\[
+  \texttt{while }e_1 \texttt{ do } e_2 \rightarrow \texttt{fix }W \texttt{ skip}
+\]
+e l'operatore \texttt{while} non è più primitivo.
