@@ -1,0 +1,77 @@
+\chapter{Subtyping}
+Il subtyping è un concetto che rende facile la vita del programmatore, 
+facendo si che possa riutilizzare il codice. Prende una particolare valenza 
+nella programmazione ad oggetti. Rende meno rigido il type system, consentendo 
+di compilare programmi che a runtime non darebbero problemi nonostante non siano 
+tipabili.
+\section{Polimorfismo}
+\begin{itemize}
+    \item \textbf{Polimorfismo ad-hoc}:
+    opratori opverloaded, che possono lavorare con tipi diversi.
+    \item \textbf{Polimorfismo parametrico}: tipi polimorfi 
+    che possono essere istanziati con tipi diversi.
+    \item \textbf{Polimorfismo di subtyping}: un tipo può essere
+    usato al posto di un altro. CI focalizzeremo su questo.
+\end{itemize}
+Motivazioni:
+\begin{prooftree}
+    \AxiomC{$\Gamma ,x, T \vdash e : T'$}
+    \LeftLabel{(fun)}
+    \UnaryInfC{$\Gamma \vdash \lambda x.e : T \rightarrow T'$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : T \rightarrow T'$}
+    \AxiomC{$\Gamma \vdash e_2 : T$}
+    \LeftLabel{(app)}
+    \BinaryInfC{$\Gamma \vdash e_1 e_2 : T'$}
+\end{prooftree}
+Prendendo in considerazione le nostre regole:
+\[
+\Gamma \vdash (\texttt{fn }x : \texttt{left : int} \implies 
+\# \texttt{left }x): \textcolor{red}{\texttt{\{left : int\} }}
+\textcolor{red}{\rightarrow \texttt{int}}
+\]
+In qualche modo introduciamo una relazione d'ordine tra i tipi,
+in modo che un tipo possa essere usato al posto di un altro.
+Quindi:
+\[
+  \{\texttt{left : int, right : int}\} <: \{left : int\} <: \{\}  
+\]
+Il sottotipo relazione $<:$ è introdotto per introdurre per introdurre la regola 
+di subtyping:
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : T$}
+    \AxiomC{$T <: T'$}
+    \LeftLabel{(sub)}
+    \BinaryInfC{$\Gamma \vdash e : T'$}
+\end{prooftree}
+In questo modo però non abbiamo più \textbf{l'unicità dei tipi}
+\subsection{Relazione $T <: T'$}
+Si tratta di una relazione riflessiva e transitiva.
+\begin{prooftree}
+    \AxiomC{}
+    \LeftLabel{(s-refl)}
+    \UnaryInfC{$T <: T$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$T<:T'$}
+    \AxiomC{$T'<:T''$}
+    \LeftLabel{(s-trans)}
+    \BinaryInfC{$T<:T''$}
+\end{prooftree}
+\subsection{Subsection sui record}
+\begin{prooftree}
+    \AxiomC{$\pi \textit{ una permutazione di }1,2,\dots,k$}
+    \LeftLabel{(s-rec)}
+    \UnaryInfC{$\Gamma \vdash e : \{l_1 : T_1', \dots, l_n : T_k\}
+    <: \{p_{\pi(1)}: T_{\pi(1)},\dots, p_{\pi(k)}: T_{\pi(k)}\}$}
+\end{prooftree}
+La relazione di subtyping sui record non è simmetica e non è transitiva: un 
+preordine e non un ordine parziale:
+
+\dots
+\section{Subtyping e funzioni}
+Contesto in cui si aspetta un certo algoritmo. Potrei avere una funzione 
+che si presta a funzionare in quel contesto, come tipo argomento vuole di meno 
+rispetto a quello che gli passo. Il subtyping è un modo per dire che una funzione
+che si aspetta un tipo, può essere usata con un tipo più generale.

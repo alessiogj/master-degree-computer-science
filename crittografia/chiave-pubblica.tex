@@ -516,7 +516,8 @@ al testo in chiaro. Dimenticandoci del problema della malleabilità, vorremmo ch
 ad alcuna informazione binaria sul plaintext, ma dobbiamo capire cosa vuol dire non poter risalire ad alcuna informazione
 binaria.
 \begin{tcolorbox}[title = Distinguisher]
-  Un \textbf{distinguisher} è un algoritmo binario $\mathcal{D} \in \texttt{PPT}$ che restituisce $0$ o $1$. Il distinguisher prende in input un evento che soddisfa o meno una certa proprietà e 
+  Un \textbf{distinguisher} è un algoritmo binario $\mathcal{D} \in \texttt{PPT}$ che restituisce $0$ o $1$. Il distinguisher
+  prende in input un evento che soddisfa o meno una certa proprietà e 
   un altro evento che soddisfa o meno la stessa proprietà. Il distinguisher deve essere in grado di distinguere
   se i due eventi si comportano in modo diverso o meno.
   Statisticamente il distinguisher verifica che i due eventi si comportino in modo polinomialmente diverso
@@ -614,3 +615,235 @@ Se sottraiamo $\frac{1}{2}$ otteniamo:
 L'algoritmo ha quindi un vantaggio di almeno $\frac{1}{2} \cdot k^{-c'}$, quindi tale algoritmo è 
 un attaccante.
 \end{proof}
+\subsection{Distinguere e indovinare}
+TODO
+\section{Lancio della moneta}
+Il sistema descritto in precedenza ha un problema, infatti sappiamo che 
+la codifica di un singolo bit richiede una quantità molto alta di bit. Infatti 
+implicherebbe un enorme spreco di banda, di risorse. Ci piacerebbe giungere 
+ad uno scenario in cui un singolo bit viene codificato con un solo bit.
+
+Per arrivare a questo punto impareremo a costruire numeri \textbf{pseudo-casuali
+crittograficamente sicuri} da utilizzare come base per simulare un one-time pad, 
+dove la chiave non è realmente casuale, ma è una chiave generata da noi, 
+ma nessuno con potenza di calcolo polinomiale possa realmente notare la 
+differenza.
+
+Il lancio di monete in rete è un problema molto importante, infatti simulare 
+un reale lancio di monete è molto difficile, in quanto non si può avere
+la certezza che uno dei due agenti non stia mentendo.
+Disponiamo dei due agenti $A$ e $B$ che vogliono simulare un
+lancio di moneta e che comunicano attraverso un canale di comunicazione
+e vorremmo che il lancio avvenga in modo simile a quello reale, ovvero
+che entrambi gli agenti non sappiano il risultato del lancio prima che
+questo avvenga e che il risultato sia frutto del lancio di una moneta.
+
+Il fatto che $A$ lanci la moneta e che comunichi il risultato a $B$ non
+va bene, poiché il risultato può essere manipolato da $A$ affinché sia 
+di suo gradimento, e l'altro agente non può avere la certezza che il
+risultato sia reale.
+Si potrebbe provare a comunicare il risultato in contemporanea, ma anche
+in questo caso si potrebbe simulare un ritardo di rete in modo da 
+sfruttare il risultato a proprio vantaggio.
+Ci si potrebbe affidare ad un terzo agente, ma anche in questo caso
+l'agente esterno deve essere fidato.
+
+Abbiamo quindi dato due risultati al lancio della moneta, ovvero
+$Coin_a$ e $Coin_b$. $Coin_a$ è una variabile del processo locale dell'agente
+$A$ e $Coin_b$ è una variabile del processo locale dell'agente $B$, ed entrambe
+conterranno il risultato del lancio della moneta. Se $A$ e $B$ seguono 
+il protocollo (\textit{sono onesti}), allora $Coin_a = Coin_b$, con 
+\[
+  \probP[Coin_a = 0] = \frac{1}{2}
+\]
+Potrebbero però non seguire il protocollo e indurre l'altro agente in errore, ottenendo 
+un risultato iniquo, nel nostro caso $A$ segue il protocollo, mentre $B$ no, non possiamo 
+fornire alcuna garanzia su $B$, possiamo però tutelare $A$. Per tutelarlo, 
+$A$ deve essere in grado di osservare il risultato di un lancio di una 
+moneta.
+\[
+  | \probP[Coin_a = 0] - \frac{1}{2} | < k^{-\omega(1)}
+\]
+Ammettiamo che $B$ possa alterare tale probabilità, ma non la può alterare di troppo,
+quindi la differenza tra la probabilità reale e quella che $B$ può alterare deve essere
+minore di qualsiasi polinomio. Per ogni esponente esiste un valore minimo della 
+lunghezza della chiave tale per cui con chiavi sufficientemente lunghe, 
+la probabilità si discosta da $\frac{1}{2}$ di un valore minore di $k^{-\omega(1)}$.
+\subsection{Lancio della moneta con il residuo quadratico}
+Ci basiamo sulla difficoltà di stabilire se un numero è un quadrato o meno in $\ZZ_p^*$.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Sceglie }p,q \in_R primi \\
+\text{Calcola } n=p\cdot q \\
+\text{Calcola } z \in \ZZ_n^* \text{ con } \left(\frac{z}{n}\right)=1\\
+\< \sendmessageright*{n,z} \\
+\<\< \text{Sceglie } b \in_R \{0,1\} \\
+\< \sendmessageleft*{b} \\
+\< \sendmessageright*{p, q} \\
+}
+
+Il risultato finale sarà $b \oplus \texttt{isSquare}(z)$. Sostanzialmente 
+$A$ lancia una moneta (\textit{sceglie a caso fra un quadrato o un non quadrato, poiché 
+scegliendo uniformemente fra gli elementi di $\ZZ_n^*$ con simbolo 
+di Jacobi $1$, si ottiene un quadrato con probabilità $\frac{1}{2}$}) e
+$B$ sceglie un bit $b$ a caso e lo invia ad $A$. Quando $B$ riceve $z$ non 
+sa qual è il risultato del lancio della moneta, perché non sa risolvere il 
+problema del residuo quadratico, di conseguenza è vero che $A$ invia prima 
+il risultato del proprio lancio della moneta, ma nella condizione in cui $B$ non 
+vede il risultato, ma $B$ non invia il bit $b$ in funzione di $z$.
+
+Se entrambi gli agenti sono onesti, $z$ è stato campionato secondo 
+una misura causale, quindi $z$ è un quadrato con probabilità $\frac{1}{2}$ 
+e un non quadrato con probabilità $\frac{1}{2}$. Anche $b$ è stato
+campionato secondo una misura causale, quindi $b$ è $0$ con probabilità
+$\frac{1}{2}$ e $1$ con probabilità $\frac{1}{2}$. Alla fine del protocollo,
+tutti sono in grado di calcolare il risultato perché tutti conoscono 
+gli interi parametri dell'algoritmo, che sarà uguale per entrambi seguendo la
+formula: $b \oplus \texttt{isSquare}(z)$.
+
+Se $B$ è disonesto, allora può calcolare il bit $b$ non casuale, distribuendolo
+in maniera differente. Se $B$ calcola $b$ \textbf{indipendentemente} da 
+$z$, allora qualunque sia la regola di calcolo di $b$, sarà sempre 
+uguale alla quadraticità di $z$ con probabilità $\frac{1}{2}$. Un altro modo 
+per imbrogliare è quello di calcolare $b$ in funzione di $z$, ma 
+questo richiede la conoscenza dell'algoritmo della quadraticità di $z$.
+$B$ ha il vantaggio di allontanarsi da $\frac{1}{2}$, ma è il vantaggio 
+pari a quello della risoluzione del problema del residuo quadratico, quindi 
+più piccolo di qualsiasi polinomio.
+
+Se $A$ è disonesto, può calcolare $p$ e $q$ non primi, ma $B$, alla fine del 
+protocollo se ne accorgerebbe ricevendo $p$ e $q$ e quindi potrebbe
+lanciare una propria moneta per decidere il proprio risultato o, se in conoscenza 
+del risultato che gli è favorevole, può decidere come risultato un valore che gli 
+fornirebbe tale vantaggio. 
+$A$ potrebbe non inviare $p$ e $q$, in questo caso $B$ ha un enorme 
+svantaggio, perché dopo il secondo messaggio $A$ conosce $Coin_A$, ma 
+$B$ non conosce $Coin_B$, se $A$ invia il proprio messaggio a $B$, $B$ 
+è in grado di calcolare $Coin_B$ e quindi il risultato finale, ma se $A$
+sa il risultato vincente e il risultato ottenuto è sfavorevole, $A$ non 
+spedisce il terzo messaggio e $B$ lancia la propria moneta che con probabilità 
+$\frac{1}{2}$ è favorevole, ma con probabilità $\frac{1}{2}$ è sfavorevole,
+ma si crea una situazione sfavorevole a $B$
+\[
+  \probP[Coin_B = 0] = \frac{1}{2} + \frac{1}{2} \cdot \frac{1}{2} = \frac{3}{4}
+\]
+Il comportamento di $A$ ha alterato la misura di probabilità di successo di $B$, a 
+favore di $A$.
+
+Il protocollo appena descritto non soddisfa le proprietà di un protocollo di lancio della 
+moneta. Ci sono casi in cui il protocollo però può essere seguito, ovvero quando chi 
+impersona $A$ non conosce il risultato vincente e $B$ può o non può conoscere il risultato 
+vincente.
+\begin{tcolorbox}
+  Un protocollo per funzionare deve essere tale che gli agenti possano conoscere il 
+  risultato anche senza l'ultimo messaggio. Se l'ultimo messaggio è quello significativo,
+  allora il protocollo non è corretto.
+\end{tcolorbox}
+Sia $n$ il numero minimo di messaggi di un protocollo che funziona, quindi gli agenti conoscono 
+il risultato del lancio della moneta anche senza l'invio dell'ultimo messaggio.
+ciò vuol dire che l'ultimo messaggio non serve, ma se non serve allora il penultimo 
+messaggio è quello che permette ad $A$ di conoscere il risultato, ma se $B$ decide di non 
+inviare tale messaggio si innesca una reazione a catena che porta $A$ e $B$ a non inviare nulla.
+\begin{tcolorbox}
+Non esiste il protocollo per il lancio della moneta che soddisfi le condizioni dettate da noi.
+Il protocollo funziona solo se, con $n$ agenti, ad imbrogliare sono meno di $\frac{n}{2}$ agenti.
+\end{tcolorbox}
+Indeboliamo la soluzione in modo che funzioni.
+\subsubsection{Lancio di moneta nel pozzo}
+L'idea è quella di utilizzare un pozzo, in cui finirà la moneta. $A$ riesce a vedere il risultato
+del lancio della moneta, ma $B$ no, perché si trova di intralcio un cane tenuto 
+al guinzaglio da $A$. $A$ può decidere far si che $B$ possa vedere il risultato, facendo rientrare 
+il cane che si trova nei pressi del pozzo, ma $A$ può anche decidere di non far rientrare il cane.
+
+$A$ non può variare il risultato del lancio della moneta, ha solamente la facoltà di impedire o meno 
+a $B$ di vedere il risultato. Sa a $B$ decidere se partecipare al processo o meno, non gli interessa
+il risultato del lancio della moneta, ma interessa solamente che la probabilità del lancio sia di 
+almeno $\frac{1}{2}$.
+\subsubsection{Oblivious transfer}
+Supponiamo che $B$ sappiamo il risultato della borsa del prossimo anno e che chieda a ad $A$ di 
+avere in cambio del denaro per i risultati della borsa. $B$ non vuole dare tutto il denaro ad $A$,
+ma vuole dare solamente una parte del denaro. A questo punto $A$ decide di far il lancio della moneta
+per decidere se mostrare o meno il risultato della borsa a $B$. $B$ a questo punto deve trasferire 
+l'informazione ad $A$, ma \textbf{non gli interessa se l'informazione è stata trasferita o meno}, ma solamente
+che la probabilità che l'informazione sia stata trasferita sia di almeno $\frac{1}{2}$.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\<\text{Sceglie }p,q \in_R primi \\
+\<\<\text{Calcola } n=p\cdot q \\
+\<\<\text{Calcola } e, d \text{ chiave } p \text{ e } p  \text{ per } \texttt{RSA} \\
+\<\<\text{Codifica il segreto con \texttt{RSA} ottenendo} \\
+\<\<\text{un messaggio } c \\
+\<\sendmessageleft*{n,e,c} \\
+\text{Sceglie } x \in_R \ZZ_n^* \\
+\<\sendmessageright*{x^2} \\
+\<\<\text{Calcola una radice quadrata di } x, \text{ che sarà } y \\
+\<\sendmessageleft*{y} \\
+}
+Quindi $A$ invia un quadrato a caso e $B$ invia una delle quattro radici quadrate di $x$.
+Con probabilità $\frac{1}{2}$ tale radice sarà diversa da $\pm x$. Quando un agente possiede 
+due radici quadrate di uno stesso numero \textbf{che non sono una l'opposta dell'altro}, allora 
+è in grado di fattorizzare $n$.
+Con probabilità $\frac{1}{2}$, $B$ invierà ad $A$ una radice diversa da $\pm x$, metterà quindi 
+$A$ nelle condizioni di calcolare $p$ e $q$ e quindi $d$ per decodificare il messaggio $c$.
+$B$ non ha alcun interesse nel risultato, che otterrà con probabilità $\frac{1}{2}$, ma
+interessa che $A$ abbia sia riuscita a decifrare $c$ con probabilità $\frac{1}{2}$.
+
+Il vantaggio di $A$ è implicito nel risultato.
+\section{Lancio della moneta con il logaritmo discreto}
+Il problema è che fino ad ora abbiamo lavorato con la quadraticità di un numero 
+in $\ZZ_n^*$, ma vorremmo lavorare con singoli bit. Quindi non con l'inversa di una 
+funzione one way, ma con singoli bit, ovvero con l'informazione \textbf{binaria} 
+dell'inversa di una funzione one way.
+
+Disponiamo di un numero $p$ e un generatore $g$ di $\ZZ_p^*$, quindi $g$ è un numero
+che genera tutti gli elementi di $\ZZ_p^*$, ovvero $\{g^0, g^1, \ldots, g^{p-1}\}$.
+I due valori $p$ e $g$ sono condivisi tra $A$ e $B$, prima dell'inizio del protocollo.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Sceglie }x \in_R \{0,\dots,p-2\} \\
+\text{Calcola } z = g^x \\
+\<\sendmessageright*{z} \\
+\<\<\text{Sceglie } b \in_R \{0,1\} \\
+\<\sendmessageleft*{b} \\
+\<\sendmessageright*{x} \\
+}
+Il risultato è quindi $b \oplus \left( x < \frac{p-1}{2}\right)$. L'idea di fondo è che $B$ 
+quando sceglie $b$ non è in grado di dedurre il risultato del lancio della moneta, perché
+dovrebbe verificare se $x$ è minore o meno di $\frac{p-1}{2}$, facendo quindi un test binario 
+su il \textbf{logaritmo discreto} di $z$. Nel momento in cui $A$ invia $x$, $B$ è in grado
+di verificare la correttezza del risultato e a calcolare il risultato.
+
+\begin{tcolorbox}
+  $B$ non è in grado di calcolare il predicato binario $x < \frac{p-1}{2}$, a meno di un 
+  vantaggio più piccolo di qualsiasi polinomio.
+\end{tcolorbox}
+Tale algoritmo utilizza un \textbf{predicato binario sull'inversa di una funzione one way}.
+Data una funzione one way $f$, un predicato binario $P$ sull'inversa di $f$, non siamo 
+certi che il predicato sia difficile da calcolare. 
+
+Per il logaritmo discreto, il predicato binario facile da calcolare è il \textbf{bit 
+meno significativo} di x. Tale bit vale zero se e solo se $z$ è un quadrato in $\ZZ_p^*$.
+Ma tale predicato dice qualcosa di differente, ovvero ci chiediamo se il logaritmo discreto di 
+$z$ sta nella prima metà o nella seconda metà dei logaritmi discreti di $\ZZ_p^*$ o nella seconda,
+ovvero una sorta di \textbf{bit più significativo} di $x$.
