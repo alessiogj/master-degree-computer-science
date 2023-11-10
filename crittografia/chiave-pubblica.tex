@@ -615,8 +615,8 @@ Se sottraiamo $\frac{1}{2}$ otteniamo:
 L'algoritmo ha quindi un vantaggio di almeno $\frac{1}{2} \cdot k^{-c'}$, quindi tale algoritmo è 
 un attaccante.
 \end{proof}
-\subsection{Distinguere e indovinare}
-TODO
+%\subsection{Distinguere e indovinare}
+%TODO
 \section{Lancio della moneta}
 Il sistema descritto in precedenza ha un problema, infatti sappiamo che 
 la codifica di un singolo bit richiede una quantità molto alta di bit. Infatti 
@@ -803,7 +803,7 @@ $B$ non ha alcun interesse nel risultato, che otterrà con probabilità $\frac{1
 interessa che $A$ abbia sia riuscita a decifrare $c$ con probabilità $\frac{1}{2}$.
 
 Il vantaggio di $A$ è implicito nel risultato.
-\section{Lancio della moneta con il logaritmo discreto}
+\subsection{Lancio della moneta con il logaritmo discreto}
 Il problema è che fino ad ora abbiamo lavorato con la quadraticità di un numero 
 in $\ZZ_n^*$, ma vorremmo lavorare con singoli bit. Quindi non con l'inversa di una 
 funzione one way, ma con singoli bit, ovvero con l'informazione \textbf{binaria} 
@@ -847,3 +847,249 @@ meno significativo} di x. Tale bit vale zero se e solo se $z$ è un quadrato in 
 Ma tale predicato dice qualcosa di differente, ovvero ci chiediamo se il logaritmo discreto di 
 $z$ sta nella prima metà o nella seconda metà dei logaritmi discreti di $\ZZ_p^*$ o nella seconda,
 ovvero una sorta di \textbf{bit più significativo} di $x$.
+\section{Hardcore predicate del logaritmo discreto}
+\begin{tcolorbox}[title = Hardcore predicate]
+  Si tratta di un predicato binario sull'inversa di una funzione one way, che è difficile da
+  calcolare. Se scegliessimo a caso il valore di tale predicato binario, la 
+  probabilità con cui un algoritmo riesce a calcolare il predicato conoscendo 
+  $z$ è $\frac{1}{2} + \epsilon$, con $\epsilon$ più piccolo di qualsiasi 
+  polinomio.
+\end{tcolorbox}
+Sia $y = g^x$ e sia il predicato in considerazione $x < \frac{p - 1}{2}$. Se 
+  $y$ è un quadrato, allora ammette due radici quadrate, $z_1$ e $z_2$,
+  di queste due radici, una ha logaritmo discreto minore di $\frac{p-1}{2}$ e l'altra
+  maggiore o uguale a $\frac{p-1}{2}$. Questo perché le rispettive radici quadrate
+  sono nella forma $g^{i}$ e $g^{i + \frac{p-1}{2}}$. La radice quadrata 
+  nella forma $g^{i}$ è chiamata \textbf{radice quadrata principale}.
+
+  Di base se abbiamo due radici quadrate di $y$, che sappiamo 
+  calcolare aritmeticamente, non sappiamo come capire quale sia
+  la radice quadrata principale, ma se 
+  avessimo a disposizione l'algoritmo per calcolare se il logaritmo 
+  discreto di un numero è minore di $\frac{p-1}{2}$, allora potremmo
+  calcolare la radice quadrata principale di un quadrato.
+
+  Supponiamo di avere un algoritmo che date le due radici quadrate di un numero 
+  distingue la radice quadrata principale. In questo caso possiamo costruire
+  un algoritmo che calcola il predicato binario $x < \frac{p-1}{2}$.
+\begin{theorem}
+  Se esiste un algoritmo per il calcolo della radice principale 
+  di un quadrato in $\ZZ_p^*$, allora esiste un algoritmo efficiente
+  per il calcolo del logaritmo discreto in $\ZZ_p^*$.
+\end{theorem}
+\begin{theorem}
+  Se esiste che riesce  a calcolare il predicato binario con vantaggio 
+  polinomiale rispetto al caso casuale, allora esiste un algoritmo
+  probabilistico polinomiale per il calcolo del logaritmo discreto.
+\end{theorem}
+Per dimostrare il teorema dovremmo seguire tre passaggi:
+\begin{enumerate}
+  \item Mostrare che siamo in grado di calcolare il logaritmo discreto
+  di un numero avendo in mano un algoritmo per il calcolo della radice
+  quadrata principale di un quadrato.
+  \item Mostrare che tale algoritmo funziona anche se la 
+  radice quadrata principale è calcolata con probabilità 
+  esponenzialmente vicina a $1$.
+  \item Mostrare che partendo da un algoritmo che funziona con vantaggio 
+  polinomiale rispetto al caso casuale, siamo in grado di costruire un
+  algoritmo che funziona con probabilità esponenzialmente vicina a $1$.
+\end{enumerate}
+\subsection{Calcolare il logaritmo discreto avendo a disposizione
+l'algoritmo per il calcolo della radice quadrata principale (\texttt{PSQR})}
+Avremo a disposizione l'algoritmo \texttt{PSQR} che calcolerà la radice
+quadrata principale di un quadrato in $\ZZ_p^*$, avendo a disposizione 
+il predicato binario. Per farlo prende in input $y$ ne calcola la radice 
+quadrata, verifica il predicato binario per capire se è la radice quadrata
+principale, se la verifica fallisce, calcola la radice principale 
+opposta e restituisce il risultato.
+
+\begin{algorithmic}[1]
+  \Procedure{LSB}{$y$}
+    \If{$\frac{y}{p} = 0$}
+      \State \Return $0$
+    \Else
+      \State \Return $1$
+    \EndIf
+  \EndProcedure
+\end{algorithmic}
+
+Ricordiamo che la procedura $\texttt{LSB}$ verifica se il bit meno significativo
+di un numero è pari o dispari. Se è pari restituisce $0$, altrimenti
+restituisce $1$.
+
+\begin{algorithmic}[1]
+  \Procedure{DiscreteLogarithm}{$y$}
+    \If{$y = 1$} 
+      \State \Return $0$ \EndIf
+    \State $b \gets \texttt{LSB}(DiscreteLogarithm(y))$
+    \If{$b = 1$}
+      \State \Return $y  \gets y \cdot g^{-1}$ \Comment{imposta a zero il bit meno significativo}
+    \EndIf
+    \State $y \gets \texttt{PSQR}(y)$ \Comment{scorri a destra di un bit}
+    \State \Return $2 \cdot \texttt{DiscreteLogarithm}(y) + b$
+  \EndProcedure
+\end{algorithmic}
+Per calcolare la radice quadrata abbiamo necessariamente bisogno del bit meno significativo
+a zero. 
+
+L'algoritmo ricorsivo permette di calcolare il logaritmo discreto di un numero calcolando 
+il bit meno significativo e riconducendo il calcolo dello stesso problema 
+in una situazione in cui si ha un bit in meno.
+
+\begin{tcolorbox}
+  Se abbiamo un algoritmo che funziona per il calcolo della radice quadrata principale
+  allora possiamo costruire un algoritmo che calcola il logaritmo discreto.
+\end{tcolorbox}
+
+Supponiamo di avere un algoritmo $B$ per \texttt{PSQR} che funziona con probabilità 
+esponenzialmente vicina a $1$, ovvero $1 - \epsilon$. La probabilità che l'algoritmo
+\texttt{DiscreteLogarithm} invocato $k$ volte fornisca sempre la risposta corretta
+è $(1 - \epsilon)^{k}$. L'algoritmo \texttt{DiscreteLogarithm} può non funzionare, 
+ma abbiamo modo di accorgerci:
+\begin{itemize}
+  \item Se il numero di passi è maggiore del numero di bit di $y$, allora
+  siamo sicuri che il \texttt{PSQR} non ha funzionato.
+  \item Sul risultato finale possiamo verificare che $g^x = y$. Se non è così
+  allora \texttt{PSQR} non ha funzionato.
+\end{itemize}
+In media se funziona con probabilità $(1 - \epsilon)^k$, allora il numero di volte
+che funziona in cui si dovrà lanciare l'algoritmo sarà 
+$\frac{1}{(1 - \epsilon)^k}$.
+Se $\epsilon \leq \frac{1}{2}$, allora $(1 - \epsilon)^k \geq \frac{1}{2^k}$.
+\begin{tcolorbox}
+  Se abbiamo un algoritmo che funziona con probabilità esponenzialmente vicina a $1$,
+  allora possiamo costruire un algoritmo che calcola il logaritmo discreto con probabilità 
+  almeno $\frac{1}{2}$, quindi se reiteriamo in media due volte l'algoritmo otteniamo la 
+  risposta corretta. Questo perché possiamo verificare che il risultato sia corretto.
+\end{tcolorbox}
+Riusciamo ora a mostrare che se ci viene dato un algoritmo che funziona con vantaggio
+polinomiale rispetto a $\frac{1}{2}$, allora possiamo costruire un algoritmo che funziona
+con probabilità esponenzialmente vicina a $1$? Assolutamente si, per farlo dobbiamo costruire 
+tante istanze indipendenti dello stesso problema e prendendo il risultato osservato la 
+maggior parte delle volte.
+Come costruiamo gli esperimenti indipendenti, tali per cui nel momento in cui conosciamo la 
+risposta al problema costruito, allora troviamo la risposta al problema originale?
+\subsection{Costruzione dell'esperimento indipendente $y'$ tale per cui dalla risposta 
+$y'$ otteniamo la risposta a $y$}
+\begin{theorem}
+Sia $y$ un quadrato in $\ZZ_p^*$ e sia $r \in_R \left[ 0,\dots \frac{p-1}{2}\right]$ (\textit{esponente a 
+caso per una possibile radice quadrata di un numero, presente nella prima metà}). Sia $y' = y \cdot g^{2x}$, 
+dove $y'$ sarà un'altra istanza indipendente del problema dei 
+residui quadratici, distribuita uniformemente in $\ZZ_p^*$, di cui conosciamo il logaritmo 
+discreto. 
+Se $2x + 2r < p - 1$ allora $z \cdot g^r$ è \texttt{PSQR} di $y \cdot g^{2r} 
+\iff z$ è \texttt{PSQR} di $y$.
+\end{theorem}
+\[
+    \textit{Sappiamo che } \sqrt{g^{2x} g^{2r}} = 
+    \begin{cases}
+      g^{x} g^{r}\\
+      g^{x} g^{r} g^{\frac{p - 1}{2}}
+  \end{cases}
+\]
+Con l'ipotesi \textcolor{red}{$2x + 2r < p - 1$} allora $g^{x+r}$ è la 
+radice quadrata principale.
+
+Questo perché moltiplicando $y \cdot g^{2r}$ abbiamo un'operazione \textbf{aritmetica} poiché 
+gli esponenti sono sommati e non si ricade nella 
+radice quadrata successiva, ovvero quella dopo la prima metà (\textit{l'esponente di 
+$y$ è $2x$}). Moltiplicare quindi fa si che non si vada 
+oltre $p - 1$, quindi il logaritmo discreto del prodotto è la somma dei logaritmi discreti;
+andar oltre $p - 1$ significa tornare indietro, siccome siamo in un gruppo ciclico.
+
+Dalla risposta al problema trasformato, sappiamo quindi calcolare la risposta al problema originale.
+
+Ma come faccio a far si che $r$ scelta casualmente soddisfi le proprietà del teorema?
+\begin{tcolorbox}
+  Più $x$ è piccolo e più è probabile trovare un $r$ che soddisfa la proprietà del teorema.
+\end{tcolorbox}
+\begin{figure}[H]
+  \centering 
+  \begin{tikzpicture}
+    % disegno un segmento orizzontale che va da 0 a (p-1)/2
+    \draw[-] (0,0) -- (10,0);
+    
+    % segni sulla linea
+    \foreach \x in {0,1,2,...,10} {
+      \draw (\x,0.1) -- (\x,-0.1);
+      
+    }
+    % etichette per gli estremi
+    \node[above] at (0.5,0) {$\frac{x}{2}$};
+    \node[below] at (0,-0.1) {0};
+    \node[below] at (10,-0.1) {\(\frac{p-1}{2}\)};
+
+    % parentesi graffa che racchiude i segmenti
+    \draw [decorate,decoration={brace,amplitude=5pt, mirror},xshift=0pt,yshift=-24pt]
+    (0,0) -- (10,0) node[midway,below=4pt] {$t$};
+  \end{tikzpicture}
+\end{figure}
+Supponiamo che $\frac{x}{2}$ sia nel primo intervallo, la probabilità di trovare un $r$ dove 
+$\frac{x}{2} + r$ non vada oltre $\frac{p - 1}{2}$, ovvero $\frac{t - 1}{t}$.
+La probabilità che la risposta sia corretta è la combinazione della probabilità di 
+soddisfacibilità del teorema, ovvero $\left( \frac{t - 1}{t}\right)$ e la probabilità
+della risposta al problema trasformato, ovvero $\left( \frac{1}{2} + k^{-c}\right)$.
+
+Questo perché qualche volta, dalla risposta al problema trasformato, non si riesce a
+trovare la risposta al problema originale.
+
+\begin{equation}
+  \probP[\texttt{Esperimento corretto}] = \left( \frac{t - 1}{t}\right) \left( \frac{1}{2} + k^{-c}\right)
+  \geq \frac{1}{2} + k^{-2c}
+\end{equation}
+Risolvendo la disequazione in $t$ riusciamo a capire qual è il limite inferiore a gli intervalli da utilizzare.
+
+Dalla teoria dell'algebra sappiamo che si tratta di una disequazione polinomiale in $t$, come tale 
+ha una soluzione polinomiale nelle costanti interne. La soluzione è quindi polinomiale nelle costanti 
+presenti nell'equazione. Il limite inferiore è quindi polinomiale nelle costanti presenti nell'equazione.
+\begin{equation}
+  \frac{t - 1}{t} \geq \frac{1}{2} + k^{-c} \implies t \geq \frac{2}{1 + 2k^{-c}}
+\end{equation}
+Dividendo in una quantità di intervalli che è polinomiale in $k$ otteniamo un sistema tale per cui, se 
+$x$ è nel primo intervallo, la probabilità di successo, ovvero di fornire una radice quadrata principale
+è polinomialmente distante da $\frac{1}{2}$, di conseguenza abbiamo un algoritmo che risolve il problema
+in tempo polinomiale.
+
+Abbiamo quindi costruito un algoritmo che con probabilità $\frac{1}{2}$ calcola il logaritmo discreto
+di un numero, a patto che la metà di tale logaritmo stia nel primo intervallo.
+\subsubsection{Generalizzazione dell'intervallo}
+Supponiamo di sapere che $\frac{x}{2}$ sia nell'intervallo $i-esimo$.
+\begin{figure}[H]
+  \centering 
+  \begin{tikzpicture}
+    % disegno un segmento orizzontale che va da 0 a (p-1)/2
+    \draw[-] (0,0) -- (10,0);
+    
+    % segni sulla linea
+    \foreach \x in {0,1,2,...,10} {
+      \draw (\x,0.1) -- (\x,-0.1);
+      
+    }
+    % etichette per gli estremi
+    \node[above] at (4.5,0) {\textcolor{red}{$\frac{x}{2}$}};
+    \node[above] at (3.5,0) {$\dots$};
+    \node[above] at (5.5,0) {$\dots$};
+    \node[below] at (0,-0.1) {0};
+    \node[below] at (10,-0.1) {\(\frac{p-1}{2}\)};
+
+    % parentesi graffa che racchiude i segmenti
+    \draw [decorate,decoration={brace,amplitude=5pt, mirror},xshift=0pt,yshift=-24pt]
+    (0,0) -- (10,0) node[midway,below=4pt] {$t$};
+  \end{tikzpicture}
+\end{figure}
+Sappiamo che $y = g^x$ e che $i \frac{p - 1}{2t} \leq \frac{x}{2} < (i + 1) \frac{p - 1}{2t}$ 
+
+\[
+  g^{x'} = y \cdot g^{-\frac{p - 1}{t}i} \implies 
+  g^{x'} = g^x \cdot g^{-\frac{p - 1}{t}i} \implies
+  x' = x - \frac{p - 1}{t}i
+\]
+Quindi $x'$ sta nel primo intervallo, infatti da $\frac{x}{2}$ abbiamo tolto il punto d'inizio 
+dell'intervallo $i-esimo$, togliendo tale quantità abbiamo ottenuto il risultato corrispondente al 
+primo intervallo.
+Ci siamo quindi ricondotti alla risoluzione di un problema relativo al calcolo della radice quadrata 
+principale, ovvero il problema che abbiamo già risolto. Dopo aver risolto il problema
+ci riconduciamo nuovamente al problema originale moltiplicando per $g^{\frac{p - 1}{t}i}$.
+
+Non conoscendo l'intervallo in cui si trova $\frac{x}{2}$, possiamo provare a risolvere il problema
+per tutti gli intervalli. Essendo quantità polinomiali in $k$.
