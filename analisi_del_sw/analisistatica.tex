@@ -847,9 +847,15 @@ futuro, e non è viva (\textit{dead}) se viene riassegnata prima del suo utilizz
 \end{minipage}
 
 La costruzione dipende da quello che avviene prima di un certo punto di programma.
+\subsection{Calcolo della liveness}
+Cerchiamo di capire le condizioni che ci permettono di capire come l'esecuzione 
+di un blocco influenza la liveness delle variabili, e se definite o possibile,
+ovvero se si combina per intersezione o unione.
 \begin{enumerate}
     
-    \item Informazione generata 
+    \item \textbf{Informazione generata}: supponiamo di trovarci in un blocco $n$ dove abbiamo un uso di 
+    x, l'utilizzo di $x$ attiva la liveness di $x$. Possiamo quindi dire che 
+    $x$ è viva in input al blocco $n$.
     
     \begin{figure}[H]
         \centering
@@ -865,7 +871,13 @@ La costruzione dipende da quello che avviene prima di un certo punto di programm
         \end{tikzpicture}
     \end{figure}
 
-    \item Informazione preservata
+    \item \textbf{Informazione preservata}: supponiamo di trovarci in un blocco $n$ dove non abbiamo una definizione di
+    $x$ ma abbiamo $x$ live in uscita da $n$, quindi l'informazione 
+    ha raggiunto il punto di programma attraverso i cammini. Quindi 
+    $x$ si propaga in input allo stesso blocco.
+
+    Se $y$ fosse \textit{liveout} in uscita al blocco $n$, non sarebbe 
+    live in ingesso, e questa sarebbe la \textit{kill}.
     
     \begin{figure}[H]
         \centering
@@ -882,5 +894,170 @@ La costruzione dipende da quello che avviene prima di un certo punto di programm
             \draw[->] (p) to node[auto, swap] {} (1.5, -5);
         \end{tikzpicture}
     \end{figure}
-    Nel caso in cui $x$ fosse live in uscita dal blocco $n$
+
+    \item Supponiamo di avere $x$ live in uno dei nodi, in questo caso nel 
+    nodo $n_1$, in uscita del nodo $n$ diremo che esiste un uso raggiunto 
+    dal nodo $n_1$, quindi lo raggiungo sicuramente in $n$. Quindi possiamo dire 
+    che $x$ è \textit{liveout} in $n$. Combiniamo quindi le informazioni
+    per unione, e quindi uniamo possibili cammini non eseguiti ed è qui che 
+    avviene la possibile perdita di precisione.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \node[draw, rectangle, minimum width = 1.3cm,minimum width = 2cm,
+            minimum height = 1cm] (p) at (0, -4) {$y \gets x + 2$};
+    
+            \node at (-1.7,-4) {$n$};
+            \draw[->] (p) to node[auto, swap] {} (-1.5, -5);
+            \draw[->] (p) to node[auto, swap] {} (1.5, -5);
+            \node[draw, rectangle, minimum width = 1.3cm,minimum width = 2cm,
+            minimum height = 1cm] (p) at (-1.5, -5.5) {};
+            \node[draw, rectangle, minimum width = 1.3cm,minimum width = 2cm,
+            minimum height = 1cm] (p) at (1.5, -5.5) {};
+
+            \node (n1) at (-2.9,-5.5) {$n_1$};
+            \node (n2) at (2.9,-5.5) {$n_2$};
+            \node[left = 0.5cm] at (n1) {$x$ è live};
+            \node at (0, -5) {$\bigcup$};
+        \end{tikzpicture}
+    \end{figure}
 \end{enumerate}
+\subsection{Equazioni per l'approccio algoritmico}
+Indichiamo con $\texttt{LiveIn[n]}$ le variabili live in ingesso al 
+nodo $n$, mentre con $\texttt{LiveOut[n]}$ le variabili live in uscita
+dal nodo $n$.
+
+\begin{equation}
+    \texttt{LiveOut(n)} = 
+    \begin{cases}
+        \varnothing & \text{se $n$ è un nodo di uscita}\\
+        \bigcup_{p \in \texttt{succ(n)}} \texttt{LiveIn(p)} & \text{altrimenti}
+    \end{cases}
+\end{equation}
+Che è quello che estraiamo dal caso 3.
+\begin{equation}
+    \texttt{LiveIn(n)} = \texttt{Gen(n)} \cup (\texttt{LiveOut(n)} \setminus \texttt{Kill(n)})
+\end{equation}
+Che è quello che estraiamo dal caso 1 e 2.
+
+La definizione precisa di $\texttt{Gen(n)}$ e $\texttt{Kill(n)}$ é:
+
+
+\begin{equation}
+    \texttt{Gen(n)} = \{x \mid \exists e \in n . x = \texttt{var(e)}\}
+\end{equation}
+\begin{equation}
+    \texttt{Kill(n)} = \{x \mid \exists e \gets e \in n\}
+\end{equation}
+\begin{tcolorbox}[title = Equazione di punto fisso]
+    Combinando le equazioni, otteniamo l'equazione di punto fisso:
+\begin{equation}
+    \texttt{LiveOut(n)} = \bigcup_{p \in \texttt{succ(n)}} \texttt{Gen(p)} \cup (\texttt{LiveIn(p)}
+    \setminus \texttt{Kill(p)})
+\end{equation}
+\end{tcolorbox}
+La soluzione algoritmica è quindi la seguente:
+\begin{itemize}
+    \item Costruzione del \textit{control flow graph}
+    \item Raccoglimento delle informazioni iniziali sul \texttt{CFG}:
+    \begin{itemize}
+        \item $ \texttt{Gen(n)} = \{x \mid \exists e \in n . x = \texttt{var(e)}\}$
+        \item $\texttt{Kill(n)} = \{x \mid \exists e \gets e \in n\}$
+    \end{itemize}
+    \item Iterazione dell'equazione di punto fisso fino a convergenza.
+\end{itemize}
+\subsection{Precisione dell'analisi di \textit{liveness}}
+Considerando cammini non eseguibili fa si che che l'analisi aggiunga potenzialmente
+falsi positivi, ovvero variabili che non sono effettivamente live. La perdita di 
+precisione avviene anche per il fatto che ragioniamo sulla sintassi cercando 
+proprietà semantiche. La variabile $x$ potrebbe essere accessibile attraverso 
+altri nomi, perdendo quindi una definizione.
+\subsubsection{Esempio di liveness con approccio algoritmico}
+\begin{minipage}{0.5\textwidth}
+    Consideriamo il seguente programma:
+
+    \begin{algorithm}[H]
+        $y \gets 1$\;
+        \While{$x \geq 1$}{
+            $y \gets y \cdot x$\;
+            $x \gets x - 1$\;
+        }
+    \end{algorithm}
+    
+    \end{minipage} 
+    \begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={12mm}, main/.style = {draw, rectangle}] 
+            \node[main] (1) {1. $y \gets 1$};
+            \node[main] (2) [below =of 1] {2. $x \geq 1$};
+            \node[main] (5) [below right =of 2] {3. $y \gets x \cdot y$};
+            \node[main] (4) [below =of 5] {4. $x \gets x - 1$};
+            \node[main] (6) [below left=of 2] {5. \texttt{exit}};
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (5);
+            \draw[->] (2) -- (6);
+            \draw[->] (5) -- (4);
+            \draw[->] (4) -- (2);
+        \end{tikzpicture}
+    \end{figure}
+    \end{minipage}
+
+    Costruiamo per ogni blocco l'insieme di espressioni generate e uccise:
+    \begin{itemize}
+        \item $b_1$: \texttt{Gen}(1) $= \varnothing$, \texttt{Kill}(1) $= \{ x \}$
+        \item $b_2$: \texttt{Gen}(2) $= \varnothing$, \texttt{Kill}(2) $= \{y\}$
+        \item $b_3$: \texttt{Gen}(3) $= \{x\}$, \texttt{Kill}(3) $= \varnothing$
+        \item $b_4$: \texttt{Gen}(4) $= \{x,y\}$, \texttt{Kill}(4) $= \{y\}$
+        \item $b_5$: \texttt{Gen}(5) $= \{x\}$, \texttt{Kill}(5) $= \{x\}$
+    \end{itemize}
+
+    Seguendo la formula per il calcolo del punto fisso della liveness 
+    costruiamo le due tabelle di \texttt{LiveIn} e \texttt{LiveOut},
+    e otteniamo quindi:
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \texttt{LiveOut}& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
+            \hline
+            \textbf{5} & $\varnothing$ & $\varnothing$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{4} & $\varnothing$ & $\{x\}$ & $\{x\}$ 
+            & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{3} & $\varnothing$ &$\{x, y\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{2} & $\varnothing$ & $\{x\}$ & $\{x,y\}$  & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{1} & $\varnothing$  & $\varnothing$ & $\{x\}$ & $\{x\}$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \texttt{LiveIn}& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
+            \hline
+            \textbf{1} & $\{x\}$ & $\{x\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{2} & $\{x, y\}$ & $\{x,y\}$ & $\{x,y\}$ 
+            & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{3} & $\{x\}$ &$\{x,y\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
+            \hline
+            \textbf{4} & $\varnothing$ & $\{x\}$ & $\{x\}$  & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{5} & $\varnothing$  & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+\end{minipage}
+
+Al punto $4$ della tabella \texttt{LiveOut} abbiamo un punto fisso, perciò 
+ricalcoleremo gli stessi valori nel punto $4$ della tabella \texttt{LiveIn}.
