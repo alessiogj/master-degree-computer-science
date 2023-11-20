@@ -712,3 +712,175 @@ Potremmo accelerare la convergenza dell'algoritmo utilizzando l'algoritmo di \te
 \end{figure}
 Raggiungiamo il punto fisso al punto $2$.
 \section{Analisi di liveness}
+Si tratta di un'analisi che cerca di individuare le variabili così dette ``vive''. 
+L'idea di fondo è che due variabili vive contemporaneamente, devono occupare 
+porzioni di memoria distinte, poiché il loro valore è utilizzato durante l'esecuzione 
+e non possono essere allocate nella stessa locazione di memoria.
+
+L'informazione è importante nei vari contesti, in particolare nell'ottimizzazione,
+infatti se due variabili non sono vive nella stessa porzione di codice, allora
+possono essere allocate nella stessa locazione di memoria. Lo stesso principio 
+può essere applicato nel software watermarking, tecnica di protezione del software
+che garantisce di scrivere informazioni segrete all'interno del codice sorgente,
+solitamente utilizzata per identificare la proprietà intellettuale del software.
+
+\subsubsection{Esempio}
+Supponiamo di avere il seguente programma:
+
+\begin{minipage}{0.45\textwidth}
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \caption{Liveness analysis}
+        $a \gets 0$\;
+        \Repeat{$a < n$}{
+            $b \gets a + 1$\;
+            $c \gets c + b$\;
+            $a \gets b \cdot 2$\;
+        }
+        \Return{c}\;
+    \end{algorithm}
+
+    Intuitivamente nell'arco $1 \to 2$ la variabile $a$ è viva, poiché viene utilizzata
+    per l'assegnamento di $b$. Nell'arco $2 \to 3$ la variabile $b$ è viva, poiché viene
+    utilizzata per l'assegnamento di $c$.
+
+    Andando avanti ci accorgiamo che la variabile $a$ viene ridefinita nel blocco $4$,
+    ciò significa che la variabile $a$ non sarà importante prima del blocco $4$, fino 
+    all'utilizzo precedente.
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={8mm}, main/.style = {draw, rectangle}] 
+            \node[main] (1) {1. $a \gets 0$};
+            \node[main] (2) [below =of 1] {2. $b \gets a + 1$};
+            \node[main] (3) [below =of 2] {3. $c \gets c + b$};
+            \node[main] (4) [below =of 3] {4. $a \gets b \cdot 2$};
+            \node[main] (5) [below =of 4] {5. $a < n$};
+            \node[main] (6) [below =of 5] {5. \texttt{return} $c$};
+
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+            \draw[->] (5) -- (6);
+            %curved
+            \draw[->] (5) to [out=180,in=-180] (2);
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+
+Rispetto all'analisi di available expressions, l'analisi di liveness guarda da un punto 
+di programma, al passato, ovvero ciò che determina il fatto che una variabile sia viva
+è l'essere utilizzato. L'essere utilizzato la rende viva nei cammini che raggiungono 
+quel nodo, quindi si tratta di un'analisi \textbf{backward}.
+
+Dobbiamo ora definire in maniera formale il concetto di variabili usate (\textit{accesso
+al valore})
+e definite (\textit{aggiornamento della locazione di memoria}). Siccome 
+si trattano di concetti relativamente sintattici, possiamo definirli in maniera sintattica 
+sulle etichette del linguaggio.
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{l|l|l}
+    \texttt{lab} & Usate & Definite\\
+    \hline
+    \texttt{;} & $\varnothing$ & $\varnothing$\\
+    \texttt{Zero(e)} & \texttt{var(e)}& $\varnothing$\\
+    \texttt{NonZero(e)} & \texttt{var(e)}& $\varnothing$\\
+    \texttt{$x \gets e$} & \texttt{var(e)}& $\{x\}$\\
+    \texttt{\texttt{input(x)}} & $\varnothing$ & $\{x\}$\\
+    \end{tabular}
+\end{figure}
+Quindi $x$ è viva (\textit{live}) all'uscita di un blocco, se il suo valore verrà utilizzato in 
+futuro, e non è viva (\textit{dead}) se viene riassegnata prima del suo utilizzo.
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width=0.1cm] (s) at (0, 2.5) {};
+            \node[draw, circle, minimum width=0.1cm] (q) at (0, 0) {};
+            \node[draw, circle, minimum width=0.1cm] (p) at (0, -2.5) {};
+        
+            \node[right = 0.7cm] at (s) {$\texttt{def(x)}$};
+            \node[right = 0.7cm] at (q) {$\texttt{use(x)}$};
+            \node[right = 0.7cm] at (p) {$\texttt{exit}$};
+    
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (q) to node[auto, swap] {} (p);
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (s) to node[auto, swap] {} (q);
+            \draw[decorate, decoration={calligraphic brace, amplitude=6pt, mirror, raise=5pt, aspect=0.5}]
+            (-1, 2.4) -- (-1,0.2) node[midway,left = 0.5] {$\textit{no def} \implies \textit{ x viva}$};
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width=0.1cm] (a) at (0, 2.5) {};
+            \node[draw, circle, minimum width=0.1cm] (s) at (0, 1) {};
+            \node[draw, circle, minimum width=0.1cm] (q) at (0, -0.5) {};
+            \node[draw, circle, minimum width=0.1cm] (p) at (0, -2.5) {};
+        
+            \node[below right = 0.7cm] at (a) {(no use)};
+            \node[right = 0.7cm] at (s) {$\texttt{def(x)}$};
+            \node[right = 0.7cm] at (q) {$\texttt{use(x)}$};
+            \node[right = 0.7cm] at (p) {$\texttt{exit}$};
+    
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (a) to node[auto, swap] {} (s);
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (q) to node[auto, swap] {} (p);
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (s) to node[auto, swap] {} (q);
+            \draw[decorate, decoration={calligraphic brace, amplitude=6pt, mirror, raise=5pt, aspect=0.5}]
+            (-1, 0.9) -- (-1,-0.4) node[midway,left = 0.5] {$\textit{no def} \implies \textit{ x viva}$};
+            \draw[decorate, decoration={calligraphic brace, amplitude=6pt, mirror, raise=5pt, aspect=0.5}]
+            (-1, 2.4) -- (-1,1.1) node[midway,left = 0.5]
+            {$\textit{x non viva}$};
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+
+La costruzione dipende da quello che avviene prima di un certo punto di programma.
+\begin{enumerate}
+    
+    \item Informazione generata 
+    
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \node[draw, rectangle, minimum width = 1.3cm,minimum width = 2cm,
+            minimum height = 1cm] (p) at (0, -4) {$y \gets x + 2$};
+    
+            \draw[->] (-2, -2) to node[auto, swap] {} (p);
+            \draw[->] (2, -2) to node[auto, swap] {} (p);
+            \node at (-1.7,-4) {$n$};
+            \node[right = 1cm] at (p) {$\texttt{uso}(x) \rightarrow$ attiva la liveness};
+            \node[right = 1cm] at (0, -4.5) {$x$ è live in al blocco $n$};
+        \end{tikzpicture}
+    \end{figure}
+
+    \item Informazione preservata
+    
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \node[draw, rectangle, minimum width = 1.3cm,minimum width = 2cm,
+            minimum height = 1cm] (p) at (0, -4) {$y \gets w + 2$};
+    
+            \draw[->] (-2, -2) to node[auto, swap] {} (p);
+            \draw[->] (2, -2) to node[auto, swap] {} (p);
+            \node at (-1.7,-4) {$n$};
+            \node[right = 1cm] at (p) {$x$ non definita in $n$};
+            \node[right = 1cm] at (0, -4.5) {$x$ è live in al blocco $n$};
+            \draw[->] (p) to node[auto, swap] {} (-1.5, -5);
+            \draw[->] (p) to node[auto, swap] {} (1.5, -5);
+        \end{tikzpicture}
+    \end{figure}
+    Nel caso in cui $x$ fosse live in uscita dal blocco $n$
+\end{enumerate}
