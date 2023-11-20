@@ -770,6 +770,8 @@ Supponiamo di avere il seguente programma:
     \end{figure}
 \end{minipage}
 
+\subsection{Analisi di liveness e l'approccio semantico}
+
 Rispetto all'analisi di available expressions, l'analisi di liveness guarda da un punto 
 di programma, al passato, ovvero ciò che determina il fatto che una variabile sia viva
 è l'essere utilizzato. L'essere utilizzato la rende viva nei cammini che raggiungono 
@@ -922,7 +924,7 @@ ovvero se si combina per intersezione o unione.
         \end{tikzpicture}
     \end{figure}
 \end{enumerate}
-\subsection{Equazioni per l'approccio algoritmico}
+\subsection{Analisi liveness e l'approccio algoritmico}
 Indichiamo con $\texttt{LiveIn[n]}$ le variabili live in ingesso al 
 nodo $n$, mentre con $\texttt{LiveOut[n]}$ le variabili live in uscita
 dal nodo $n$.
@@ -1061,3 +1063,124 @@ altri nomi, perdendo quindi una definizione.
 
 Al punto $4$ della tabella \texttt{LiveOut} abbiamo un punto fisso, perciò 
 ricalcoleremo gli stessi valori nel punto $4$ della tabella \texttt{LiveIn}.
+
+\section{Analisi True Liveness}
+Nell'analisi liveness abbiamo osservato che rimangono dei falsi positivi,
+non legati ad aspetti non eseguibili o semantica non osservabile, ma legati 
+ad aspetti sintattici, quindi catturabili.
+
+\subsubsection{Esempio di falsi positivi nell'analisi non dovuti all'approssimazione}
+Supponiamo di avere il seguente cammino:
+
+Dall'analisi liveness otteniamo che $z$ non è mai live in tutto il programma, 
+quindi l'istruzione che coinvolge $z$ può essere eliminata. Tuttavia, considerando il programma
+ottimizzato, reiterando l'analisi liveness otteniamo che $x$ non è mai live in tutto il programma,
+quindi l'istruzione $x \gets y + 1$ andrebbe eliminata.
+
+È chiaro che si potrebbe risolvere applicando iterativamente l'analisi liveness, ma questo
+non è efficiente. Possiamo però sfruttare in modo ricorsivo quanto viene calcolato dall'analisi.
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width = 1.3cm] (s) at (0, -2){$4$};
+            \node[draw, circle, minimum width = 1.3cm] (q) at (0, 0) {$3$};   
+            \node[draw, circle, minimum width = 1.3cm] (p) at (0, 2) {$2$};
+            \node[draw, circle, minimum width = 1.3cm] (r) at (0, 4) {$1$};
+    
+            \node[right = 1cm] at (s) {\textcolor{orange}{$\{y\}$}};
+            \node[above right = 1.2cm] at (s) {$y \gets y + r$};
+            \node[right = 1cm] at (q) {\textcolor{orange}{$\{y,r\}$}};
+            \node[above right = 1.2cm] at (q) {$z \gets 2x$};
+            \node[right = 1cm] at (p) {\textcolor{orange}{$\{x,y,r\}$}};
+            \node[above right = 1.2cm] at (p) {$x \gets y + 1$};
+            \node[right = 1cm] at (r) {\textcolor{orange}{$\{y,r\}$}};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (q);
+            \draw[->] (q) -- (s);
+    
+        \end{tikzpicture}
+        \caption{Prima iterazione dell'analisi liveness}
+    \end{figure} 
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width = 1.3cm] (s) at (0, -2){$4$};
+            \node[draw, circle, minimum width = 1.3cm] (q) at (0, 0) {$3$};   
+            \node[draw, circle, minimum width = 1.3cm] (p) at (0, 2) {$2$};
+            \node[draw, circle, minimum width = 1.3cm] (r) at (0, 4) {$1$};
+    
+            \node[right = 1cm] at (s) {\textcolor{orange}{$\{y\}$}};
+            \node[above right = 1.2cm] at (s) {$y \gets y + r$};
+            \node[right = 1cm] at (q) {\textcolor{orange}{$\{y,r\}$}};
+            \node[above right = 1.2cm] at (q) {$;$};
+            \node[right = 1cm] at (p) {\textcolor{orange}{$\{y,r\}$}};
+            \node[above right = 1.2cm] at (p) {$x \gets y + 1$};
+            \node[right = 1cm] at (r) {\textcolor{orange}{$\{y,r\}$}};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (q);
+            \draw[->] (q) -- (s);
+    
+        \end{tikzpicture}
+        \caption{Seconda iterazione dell'analisi liveness}
+    \end{figure} 
+\end{minipage}
+
+Quando inseriamo $x$ all'interno delle variabili live, lo facciamo in funzione dell'utilizzo che avviene 
+all'interno di un assegnamento che sappiamo che non sia live. Possiamo quindi raffinare l'analisi 
+andando a decidere se inserire una variabile usata tra le live in funzione di quanto abbiamo calcolato come 
+variabili live fino a quel punto di programma.
+Il concetto di \textbf{truly liveness} è quindi il vero uso della variabile all'interno del programma. 
+
+\begin{tcolorbox}[title = True liveness]
+    Una variabile $x$ è \textbf{truly live} su $\pi: N \to \texttt{exit}$ 
+    se $\pi$ non contiene definizioni di $x$ e contiene un vero uso 
+    della variabile prima che venga ridefinita.
+\end{tcolorbox}
+
+Il significato di vero uso dipende dall'informazione che arriva ad un certo arco,
+quindi dobbiamo tener conto dell'informazione dell'arco.
+\[
+    k = (u, \texttt{lab}, v)
+\]
+Ovvero se ciò che arriva all'arco $v$ dipende da variabili veramente usate.
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{l|l}
+    \texttt{lab} & $y$ truly used in $u$\\
+    \hline
+    \texttt{;} & \texttt{false}\\
+    \texttt{Zero(e)} & $y \in \texttt{Var(e)}$\\
+    \texttt{NonZero(e)} & $y \in \texttt{Var(e)}$\\
+    \texttt{$x \gets e$} & $y \in \texttt{Var(e)} \land y \neq x$ truly used in $u$\\
+    \texttt{\texttt{input(x)}} & \texttt{false}\\
+    \end{tabular}
+\end{figure}
+Usando tale definizione sull'esempio precedente otteniamo il risultato corretto 
+solamente con una iterazione dell'analisi true liveness.
+\subsection{Analisi true liveness e l'approccio algoritmico}
+\begin{equation}
+    \texttt{TLiveOut}(n) =
+        \begin{cases}
+            x & n = \texttt{exit}\\
+            \bigcup_{p \in \texttt{succ}(n)} \texttt{TLiveIn}(p)
+        \end{cases}
+\end{equation}
+Dove:
+\begin{equation}
+    \texttt{TLiveIn}(n) = \texttt{TGen}(n) ( \texttt{TLiveOut}(n) \setminus \texttt{TKill}(n))
+\end{equation}
+Ciò che essenzialmente varia è il modo di generare le variabili.
+\begin{equation}
+    \texttt{TGen}(n) = \{x \mid \exists e \in n \texttt{(no assign)} x \in \texttt{Var(e)} \lor 
+    (\exists y \gets e . x \in \texttt{Var(e)} \land y\text{ è true live in }n)\}
+\end{equation}
+\begin{equation}
+    \texttt{TKill}(n) = \{x \mid x \in n\}
+\end{equation}
+\subsection{Analisi true liveness e l'approccio semantico}
