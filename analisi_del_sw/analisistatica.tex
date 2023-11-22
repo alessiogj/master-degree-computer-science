@@ -1046,16 +1046,16 @@ altri nomi, perdendo quindi una definizione.
             \hline
             \texttt{LiveIn}& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
             \hline
-            \textbf{1} & $\{x\}$ & $\{x\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
+            \textbf{5} & $\{x\}$ & $\{x\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
             \hline
-            \textbf{2} & $\{x, y\}$ & $\{x,y\}$ & $\{x,y\}$ 
+            \textbf{4} & $\{x, y\}$ & $\{x,y\}$ & $\{x,y\}$ 
             & $\{x,y\}$ & $\dots$ \\
             \hline
             \textbf{3} & $\{x\}$ &$\{x,y\}$ & $\{x,y\}$ & $\{x,y\}$ & $\dots$ \\
             \hline
-            \textbf{4} & $\varnothing$ & $\{x\}$ & $\{x\}$  & $\{x\}$ & $\dots$ \\
+            \textbf{2} & $\varnothing$ & $\{x\}$ & $\{x\}$  & $\{x\}$ & $\dots$ \\
             \hline
-            \textbf{5} & $\varnothing$  & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+            \textbf{1} & $\varnothing$  & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
             \hline
         \end{tabular}
     \end{figure}
@@ -1184,3 +1184,284 @@ Ciò che essenzialmente varia è il modo di generare le variabili.
     \texttt{TKill}(n) = \{x \mid x \in n\}
 \end{equation}
 \subsection{Analisi true liveness e l'approccio semantico}
+\begin{itemize}
+    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{L} = \mathcal{L}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{L} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{L}
+    = \mathcal{L} \cup \texttt{Var(e)}$
+    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{L} =
+    \mathcal{L} \setminus \{x\}$
+    \item $\llbracket y \gets e \rrbracket^\# \mathcal{L} = 
+    \begin{cases}
+        (\mathcal{L} \setminus \{x\}) \cup \texttt{Var(e)} & x \in \mathcal{L}\\
+        \mathcal{L} \setminus \{x\} & \textit{altrimenti}
+    \end{cases}
+    $
+\end{itemize}
+L'analisi è quindi distributiva, non cambiano quindi tutte le proprietà 
+che abbiamo visto per le analisi precedenti.
+\subsubsection{Esempio di analisi true liveness}
+\subsubsection{Approccio algoritmico}
+
+\begin{minipage}{0.5\textwidth}
+    Consideriamo il seguente programma:
+
+    \begin{algorithm}[H]
+        $x \gets I$\;
+        $y \gets 1$\;
+        \While{$x \geq 1$}{
+            $y \gets y \cdot x$\;
+            $x \gets x - 1$\;
+        }
+    \end{algorithm}
+    
+    \end{minipage} 
+    \begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={12mm}, main/.style = {draw, rectangle}] 
+            \node[main] (1) {1. $x \gets I$};
+            \node[main] (2) [below =of 1] {2. $y \gets 1$};
+            \node[main] (3) [below =of 2] {3. $x \geq 1$};
+            \node[main] (4) [below right = of 3] {4. $y \gets x \cdot y$};
+            \node[main] (5) [below =of 4] {5. $x \gets x - 1$};
+            \node[main] (6) [below left=of 3] {6. \texttt{exit}};
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+            \draw[->] (5) -- (3);
+            \draw[->] (3) -- (6);
+        \end{tikzpicture}
+    \end{figure}
+    \end{minipage}
+
+    Costruiamo per ogni blocco l'insieme di espressioni generate e uccise:
+    \begin{itemize}
+        \item $b_1$: \texttt{Gen}(1) $= I$ se $x$ è \textit{liveout},
+        \texttt{Kill}(1) $= \{ x \}$
+        \item $b_2$: \texttt{Gen}(2) $= \varnothing$, \texttt{Kill}(2) $= \{y\}$
+        \item $b_3$: \texttt{Gen}(3) $= \{x\}$, \texttt{Kill}(3) $= \varnothing$
+        \item $b_4$: \texttt{Gen}(4) $= \{x,y\}$ se $y$ è \textit{liveout},
+        \texttt{Kill}(4) $= \{y\}$ se $y$ è \textit{liveout}
+        \item $b_5$: \texttt{Gen}(5) $= \{x\}$, \texttt{Kill}(5) $= \{x\}$
+        \item $b_6$: \texttt{Gen}(6) $= \varnothing$, \texttt{Kill}(6) $= \varnothing$
+    \end{itemize}
+
+    Seguendo la formula per il calcolo del punto fisso della liveness 
+    costruiamo le due tabelle di \texttt{LiveIn} e \texttt{LiveOut},
+    e otteniamo quindi:
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \texttt{TLiveOut}& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
+            \hline 
+            \textbf{6} & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+            \hline
+            \textbf{5} & $\varnothing$ & $\{x\}$ & $\{x\}$ & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{4} & $\varnothing$ & $\varnothing$ & $\{x\}$ 
+            & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{3} & $\varnothing$ &$\varnothing$ & $\varnothing$ & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{2} & $\varnothing$ & $\{x\}$ & $\{x\}$  & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{1} & $\varnothing$  & $\varnothing$ & $\{x\}$ & $\{x\}$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \texttt{TLiveIn}& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{$\dots$} \\
+            \hline
+            \textbf{6} &$\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+            \hline
+            \textbf{5} & $\varnothing$ & $\{x\}$ & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{4} & $\varnothing$ &$\varnothing$ & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{3} & $\{x\}$ & $\{x\}$ & $\{x\}$  & $\dots$ \\
+            \hline
+            \textbf{2} & $\varnothing$  & $\{x\}$ & $\{x\}$ & $\dots$ \\
+            \hline
+            \textbf{1} & $\varnothing$  & $\varnothing$ & $\{I\}$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+\end{minipage}
+
+Poiché la variabile $y$ non viene mai utilizzata nelle espressioni, vediamo che non sarà 
+mai \textit{live}.
+
+\subsubsection{Approccio semantico}
+
+\begin{minipage}{0.5\textwidth}
+    Riportiamo il programma programma precedentemente analizzato.
+
+    \begin{algorithm}[H]
+        $x \gets I$\;
+        $y \gets 1$\;
+        \While{$x \geq 1$}{
+            $y \gets y \cdot x$\;
+            $x \gets x - 1$\;
+        }
+    \end{algorithm}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={22mm}, minimum width = 1cm, main/.style = {draw, circle}] 
+            \node[main] (1) {1};
+            \node[main] (2) [below =of 1] {2};
+            \node[main] (5) [below right =of 2] {3};
+            \node[main] (4) [below =of 5] {4};
+            \node[main] (6) [below left=of 2] {5};
+            \draw[->] (1) -- node[left] {$y \gets 1$} (2) ;
+            \draw[->] (2) -- node[right] {$\texttt{NonZero}(x > 1)$} (5);
+            \draw[->] (2) --  (6) node[above = 1cm] {$\texttt{Zero}(x > 1)$};
+            \draw[->] (5) -- node[right] {$y \gets x \cdot y$} (4);
+            \draw[->] (4) -- node[left] {$y \gets x -1$} (2);
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+
+\begin{itemize}
+    \item $\mathcal{L}(6) \supseteq \varnothing$
+    \item $\mathcal{L}(5) \supseteq \llbracket x \gets x - 1\rrbracket^\# \mathcal{L}(3)
+    = \mathcal{L}(3) \setminus \{x\} \cup \{ x \mid x \in \mathcal{L}(3)\}$
+    \item $\mathcal{L}(4) \supseteq \llbracket y \gets x \cdot y\rrbracket^\# \mathcal{L}(5)
+    = \mathcal{L}(5) \setminus \{y\} \cup \{ x,y \mid x \in \mathcal{L}(5) \}$
+    \item $\mathcal{L}(3) \supseteq \mathcal{L}(6) \cup \mathcal{L}(4)\cup \{x\}$
+    \item $\mathcal{L}(2) \supseteq \mathcal{L}(3) \cup \mathcal{L}(6) \setminus \{y\}$
+    \item $\mathcal{L}(1) \supseteq \mathcal{L}(2) \setminus \{x\} \cup \{I \mid x \in \mathcal{L}(2)\}$
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{$\dots$} \\
+        \hline
+        \textbf{6} &$\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+        \hline
+        \textbf{5} & $\varnothing$ & $\varnothing$ & $\{x\}$ & $\dots$ \\
+        \hline
+        \textbf{4} & $\varnothing$ &$\varnothing$ & $\{x\}$ & $\dots$ \\
+        \hline
+        \textbf{3} & $\varnothing$ & $\{x\}$ & $\{x\}$  & $\dots$ \\
+        \hline
+        \textbf{2} & $\varnothing$  & $\{x\}$ & $\{x\}$ & $\dots$ \\
+        \hline
+        \textbf{1} & $\varnothing$  & $\varnothing$ & $\{I\}$ & $\dots$ \\
+        \hline
+    \end{tabular}
+\end{figure}
+Siamo arrivati allo stesso risultato dell'approccio algoritmo.
+
+Osserviamo che la true liveness cattura falsi allarmi che un'applicazione ripetuta 
+della liveness non saremmo in grado di catturare.
+
+\section{Copy propagation}
+La propagazione delle coppie riguarda l'idea di analizzare quali variabili durante l'esecuzione 
+uno sono la copia dell'altra. L'idea è quella di ottimizzare andando ad utilizzare una sola delle due.
+
+Per pensare all'utilità di tale analisi, pensiamo al contesto in cui vengono utilizzate, ovvero 
+per l'ottimizzazione del codice intermedio.
+
+Vediamo un'esempio di applicazione di tale ottimizzazione.
+
+\begin{minipage}{0.33\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width = 1.3cm] (s) at (0, -2){$4$};
+            \node[draw, circle, minimum width = 1.3cm] (q) at (0, 0) {$3$};   
+            \node[draw, circle, minimum width = 1.3cm] (p) at (0, 2) {$2$};
+            \node[draw, circle, minimum width = 1.3cm] (r) at (0, 4) {$1$};
+    
+            \node[above right = 1.2cm] at (s) {$R \gets y + 1$};
+            \node[above right = 1.2cm] at (q) {$y \gets T$};
+            \node[above right = 1.2cm] at (p) {$T \gets x + 1$};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (q);
+            \draw[->] (q) -- (s);
+    
+        \end{tikzpicture}
+    \end{figure} 
+\end{minipage}
+\begin{minipage}{0.33\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width = 1.3cm] (s) at (0, -2){$4$};
+            \node[draw, circle, minimum width = 1.3cm] (q) at (0, 0) {$3$};   
+            \node[draw, circle, minimum width = 1.3cm] (p) at (0, 2) {$2$};
+            \node[draw, circle, minimum width = 1.3cm] (r) at (0, 4) {$1$};
+    
+            \node[above right = 1.2cm] at (s) {$R \gets$\textcolor{orange}{$T$}$+ 1$};
+            \node[above right = 1.2cm] at (q) {$y \gets T$};
+            \node[above right = 1.2cm] at (p) {$T \gets x + 1$};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (q);
+            \draw[->] (q) -- (s);
+    
+        \end{tikzpicture}
+    \end{figure} 
+\end{minipage}
+\begin{minipage}{0.33\textwidth}
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width = 1.3cm] (s) at (0, -2){$3$};
+            \node[draw, circle, minimum width = 1.3cm] (p) at (0, 0) {$2$};
+            \node[draw, circle, minimum width = 1.3cm] (r) at (0, 2) {$1$};
+    
+            \node[above right = 1.2cm] at (s) {$R \gets T + 1$};
+            \node[above right = 1.2cm] at (p) {$T \gets x + 1$};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (s);
+    
+        \end{tikzpicture}
+    \end{figure} 
+\end{minipage}
+
+Notiamo che la variabile $y$ è la copia di $T$ e quindi possiamo sostituire $y$ con $T$.
+L'idea è quindi di sostituire la variabile $T$ all'interno dell'uso di $y$. Quello ottenuto 
+è un codice in cui, applicando la \textit{liveness} eliminiamo l'assegnamento $y \gets T$.
+\subsection{Costruzione dell'informazione}
+Vediamo come costruire l'informazione che ci serve per propagare queste copie.
+Vorremmo che l'analisi mantenga ad ogni punto di programma l'insieme delle variabili che contengono 
+una copia di una variabile $x$ fissata.
+Se otteniamo questo, allora gni occorrenza di una copia di $x$ può essere sostituita con $x$, ovviamente 
+più è grande tale insieme, più copie possiamo sostituire e quindi ad ottimizzare il programma.
+
+Dal punto di vista dell'analisi, è poco verosimile sapere a priori sapere a priori qual è una variabile 
+per la quale è utile cercare le copie. Dobbiamo quindi estendere l'idea propagando la copia di tutte le 
+variabili, raccogliendo l'insieme delle variabili che sono una la copia dell'altra, determinando quindi
+per ogni punto di programma quali variabili sono copie di altre.
+
+L'informazione osservata è ora un insieme di coppie di variabili: $\texttt{Var} \rightarrow \texttt{Var}$, 
+quindi $(x, y) \implies x$ è copia di $y$. Dal punto di vista della distruzione, distruggiamo le coppie 
+quando una delle due variabili viene sovrascritta, quindi dal punto di vista della distruzione 
+c'è commutatività, mentre per la generazione non c'è commutatività, poiché c'è una direzione di 
+generazione.
+
+È chiaro che stiamo prendendo in considerazione il programma nella direzione di esecuzione.
+
+Dobbiamo definiamo $\texttt{Copy}_{out}$ e $\texttt{Copy}_{in} \subseteq \texttt{Var} \rightarrow \texttt{Var}$, dove 
+$\texttt{Copy}_{out}$ è l'insieme delle coppie di variabili disponibili in uscita,
+mentre $\texttt{Copy}_{in}$ è l'insieme delle coppie di variabili disponibili in ingresso ad ogni blocco.
+\begin{equation}
+    e
+\end{equation}
