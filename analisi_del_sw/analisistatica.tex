@@ -1369,7 +1369,7 @@ Siamo arrivati allo stesso risultato dell'approccio algoritmo.
 Osserviamo che la true liveness cattura falsi allarmi che un'applicazione ripetuta 
 della liveness non saremmo in grado di catturare.
 
-\section{Copy propagation}
+\section{Analisi Copy propagation}
 La propagazione delle coppie riguarda l'idea di analizzare quali variabili durante l'esecuzione 
 uno sono la copia dell'altra. L'idea è quella di ottimizzare andando ad utilizzare una sola delle due.
 
@@ -1457,11 +1457,504 @@ quando una delle due variabili viene sovrascritta, quindi dal punto di vista del
 c'è commutatività, mentre per la generazione non c'è commutatività, poiché c'è una direzione di 
 generazione.
 
-È chiaro che stiamo prendendo in considerazione il programma nella direzione di esecuzione.
-
 Dobbiamo definiamo $\texttt{Copy}_{out}$ e $\texttt{Copy}_{in} \subseteq \texttt{Var} \rightarrow \texttt{Var}$, dove 
 $\texttt{Copy}_{out}$ è l'insieme delle coppie di variabili disponibili in uscita,
 mentre $\texttt{Copy}_{in}$ è l'insieme delle coppie di variabili disponibili in ingresso ad ogni blocco.
+
+È chiaro che stiamo prendendo in considerazione il programma nella direzione di esecuzione. Poiché che 
+c'è un assegnamento tra una variabile e un'altra e utilizziamo l'informazione per sostituire la variabile
+assegnata con l'analisi di cui è copia, perciò è \textbf{forward}.
+Rispetto al modo di combinazione, notiamo che collezioniamo variabili che sicuramente sono copie di altre,
+quindi ci dobbiamo assicurare che qualunque cammino che porti al punto di sostituzione, abbia 
+tale copia, perciò l'analisi è di tipo \textbf{definite}.
+
+\subsection{Analisi di Copy Propagation e l'approccio algoritmico}
+Dobbiamo definire l'informazione generata e distrutta.
 \begin{equation}
-    e
+    \texttt{Gen}(b) = \{(x, y) \mid \exists x := y \in b\}
 \end{equation}
+
+\begin{equation}
+    \texttt{Kill}(b) = \{(x, y) \mid (\exists x := e \in b \lor \exists y := e \in b) \land x \not = y\}
+\end{equation}
+
+L'informazione iniziale sull'entry point è ciò che vale sempre, ovvero:
+\[
+  x = \{ (x, x) \mid x \in \texttt{Var} \}
+\]
+Perché è sempre vero che una variabile è copia di se stessa.
+
+Possiamo quindi costruire lle equazioni:
+\begin{equation}
+    \texttt{Copy}_{in}(n) = 
+    \begin{cases}
+        x & \text{se } n = \text{entry} \\
+        \bigcap_{p \in \text{pred}(n)} \texttt{Copy}_{out}(p) & \text{altrimenti}
+    \end{cases}
+\end{equation}
+\begin{equation}
+    \texttt{Copy}_{out}(n) = \texttt{Gen}(n) \cup (\texttt{Copy}_{in}(n) \setminus \texttt{Kill}(n))
+\end{equation}
+Notiamo che l'equazione è stata costruita partendo dalle informazioni date precedentemente, ovvero che viene
+utilizzata l'intersezione dato che l'analisi è \textit{definite}. Il fatto che sia un'analisi analisi
+\textbf{forward} proviene dall'informazione iniziale sulla entry 
+e il fatto che venga fatta l'intersezione sui \textbf{predecessori}. 
+
+\subsection{Analisi di Copy Propagation e l'approccio semantico}
+Il dominio di osservazione è l'insieme delle coppie di variabili,
+quindi $\texttt{Var} \times \texttt{Var}$, e l'informazione iniziale è esattamente lo stesso insieme
+$x =\{(x,x) \mid x \in \texttt{Var}\}$.
+Le informazioni mancanti sono le informazione di calcolo vero e proprio, ovvero la semantica, quindi 
+l'\textbf{abstract edge effect}. Definita in modo induttivo sulla struttura sintattica del linguaggio 
+$\mathcal{C} \subseteq \texttt{Var} \times \texttt{Var}$.
+Quindi:
+\begin{itemize}
+    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{C} = \mathcal{C}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{C} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{C}
+    = \mathcal{C}$
+    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{C} =
+    \mathcal{C} \setminus \{x\}$
+    \item $\llbracket x \gets e \rrbracket^\# \mathcal{C} = 
+    \begin{cases}
+        (\mathcal{C} \setminus \texttt{Copy}(x)) \cup \{(x,y)\} & e \equiv y \\
+        \mathcal{C} \setminus \texttt{Copy}(x) & \text{altrimenti}
+    \end{cases}
+    $
+\end{itemize}
+Dove:
+\[
+  \texttt{Copy}(x) = \{(x,y) \mid y \in \texttt{Var} \land x \not = y\} 
+  \cup \{(y,x) \mid y \in \texttt{Var} \land x \not = y\}
+\]
+Ricordiamo che la soluzione migliore che vogliamo ottenere è la \textbf{MOP}, quindi:
+\[
+    \mathcal{C}^* [v] = \bigcap  \{\llbracket \pi \rrbracket^\# x \mid \pi : \texttt{entry} \rightarrow c \}
+\]
+Dove la semantica del cammino $\pi$ è calcolata in modo forward: $\llbracket \pi \rrbracket^\# =
+\llbracket k_n \rrbracket^\# \circ \dots \circ \llbracket k_1 \rrbracket^\# x$.
+La semantica è monotona e distributiva, quindi $\mathcal{C}^* [v]$ può essere calcolata come 
+soluzione del sistema di disequazioni.
+
+Forniamo quindi l'informazione di trasferimento locale ad ogni punto programma, ignorando il calcolo 
+sull'intero cammino caratterizzando l'informazione locale su ogni arco.
+
+\begin{itemize}
+    \item $\mathcal{C}[\texttt{entry}] \subseteq x$ 
+    \item $\mathcal{C}[v] \subseteq \llbracket \texttt{lab}\rrbracket^\# \mathcal{C}[u]$
+\end{itemize}
+Notiamo la presenza del contenimento dato che l'analisi è \textbf{definite} e il target 
+dell'arco è scritto in funzione della sorgente $\cdot \stackrel{\texttt{lab}}{\longrightarrow} \cdot$ è dato 
+che l'analisi è \textbf{forward}.
+
+La  semantica distributiva fa si che la soluzione del sistema di disequazioni ovvero la 
+\textbf{MFP}, sia uguale alla soluzione \textbf{MOP}. 
+
+\subsubsection{Esempio di analisi di Copy Propagation}
+\subsubsection{Approccio algoritmico}
+
+\begin{minipage}{0.5\textwidth}
+    Consideriamo il seguente programma:
+
+    \begin{algorithm}[H]
+        $T \gets x+ 1$\;
+        $y \gets T$\;
+        $R \gets y + 1$\;
+    \end{algorithm}
+
+    Dove la notazione $(zz) = \{(z,z) \mid z \in \texttt{Var}\}$, mentre 
+    $(zw) = \{(z,w) \mid z,w \in \texttt{Var}\}$.
+    
+    \end{minipage} 
+    \begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={12mm}, main/.style = {draw, rectangle}] 
+            \node[main] (1) {0. $\texttt{entry}$};
+            \node[main] (2) [below =of 1] {1. $T \gets x+ 1$};
+            \node[main] (3) [below =of 2] {2. $y \gets T$};
+            \node[main] (4) [below =of 3] {3. $R \gets y + 1$};
+            \node[main] (5) [below =of 4] {4. \texttt{exit}};
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+        \end{tikzpicture}
+    \end{figure}
+    \end{minipage}
+
+    Costruiamo per ogni blocco l'insieme di espressioni generate e uccise:
+    \begin{itemize}
+        \item $b_1$: \texttt{Gen}(1) $= \varnothing$,
+        \texttt{Kill}(1) $= \texttt{Copy}(T)$
+        \item $b_2$: \texttt{Gen}(2) $= (y T)$, \texttt{Kill}(2) $= \texttt{Copy}(y)$
+        \item $b_3$: \texttt{Gen}(3) $= \varnothing$, \texttt{Kill}(3) $= \texttt{Copy}(R)$
+    \end{itemize}
+
+    Ricordiamo che la coppia $(zw)$ denota l'insieme di tutte le possibili coppie di variabili.
+    Seguendo la formula per il calcolo del punto fisso della Copy Propagation
+    costruiamo le due tabelle di \texttt{Copy}$_{in}$ e \texttt{Copy}$_{out}$,
+    e otteniamo quindi:
+
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \texttt{Copy}$_{in}$& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
+            \hline 
+            \textbf{0} & $(zz)$ & $(zz)$ & $(zz)$ & $(zz)$ & $\dots$ \\
+            \hline
+            \textbf{1} & $(zw)$ & $(zz)$ & $(zz)$ & $(zz)$ & $\dots$ \\
+            \hline
+            \textbf{2} & $(zw)$ & $(xy)(xR)(yR)$ & $(zz)$ 
+            & $(zz)$ & $\dots$ \\
+            \hline
+            \textbf{3} & $(zw)$ &$(yT)(xT)(xR)(RT)$ & $(yT)(xR)$ & $(yT)$ & $\dots$ \\
+            \hline
+            \textbf{4} & $(zw)$ & $(xy)(xT)(yT)$ & $(yT)(xT)$  & $(yT)$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \texttt{Copy}$_{out}$& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{$\dots$} \\
+            \hline
+            \textbf{0} &$(zz)$ & $(zz)$ & $(zz)$ & $\dots$ \\
+            \hline
+            \textbf{1} & $(xy)(xR)$ & $(zz)$ & $(zz)$ & $\dots$ \\
+            \hline
+            \textbf{2} & $(yR)$ &$(yT)(xR)$ & $(yT)$ & $\dots$ \\
+            \hline
+            \textbf{3} & $(yT)(xT)(xR)(RT)$ & $(yT)(xT)$ & $(yT)$  & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+Notiamo che effettivamente dal nodo $3$ in po $y$ e $T$ sono uno la copia dell'altro, 
+quindi $T$ può essere copiata in $y$. 
+
+\subsubsection{Approccio semantico}
+
+\begin{minipage}{0.5\textwidth}
+    Riportiamo il programma programma precedentemente analizzato.
+
+    \begin{algorithm}[H]
+        $T \gets x+ 1$\;
+        $y \gets T$\;
+        $R \gets y + 1$\;
+    \end{algorithm}
+
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={22mm}, minimum width = 1cm, main/.style = {draw, circle}] 
+            \node[main] (s) at (0, -2){$4$};
+            \node[main] (q) at (0, 0) {$3$};   
+            \node[main] (p) at (0, 2) {$2$};
+            \node[main] (r) at (0, 4) {$1$};
+    
+            \node[above right = 1.2cm] at (s) {$R \gets y + 1$};
+            \node[above right = 1.2cm] at (q) {$y \gets T$};
+            \node[above right = 1.2cm] at (p) {$T \gets x + 1$};
+        
+            \draw[->] (r) -- (p);
+            \draw[->] (p) -- (q);
+            \draw[->] (q) -- (s);
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+
+\begin{itemize}
+    \item $\mathcal{C}(1) \subseteq (zz)$
+    \item $\mathcal{C}(2) \subseteq \llbracket T \gets x + 1 \rrbracket \mathcal{C}(1) = 
+    \mathcal{C}(1) \setminus \texttt{Copy}(T) $
+    \item $\mathcal{C}(3) \subseteq \llbracket y \gets T \rrbracket \mathcal{C}(2) =
+    \mathcal{C}(2) \setminus \texttt{Copy}(y)  \cup (yT)$
+    \item $\mathcal{C}(4) \subseteq \llbracket R \gets y + 1 \rrbracket \mathcal{C}(3) =
+    \mathcal{C}(3) \setminus \texttt{Copy}(R)$
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        & \textbf{1} & \textbf{2} & \textbf{$\dots$} \\
+        \hline
+        \textbf{1} &$(zz)$ & $(zz)$ &  $\dots$ \\
+        \hline
+        \textbf{2} & $(zw)$ & $(zz)$ & $\dots$ \\
+        \hline
+        \textbf{3} & $(zw)$ &$(yT)$ & $\dots$ \\
+        \hline
+        \textbf{4} & $(zw)$ & $(yT)$ & $\dots$ \\
+        \hline
+    \end{tabular}
+\end{figure}
+Siamo arrivati allo stesso risultato dell'approccio algoritmo, ma eseguendo una solo iterazione.
+\section{Analisi Reaching Definitions}
+Tale analisi ha come obiettivo quello di individuare, dato un punto di programma, quali sono gli 
+assegnamenti che non vengono sovrascritti prima di raggiungere quel punto, quindi senza ridefinizioni 
+intermedie.
+
+\begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}
+            \node[draw, circle, minimum width=0.1cm] (s) at (0, 2.5) {};
+            \node[draw, circle, minimum width=0.1cm] (p) at (0,0) {};
+        
+            \node[right = 0.7cm] at (s) {$x \gets e$};
+            \node[right = 0.7cm] at (p) {$p$};
+    
+            \draw[->,decorate,decoration={snake,amplitude=.4mm,segment length=2mm,post length=1mm}]
+            (s) to node[auto, swap] {} (p);
+            \draw[decorate, decoration={calligraphic brace, amplitude=6pt, mirror, raise=5pt, aspect=0.5}]
+            (s) -- (p) node[midway,left = 0.5] {$\textit{no def } x$};
+        \end{tikzpicture}
+    \end{figure}
+
+Una definizione viene uccisa quando in un punto intermedio si va a riscrivere una definizione 
+per una stessa variabile.
+
+Si tratta di un analisi molto semplice, utilizzata in vari contesti. Un esempio di applicazione consiste 
+nel \textit{loop invariant code motion}, ovvero spostare all'esterno del ciclo del codice che non viene
+modificato all'interno del ciclo.
+
+L'analisi è chiaramente \textit{forward}, in quanto si parte da un punto di programma e
+si arriva ad un altro punto di programma, poiché arriviamo alla definizione,
+generiamo l'informazione e da lì in poi l'informazione vale finché non si trova una ridefinizione.
+
+Il fatto che si considerino tutte le definizioni che raggiungono un punto di programma, 
+rende l'analisi \textit{possibile}, quindi colleziona per unione.
+
+L'informazione osservata sarà le coppie tra variabili e punti di programma, ovvero
+$\texttt{Var} \times \texttt{pp}$. Quando scriveremo $(x, p)$ intendiamo che la variabile $x$
+è definita al punto $p$.
+
+Supponendo che il programma non abbia assegnamenti precedenti, l'informazione iniziale sarà 
+l'insieme vuoto.
+
+\subsection{Analisi di Reaching Definitions e l'approccio algoritmo}
+Definiamo come l'informazione vine generata e distrutta:
+\begin{equation}
+    \texttt{Gen}(n) = \{ (x, n) \mid \exists x := e \in n \lor \texttt{input}(x) \in n \}
+\end{equation}
+\begin{equation}
+    \texttt{Kill}(n) = \{ (x, p) \mid \exists x := e \in n  \lor \texttt{input}(x) \in n, p \in \texttt{pp} \}
+\end{equation}
+Possiamo quindi definire le funzioni di punto fisso $\texttt{RD}_{in}$ e $\texttt{RD}_{out}$:,
+\begin{equation}
+    \texttt{RD}_{in}(n) = 
+    \begin{cases}
+        \varnothing & n = \texttt{entry} \\
+        \bigcup_{p \in pred(n)} \texttt{RD}_{out}(p) & \text{altrimenti}
+    \end{cases}
+\end{equation}
+Notiamo che l'equazione è stata costruita partendo dalle informazioni date precedentemente, ovvero che viene
+utilizzata l'unione dato che l'analisi è \textit{possibile}. Il fatto che sia un'analisi analisi
+\textbf{forward} proviene dall'informazione iniziale sulla entry 
+e il fatto che venga fatta l'intersezione sui \textbf{predecessori}.
+\begin{equation}
+    \texttt{RD}_{out}(n) = \texttt{Gen}(n) \cup (\texttt{RD}_{in}(n) \setminus \texttt{Kill}(n))
+\end{equation}
+\subsection{Analisi di Reaching Definitions e l'approccio semantico}
+Descriviamo l'abstract edge effect, ovvero l'elemento caratteristico dei singoli archi del \texttt{CFG}.
+\begin{itemize}
+    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{R} = \mathcal{R}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{R} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{R}
+    = \mathcal{R}$
+    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{R} =
+        \mathcal{R} \setminus \texttt{def}(x) \cup \{\langle xu \rangle \mid 
+        \langle u, x \gets e, v \rangle \textit{ arco eseguito}\}$
+    \item $\llbracket x \gets e \rrbracket^\# \mathcal{R} = 
+        \mathcal{R} \setminus \texttt{def}(x) \cup \{\langle xu \rangle \mid 
+        \langle u, x \gets e, v \rangle \textit{ arco eseguito}\}$
+\end{itemize}
+Dove:
+\[
+    \texttt{Def}(x) = \{(x,p) \mid p \in \texttt{pp}\}
+\]
+Come sempre la soluzione \textbf{MOP}, che chiamiamo $\mathcal{R}[v]$ è definita come:
+\[
+    \mathcal{R}^*[v] = \bigcup \{ \llbracket \pi \rrbracket^\# \varnothing
+    \mid \pi : \texttt{entry} \to v \}
+\]
+La semantica è monotona e distributiva, quindi $\mathcal{R}^* [v]$ può essere calcolata come 
+soluzione del sistema di disequazioni.
+
+Forniamo quindi l'informazione di trasferimento locale ad ogni punto programma, ignorando il calcolo 
+sull'intero cammino caratterizzando l'informazione locale su ogni arco.
+
+\begin{itemize}
+    \item $\mathcal{R}[\texttt{entry}] \supseteq x$ 
+    \item $\mathcal{R}[v] \supseteq \llbracket \texttt{lab}\rrbracket^\# \mathcal{R}[u]$
+\end{itemize}
+Notiamo la presenza del \textit{supset} dato che l'analisi è \textbf{possibile} e il target 
+dell'arco è scritto in funzione della sorgente $\cdot \stackrel{\texttt{lab}}{\longrightarrow} \cdot$ è dato 
+che l'analisi è \textbf{forward}.
+
+La  semantica distributiva fa si che la soluzione del sistema di disequazioni ovvero la 
+\textbf{MFP}, sia uguale alla soluzione \textbf{MOP}. 
+
+\subsubsection{Esempio di analisi di Reaching Definitions}
+\subsubsection{Approccio algoritmico}
+
+\begin{minipage}{0.5\textwidth}
+    Consideriamo il seguente programma:
+
+    \begin{algorithm}[H]
+        $\texttt{Input}(x)$\;
+        $y \gets 1$\;
+        \While{$x \geq 1$}{
+            $y \gets y \cdot x$\;
+            $x \gets x - 1$\;
+        }
+        $R \gets y$\;
+    \end{algorithm}
+    
+    \end{minipage} 
+    \begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={12mm}, main/.style = {draw, rectangle}] 
+            \node[main] (0) {0. \texttt{entry}};
+            \node[main] (1) [below =of 0] {1. $\texttt{Input}(x)$};
+            \node[main] (2) [below =of 1] {2. $y \gets 1$};
+            \node[main] (3) [below =of 2] {3. $x \geq 1$};
+            \node[main] (4) [below right = of 3] {4. $y \gets x \cdot y$};
+            \node[main] (5) [below =of 4] {5. $x \gets x - 1$};
+            \node[main] (6) [below left=of 3] {6. $R \gets y$};
+            \node[main] (7) [below =of 6] {7. \texttt{exit}};
+            \draw[->] (0) -- (1);
+            \draw[->] (1) -- (2);
+            \draw[->] (2) -- (3);
+            \draw[->] (3) -- (4);
+            \draw[->] (4) -- (5);
+            \draw[->] (5) -- (3);
+            \draw[->] (3) -- (6);
+            \draw[->] (6) -- (7);
+        \end{tikzpicture}
+    \end{figure}
+    \end{minipage}
+
+    Costruiamo per ogni blocco l'insieme di espressioni generate e uccise:
+    \begin{itemize}
+        \item $b_1$: \texttt{Gen}(1) $= (x1)$,
+        \texttt{Kill}(1) $ = (xn)$
+        \item $b_2$: \texttt{Gen}(2) $= (y2)$, \texttt{Kill}(2) $= (yn)$
+        \item $b_3$: \texttt{Gen}(3) $=$ \texttt{Kill}(3) $= \varnothing$
+        \item $b_4$: \texttt{Gen}(4) $= (y4)$, \texttt{Kill}(4) $= (yn)$
+        \item $b_5$: \texttt{Gen}(5) $= (x5)$, \texttt{Kill}(5) $= (xn)$
+        \item $b_6$: \texttt{Gen}(6) $= (R6)$, \texttt{Kill}(6) $= (Rn)$
+    \end{itemize}
+
+    Seguendo la formula per il calcolo del punto fisso della Reaching Definitions, 
+    costruiamo le due tabelle di \texttt{RD}$_{in}$ e \texttt{RD}$_{out}$,
+    e otteniamo quindi:
+
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|c|}
+            \hline
+            \texttt{RD}$_{out}$& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5}& \textbf{$\dots$} \\
+            \hline 
+            \textbf{0} & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\varnothing$  & $\varnothing$ & $\dots$ \\
+            \hline
+            \textbf{1} & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\varnothing$  & $\varnothing$ & $\dots$ \\
+            \hline
+            \textbf{2} & $\varnothing$ & $(x1)$ & $(x1)$ 
+            & $(x1)$  & $(x1)$& $\dots$ \\
+            \hline
+            \textbf{3} & $\varnothing$ &$(y2)(x5)$ & $(y2)(x5)(x1)(y4)$ &
+            $(y2)(x5)(x1)(y4)$ & $(y2)(x5)(x1)(y4)$ & $\dots$ \\
+            \hline
+            \textbf{4} & $\varnothing$ & $\varnothing$ & $(y2)(x5)$  
+            & $(y2)(x5)(x1)(y4)$ & $(y2)(x5)(x1)(y4)$ & $\dots$ \\
+            \hline
+            \textbf{5} & $\varnothing$  & $(y4)$ & $(y4)$ 
+            & $(y4)(x5)$ & $(y4)(x5)(x1)$ & $\dots$ \\
+            \hline
+            \textbf{6} & $\varnothing$  & $\varnothing$ & $(y2)(x5)$ 
+            & $(y2)(x5)(x1)(y4)$ & $(y2)(x5)(x1)(y4)$ & $\dots$ \\
+            \hline
+            \textbf{7} & $\varnothing$  & $(R6)$ & $(R6)$ & $(R6)(y2)(x5)$ & $(R6)(y2)(x5)(x1)(y4)$& $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \texttt{RD}$_{in}$& \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{$\dots$} \\
+            \hline 
+            \textbf{0} & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+            \hline
+            \textbf{1} & $(x1)$ & $(x1)$ & $(x1)$ & $(x1)$ & $\dots$ \\
+            \hline
+            \textbf{2} & $(y2)$ & $(y2)(x1)$ & $(y2)(x1)$ 
+            & $(y2)(x1)$ & $\dots$ \\
+            \hline
+            \textbf{3} & $\varnothing$ &$(y2)(x5)$ & $(y2)(x5)(x1)(y4)$ &
+            $(y2)(x5)(x1)(y4)$ & $\dots$ \\
+            \hline
+            \textbf{4} & $(y4)$ & $(y4)$ & $(y4)(x5)$  & $(x5)(x1)(y4)$ & $\dots$ \\
+            \hline
+            \textbf{5} & $(x5)$  & $(x5)(y4)$ & $(x5)(y4)$ & $(y4)(x5)$ & $\dots$ \\
+            \hline
+            \textbf{6} & $(R6)$  & $(R6)$ & $(R6)(y2)(x5)$ & $(R6)$ & $\dots$ \\
+            \hline
+        \end{tabular}
+    \end{figure}
+
+
+\subsubsection{Approccio semantico}
+
+\begin{minipage}{0.5\textwidth}
+    Riportiamo il programma programma precedentemente analizzato.
+
+    \begin{algorithm}[H]
+        $\texttt{Input}(x)$\;
+        $y \gets 1$\;
+        \While{$x \geq 1$}{
+            $y \gets y \cdot x$\;
+            $x \gets x - 1$\;
+        }
+        $R \gets y$\;
+    \end{algorithm}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={22mm}, minimum width = 1cm, main/.style = {draw, circle}] 
+            \node[main] (1) {1};
+            \node[main] (2) [below =of 1] {2};
+            \node[main] (3) [below =of 2] {3};
+            \node[main] (4) [below right =of 3] {4};
+            \node[main] (5) [below =of 4] {5};
+            \node[main] (6) [below left=of 3] {6};
+            \node[main] (7) [below =of 6] {7};
+
+            \draw[->] (1) -- node[left] {$\texttt{Input(x)}$} (2) ;
+            \draw[->] (2) -- node[left] {$y \gets 1$} (3) ;
+            \draw[->] (3) -- node[right] {$\texttt{NonZero}(x > 1)$} (4);
+            \draw[->] (3) --  (6) node[above = 1cm] {$\texttt{Zero}(x > 1)$};
+            \draw[->] (4) -- node[right] {$y \gets x \cdot y$} (5);
+            \draw[->] (5) -- node[left] {$y \gets x -1$} (3);
+            \draw[->] (6) -- node[left] {$R \gets y$} (7);
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+
+\begin{itemize}
+    \item $\mathcal{L}(1) \supseteq \varnothing$
+    \item $\mathcal{L}(2)$
+    \item $\mathcal{L}(3)$
+    \item $\mathcal{L}(4) $
+    \item $\mathcal{L}(5) $
+    \item $\mathcal{L}(6)$
+\end{itemize}
+TODO
