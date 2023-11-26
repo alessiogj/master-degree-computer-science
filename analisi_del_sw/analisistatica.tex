@@ -1950,11 +1950,38 @@ La  semantica distributiva fa si che la soluzione del sistema di disequazioni ov
 \end{minipage}
 
 \begin{itemize}
-    \item $\mathcal{L}(1) \supseteq \varnothing$
-    \item $\mathcal{L}(2)$
-    \item $\mathcal{L}(3)$
-    \item $\mathcal{L}(4) $
-    \item $\mathcal{L}(5) $
-    \item $\mathcal{L}(6)$
+    \item $\mathcal{R}(1) \supseteq \varnothing$
+    \item $\mathcal{R}(2) \supseteq \llbracket \texttt{input(x)} \rrbracket^\# \varnothing = (x1)$
+    \item $\mathcal{L}(3) \supseteq \llbracket y \gets 1 \rrbracket^\# \mathcal{R}(2) = 
+    \mathcal{R}(2) \setminus \texttt{def}(y) \cup (y2) \cup (\mathcal{R}(5) \setminus 
+    \texttt{def}(x) \cup (x5))$
+    \item $\mathcal{R}(4) \supseteq \mathcal{R}(3)$
+    \item $\mathcal{R}(5) \supseteq \llbracket y \gets x \cdot y \rrbracket^\# \mathcal{R}(4) =
+    \mathcal{R}(4) \setminus \texttt{def}(y) \cup (y4)$
+    \item $\mathcal{R}(6) \supseteq \mathcal{R}(3)$
+    \item $\mathcal{R}(7) \supseteq \llbracket R \gets y \rrbracket^\# \mathcal{R}(6) =
+    \mathcal{R}(6) \setminus \texttt{def}(R) \cup (R6)$
 \end{itemize}
-TODO
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{$\dots$} \\
+        \hline
+        \textbf{1} &$\varnothing$ & $\varnothing$ & $\varnothing$ & $\dots$ \\
+        \hline
+        \textbf{2} & $\varnothing$ & $(x1)$ & $(x1)$ & $\dots$ \\
+        \hline
+        \textbf{3} & $\varnothing$ & $(x1)(y2)(x5)$ & $(x1)(y2)(y4)(x5)$ & $\dots$ \\
+        \hline
+        \textbf{4} & $\varnothing$ & $(x1)(y2)(x5)$ & $(x1)(y2)(y4)(x5)$  & $\dots$ \\
+        \hline
+        \textbf{5} & $\varnothing$ & $(x1)(x5)(y4)$ & $(x1)(x2)(y4)$ & $\dots$ \\
+        \hline
+        \textbf{6} & $\varnothing$ & $(x1)(y2)(x5)$ & $(x1)(y2)(y4)(x5)$ & $\dots$ \\
+        \hline
+        \textbf{7} & $\varnothing$ & $(x1)(y2)(x5)$ & $(x1)(y2)(y4)(x5)$ & $\dots$ \\
+        \hline
+    \end{tabular}
+\end{figure}
