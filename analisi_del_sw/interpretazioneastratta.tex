@@ -274,31 +274,31 @@ completamente equivalenti.
 
 \begin{tcolorbox}[title = Connessione di Galois]
     La connessione di Galois \texttt{GC} è una coppia di funzioni monotone 
-    $\alpha$ e $\gamma$ definite tra un dominio concreto $C$ e un dominio
-    astratto $A$.
+    $\alpha$ e $\gamma$ definite tra un dominio concreto $\mathcal{C}$ e un dominio
+    astratto $\mathcal{A}$.
 \end{tcolorbox}
-In generale $A$ e $C$ possono essere dei \textit{poset}, per semplicità di 
-formalizzazione consideriamo $A$ e $C$ come reticoli completi, dove è quindi 
+In generale $\mathcal{A}$ e $\mathcal{C}$ possono essere dei \textit{poset}, per semplicità di 
+formalizzazione consideriamo $\mathcal{A}$ e $\mathcal{C}$ come reticoli completi, dove è quindi 
 definito un \textit{least upper bound} e un \textit{greatest lower bound}, oltre 
 all'ordine parziale. Gli ordinamenti sono definiti come segue:
 \begin{itemize}
-    \item $(A, \leq)$;
-    \item $(C, \leq)$;
+    \item $(\mathcal{A}, \leq)$;
+    \item $(\mathcal{C}, \leq)$;
 \end{itemize}
 
 Le due funzioni sono definite come segue:
 \begin{itemize}
-    \item $\alpha: C \rightarrow A$ è detta di \textbf{astrazione}
-    \item $\gamma: A \rightarrow C$ è detta di \textbf{concretizzazione}
+    \item $\alpha: \mathcal{C} \rightarrow \mathcal{A}$ è detta di \textbf{astrazione}
+    \item $\gamma: \mathcal{A} \rightarrow \mathcal{C}$ è detta di \textbf{concretizzazione}
 \end{itemize}
 $\alpha$ e $\gamma$ formano una connessione di Galois se sono monotone, ovvero: 
 \[
-    \forall x, y \in C . x \leq_c y \implies \alpha(x) \leq_A \alpha(y)
+    \forall x, y \in \mathcal{C} . x \leq_\mathcal{C} y \implies \alpha(x) \leq_\mathcal{A} \alpha(y)
 \]
 \[
-    \forall x, y \in A . x \leq_A y \implies \gamma(x) \leq_C \gamma(y)
+    \forall x, y \in \mathcal{A} . x \leq_\mathcal{A} y \implies \gamma(x) \leq_\mathcal{C} \gamma(y)
 \]
-e $\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$.
+e $\alpha(c) \leq_\mathcal{A} a \iff c \leq_\mathcal{C} \gamma(a)$.
 
 \begin{figure}[H]
     \centering
@@ -336,16 +336,16 @@ In generale $\alpha$ è chiamata aggiunta a destra,
 mentre $\gamma$ è chiamata aggiunta a sinistra.
 
 La monotonia garantisce di preservare l'ordine, mentre la condizione 
-$\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$ garantisce l'esistenza,
+$\alpha(c) \leq_\mathcal{A} a \iff c \leq_\mathcal{C} \gamma(a)$ garantisce l'esistenza,
 nel mondo astratto, della migliore approssimazione possibile per 
 ogni elemento concreto.
 
 Come notazione, la connessione di Galois è rappresentata
 come segue: 
-\[(C, \leq_C) \galois{\alpha}{\gamma} (A, \leq_A)\]
+\[(\mathcal{C}, \leq_\mathcal{C}) \galois{\alpha}{\gamma} (\mathcal{A}, \leq_\mathcal{A})\]
 Inoltre la condizione $\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$
 equivale a dire che:
-\[c \leq_C \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) \leq_A a\]
+\[c \leq_\mathcal{C} \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) \leq_\mathcal{A} a\]
 questo perché non ponendo vincoli sul dominio astratto, può essere che 
 vi siano elementi assolutamente inutili per rappresentare la proprietà
 che ci interessa osservare e tali elementi hanno un significato che coincide al significato di 
@@ -355,86 +355,322 @@ vengono mappati sullo stesso elemento concreto, e tornando indietro con $\alpha$
 si ottiene $\alpha(c)$.
 
 Le inserzioni di Galois, invece, differiscono dalle connessioni di Galois nel fatto che 
-$c \leq_C \gamma \, \circ \, a(c)$ diventa un'uguaglianza, quindi:
-\[c \leq_C \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) = a\]
+$c \leq_\mathcal{C} \gamma \, \circ \, a(c)$ diventa un'uguaglianza, quindi:
+\[c \leq_\mathcal{C} \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) = a\]
 Hanno come caratteristica di non avere nel dominio astratto $A$ nessun elemento inutile, 
 quindi ogni elemento astratto ha uno specifico significato concreto che ci interessa 
 osservare. Catturano meglio perché catturano tutti gli elementi significativi del dominio.
 
 La rappresentazione dell'inserzione di Galois è la seguente:
-\[(C, \leq_C) \galoiS{\alpha}{\gamma} (A, \leq_A)\]
+\[(\mathcal{C}, \leq_\mathcal{C}) \galoiS{\alpha}{\gamma} (\mathcal{A}, \leq_\mathcal{A})\]
 Poiché $\alpha$ è una funzione suriettiva.
 
 Ogni connessione di Galois può essere ridotta ad una inserzione di Galois, eliminando 
 gli elementi astratti inutili, ovvero quelli per cui esiste un elemento più piccolo che 
 ha lo stesso significato.
 \subsection{Esempio di inserzione e connessione di Galois}
+Vogliamo vedere cosa vuol dire quando abbiamo a disposizione una connessione di Galois 
+che non è effettivamente un'inserzione di Galois, con elementi inutili nel nostro 
+dominio astratto, ridurre la connessione di Galois ad una inserzione di Galois.
 
-\begin{minipage}{0.5\textwidth}
-    \begin{figure}[H]
-        \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
-            % Coordinate dei vertici del cubo
-            \coordinate (A) at (0,0,0);
-            \coordinate (B) at (4,0,0);
-            \coordinate (C) at (4,4,0);
-            \coordinate (D) at (0,4,0);
-            \coordinate (E) at (0,0,4);
-            \coordinate (F) at (4,0,4);
-            \coordinate (G) at (4,4,4);
-            \coordinate (H) at (0,4,4);
-        
-            % Disegno del cubo con parentesi angolari
-            \foreach \p/\t in { A/{$\{1,5\}$},
-                                B/{$\{5\}$},
-                                C/{$\{3,5\}$},
-                                D/{$\{1,3,5\}$},
-                                E/{\{1\}},
-                                F/{$\varnothing$},
-                                G/{$\{3\}$},
-                                H/{$\{1,3\}$}}
-                \node[draw, fill, circle, inner sep=2pt, label={135:\t}] at (\p) {};
-            
-            \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
-            \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
-            \draw (A) -- (E);
-            \draw (B) -- (F);
-            \draw (C) -- (G);
-            \draw (D) -- (H);
-        \end{tikzpicture}
-        \caption{$\mathcal{P}(A)$, dove $A = \{1,3,5\}$}
-    \end{figure}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-    \begin{figure}[H]
-        \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
-            % Coordinate dei vertici del cubo
-            \coordinate (A) at (0,0,0);
-            \coordinate (B) at (4,0,0);
-            \coordinate (C) at (4,4,0);
-            \coordinate (D) at (0,4,0);
-            \coordinate (E) at (0,0,4);
-            \coordinate (F) at (4,0,4);
-            \coordinate (G) at (4,4,4);
-            \coordinate (H) at (0,4,4);
-        
-            % Disegno del cubo con parentesi angolari
-            \foreach \p/\t in { A/{$\{4\}$},
-                                B/{$\{4,6\}$},
-                                C/{$\{6\}$},
-                                D/{$\varnothing$},
-                                E/{\{2,4\}},
-                                F/{$\{2,4,6\}$},
-                                G/{$\{2,6\}$},
-                                H/{$\{2\}$}}
-                \node[draw, fill, circle, inner sep=2pt, label={135:\t}] at (\p) {};
-            
-            \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
-            \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
-            \draw (A) -- (E);
-            \draw (B) -- (F);
-            \draw (C) -- (G);
-            \draw (D) -- (H);
-        \end{tikzpicture}
-        \caption{$\mathcal{P}(B)^d$, dove $B = \{2,4,6\}$}
-    \end{figure}
-\end{minipage}
+Supponiamo di disporre di questi due domini, dove il dominio concreto è 
+$\wp(\mathcal{A})$ e come dominio astratto abbiamo $\wp(\mathcal{B})^d$, dove 
+$\wp(\mathcal{B})^d$ è ordinato per inclusione inversa.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        \foreach \p/\t in { A/{$\{1,5\}$},
+                            B/{$\{5\}$},
+                            C/{$\{3,5\}$},
+                            D/{$\{1,3,5\}$},
+                            E/{\{1\}},
+                            F/{$\varnothing$},
+                            G/{$\{3\}$},
+                            H/{$\{1,3\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (A\p) at (\p) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw (C) -- (G);
+        \draw (D) -- (H);
+
+        \coordinate (I) at (8,0,0);
+        \coordinate (J) at (12,0,0);
+        \coordinate (K) at (12,4,0);
+        \coordinate (L) at (8,4,0);
+        \coordinate (M) at (8,0,4);
+        \coordinate (N) at (12,0,4);
+        \coordinate (O) at (12,4,4);
+        \coordinate (P) at (8,4,4);
+
+        \foreach \p/\t in { I/{$\{4\}$},
+                            J/{$\{4,6\}$},
+                            K/{$\{6\}$},
+                            L/{$\varnothing$},
+                            M/{\{2,4\}},
+                            N/{$\{2,4,6\}$},
+                            O/{$\{2,6\}$},
+                            P/{$\{2\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (B\p) at (\p) {};
+
+        \draw (I) -- (J) -- (K) -- (L) -- cycle; % Base
+        \draw (M) -- (N) -- (O) -- (P) -- cycle; % Top
+        \draw (I) -- (M);
+        \draw (J) -- (N);
+        \draw (K) -- (O);
+        \draw (L) -- (P);
+
+        \draw[->, color=orange, bend right=20, thick] (E) to node[above] {} (N);
+        \draw[->, color=orange, bend right=20, thick] (F) to node[above] {} (N);
+        \draw[->, color=orange, bend right=30, thick] (G) to node[above] {} (J);
+        \draw[->, color=orange, bend right=30, thick] (H) to node[above] {} (J);
+        \draw[->, color=orange, bend right=30, thick] (A) to node[above] {} (K);
+        \draw[->, color=orange, bend right=30, thick] (B) to node[above] {} (K);
+        \draw[->, color=orange, bend right=30, thick] (C) to node[above] {} (K);
+        \draw[->, color=orange, bend right=30, thick] (D) to node[above] {} (K);
+    \end{tikzpicture}
+\end{figure}
+L'obiettivo è costruire una funzione di concretizzazione che permetta di 
+vedere l'insieme a destra come un'astrazione del dominio a sinistra.
+\[
+  \forall \mathcal{A}' \subseteq \mathcal{A} .
+  \quad \alpha(\mathcal{A}') = \{b \in \mathcal{B} \mid \mathcal{A}' \subseteq b\}  
+\]
+Dove dal punto di vista formale si tratta di una funzione monotona che 
+mappa un insieme nell'insieme più grande di 
+elementi in cui tutti gli elementi sono più grandi dell'insieme di partenza.
+
+Da quello che osserviamo solo tre elementi di elementi sono immagine di 
+$\alpha$ secondo la definizione.
+
+Tutti gli altri elementi sono inutili all'interno del significato di 
+tale astrazione. Fatto che possiamo verificare calcolando la funzione 
+$\gamma$ che è la funzione di astrazione.
+\[
+  \forall \mathcal{B}' \subseteq \mathcal{B} . 
+    \quad \gamma(\mathcal{B}') = \{ a \in \mathcal{A} \mid a \subseteq \mathcal{B}' \}
+\]
+La funzione $\gamma$ preso un elemento astratto restituisce il suo significato 
+concreto, in questo caso l'insieme massimale di elementi che sono più piccoli.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        \foreach \p/\t in { A/{$\{1,5\}$},
+                            B/{$\{5\}$},
+                            C/{$\{3,5\}$},
+                            D/{$\{1,3,5\}$},
+                            E/{\{1\}},
+                            F/{$\varnothing$},
+                            G/{$\{3\}$},
+                            H/{$\{1,3\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (A\p) at (\p) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw (C) -- (G);
+        \draw (D) -- (H);
+
+        \coordinate (I) at (8,0,0);
+        \coordinate (J) at (12,0,0);
+        \coordinate (K) at (12,4,0);
+        \coordinate (L) at (8,4,0);
+        \coordinate (M) at (8,0,4);
+        \coordinate (N) at (12,0,4);
+        \coordinate (O) at (12,4,4);
+        \coordinate (P) at (8,4,4);
+
+        \foreach \p/\t in { I/{$\{4\}$},
+                            J/{$\{4,6\}$},
+                            K/{$\{6\}$},
+                            L/{$\varnothing$},
+                            M/{\{2,4\}},
+                            N/{$\{2,4,6\}$},
+                            O/{$\{2,6\}$},
+                            P/{$\{2\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (B\p) at (\p) {};
+
+        \draw (I) -- (J) -- (K) -- (L) -- cycle; % Base
+        \draw (M) -- (N) -- (O) -- (P) -- cycle; % Top
+        \draw (I) -- (M);
+        \draw (J) -- (N);
+        \draw (K) -- (O);
+        \draw (L) -- (P);
+
+        %cerchio i punti che sono immagine di alpha
+        \draw[circle, color=orange, thick] (K) circle (0.5);
+        \draw[circle, color=orange, thick] (J) circle (0.5);
+        \draw[circle, color=orange, thick] (N) circle (0.5);
+
+        \draw[->, color=blue, bend right=20, thick] (N) to node[above] {} (E);
+        \draw[->, color=blue, bend right=30, thick] (O) to node[above] {} (E);
+        \draw[->, color=blue, bend right=30, thick] (P) to node[above] {} (E);
+        \draw[->, color=blue, bend right=30, thick] (J) to node[above] {} (H);
+        \draw[->, color=blue, bend right=30, thick] (I) to node[above] {} (H);
+        \draw[->, color=blue, bend right=30, thick] (K) to node[above] {} (D);
+        \draw[->, color=blue, bend right=30, thick] (L) to node[above] {} (D);
+\end{tikzpicture}
+\end{figure}
+Quindi emergono 3 elementi, ovvero $\{1,3,5\}$, $\{1,3\}$ e $\{1\}$,
+che sono i più concreti tra quelli che hanno la stessa 
+immagine astratta, ovvero $\{4\}$, $\{4,6\}$ e $\{6\}$.
+
+Verifichiamo che $\alpha$ e $\gamma$ rispettano le condizioni sull'essere 
+connessioni di Galois.
+
+Partendo dall'insieme vuoto e applicando $\alpha$ otteniamo l'insieme
+$\{4\}$ che è l'immagine astratta di $\{ 2,4,6 \}$, applicando $\gamma$
+otteniamo l'insieme $\{1\}$. Quindi
+$\gamma \circ \alpha(\varnothing) \geq \varnothing$, e provandolo per tutti 
+gli elementi otteniamo lo stesso risultato generico:
+\[
+  \gamma \circ \alpha(c) \geq c  
+\]
+e anche la condizione opposta:
+\[
+  \alpha \circ \gamma(a) \leq a
+\]
+Quindi $\alpha$ e $\gamma$ sono connessioni di Galois.
+
+Per riuscire a eliminare gli elementi inutili possiamo applicare
+il concetto relativo all'inserzione di Galois, quindi:
+\[
+  \mathcal{B}' \equiv \mathcal{B}''
+  \iff \gamma(\mathcal{B}') = \gamma(\mathcal{B}'') 
+  \iff \forall a \in
+  \mathcal{A} . \quad a \mathcal{RB}' \iff a \mathcal{RB}'' 
+\]
+La differenza è che $ \alpha \circ \gamma(a) = a $, quindi
+vediamo che modificando il dominio astratto e non le astrazioni 
+otteniamo un'inserzione di Galois, osserviamo quindi gli elementi che 
+hanno lo stesso significato.
+quindi:
+\begin{itemize}
+    \item $\varnothing$ e $\{6\}$ hanno lo stesso significato, quindi
+    vengono mappati in un unico elemento, che è $\{6\}$;
+    \item $\{4\}$ e $\{4,6\}$ hanno lo stesso significato, quindi
+    vengono mappati in un unico elemento, che è $\{4,6\}$;
+    \item $\{2,4\}$, $\{2,4,6\}$, $\{2,6\}$ e $\{2\}$ hanno lo stesso
+    significato e vengono mappati in un unico elemento, che è $\{2,4,6\}$.
+\end{itemize} 
+Accorpando gli elementi astratti che hanno lo stesso significato.
+Quindi otteniamo il seguente diagramma:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        \foreach \p/\t in { A/{$\{1,5\}$},
+                            B/{$\{5\}$},
+                            C/{$\{3,5\}$},
+                            D/{$\{1,3,5\}$},
+                            E/{\{1\}},
+                            F/{$\varnothing$},
+                            G/{$\{3\}$},
+                            H/{$\{1,3\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (A\p) at (\p) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw (C) -- (G);
+        \draw (D) -- (H);
+
+        %retta 
+        \coordinate (J) at (12,0,0);
+        \coordinate (K) at (12,2,0);
+        \coordinate (N) at (12,-2,0);
+
+        %connetto i punti
+        \draw (J) -- (K) -- (N); 
+
+
+        \foreach \p/\t in { J/{$[\{4\},\{4,6\}]$},
+                            K/{$[\varnothing,\{6\}]$},
+                            N/{$[\{2,4\},\{2,4,6\},\{2,6\},\{2\}]$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (B\p) at (\p) {};
+
+            \draw[->, color=orange, bend right=20, thick] (E) to node[above] {} (N);
+            \draw[->, color=orange, bend right=20, thick] (F) to node[above] {} (N);
+            \draw[->, color=orange, bend right=30, thick] (G) to node[above] {} (J);
+            \draw[->, color=orange, bend right=30, thick] (H) to node[above] {} (J);
+            \draw[->, color=orange, bend right=30, thick] (A) to node[above] {} (K);
+            \draw[->, color=orange, bend right=30, thick] (B) to node[above] {} (K);
+            \draw[->, color=orange, bend right=30, thick] (C) to node[above] {} (K);
+            \draw[->, color=orange, bend right=30, thick] (D) to node[above] {} (K);
+\end{tikzpicture}
+\end{figure}
+Definiamo quindi una relazione di equivalenza tale per cui, se prendiamo 
+anziché gli elementi astratti, le classi di equivalenza rispetto a tale relazione,
+otteniamo un'inserzione di Galois, senza variare le funzioni 
+$\alpha$ e $\gamma$, riducendo il dominio astratto.
+
+Vediamo come questi formalismi (\textit{in particolare l'inserzione di
+Galois}) sono equivalenti ad altri due formalismi, che però spostano 
+l'osservazione dal dominio astratto, ovvero $\mathcal{A}$,
+che ha una propria rappresentazione, a quello del dominio degli oggetti 
+concreti che vogliamo osservare. Invece di guardare un mondo astratto 
+rappresentato in un modo diverso, osserviamo il loro significato sul 
+mondo concreto. Specifichiamo gli oggetti che osserviamo con precisione, ma 
+nel mondo concreto e quindi modello con una funzione, chiamata \textbf{
+funzione di chiusura superiore}, o un sottodominio, chiamato 
+\textbf{Moore family}, ovvero l'astrazione del dominio concreto.
+
+\section{Operatore di chiusura superiore (\texttt{UCO})}
+Introduciamo questo nuovo concetto, che è una tipologia di funzioni che possiamo 
+definire su un dominio. Supponiamo di avere un dominio $\mathcal{P}$ con un suo 
+ordinamento $\leq_\mathcal{P}$ (\textit{in generale su reticoli completi}).
+
+Allora una funzione $\rho : \mathcal{P} \to \mathcal{P}$ è un \texttt{UCO} 
+se la funzione $\rho$ è:
+\begin{itemize}
+    \item \textbf{Monotona}: $\forall x,y \in \mathcal{P} \quad x \leq_\mathcal{P} y \implies \rho(x) \leq_\mathcal{P} \rho(y)$;
+    \item \textbf{Estensiva}: $\forall x \in \mathcal{P} \quad x \leq_\mathcal{P} \rho(x)$;
+    \item \textbf{Idempotente}: $\forall x \in \mathcal{P} \quad \rho(\rho(x)) = \rho(x)$.
+\end{itemize}
+Ovvero che $\rho$ può perdere informazione, ma tale informazione viene persa 
+tutta in un'unica applicazione, ogni successiva applicazione non aggiunge
+ulteriore imprecisione.
+
+\begin{tcolorbox}[title = $\gamma \circ \alpha$ è un \texttt{UCO} nelle connessioni di Galois]
+Questo perché sappiamo che $\gamma \circ \alpha$ è monotona, poiché 
+si tratta di composizione di funzioni monotone, è estensiva perché
+nelle proprietà delle connessioni di Galois abbiamo che 
+$\gamma \circ \alpha(c) \geq c$ ed è idempotente, ovvero
+perché $\gamma \circ \alpha \circ \gamma \circ \alpha(c) = 
+\gamma \circ \texttt{id} \circ \alpha(c) = \gamma \circ \alpha(c)$, poiché 
+$\gamma \circ \alpha \equiv \texttt{id}$.  
+\end{tcolorbox}
