@@ -111,8 +111,330 @@ forma approssimata. Decidiamo di rappresentare l'insieme di pixel dal suo contor
 Questo è l'ordine che inseriamo nel dominio di computazione, propagando l'ordinamento,
 che nel dominio concreto è dato dal contenimento, sul dominio astratto.
 Un oggetto è quindi più astratto se è la rappresentazione di un oggetto concreto più grande.
-
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.6]{img/abstractobj.png}
 \end{figure}
+L'idea è che il contorno di un certo oggetto venga disegnato con una pennarello 
+di spessore variabile, la variabilità di tale spessore è data dal livello di astrazione.
+Disegnando un un pennarello più spesso, si perde dettaglio, mentre disegnando
+con un pennarello più sottile, si guadagna dettaglio.
+
+\begin{tcolorbox}[title = Dominio astratto]
+    Il dominio astratto è l'insieme di tutti gli oggetti astratti, più 
+    le operazioni astratte che permettono di costruire oggetti astratti
+    (\textit{che approssimano le operazioni concrete}).
+\end{tcolorbox}
+\begin{tcolorbox}[title =  Astrazione]
+    L'astrazione è una funzione $\alpha$ che mappa ogni oggetto concreto
+    in una approssimazione rappresentata da un oggetto astratto $\alpha(o)$
+    in modo univoco.
+\end{tcolorbox}
+Il tutto è costruito in modo tale da poter confrontare oggetti astratti 
+tra di loro, scegliendo di guardare l'informazione approssimata allargando 
+il diametro del pennarello.
+\subsection{Concretizzazione}
+Nel mondo dell'interpretazione astratta corrisponde ad assegnare il significato 
+concreto dell'oggetto astratto che stiamo osservando.
+
+Nel caso degli oggetti rappresentati precedentemente, la concretizzazione
+è possibile vederla come l'idea di riempire il contorno dell'oggetto astratto.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/concretizzazione.png}
+\end{figure}
+Si tratta di una funzione $\gamma$ che mappa ogni oggetto
+astratto $\bar{o}$ in un oggetto concreto, in modo univoco
+$\gamma(\bar{o})$.
+
+Prendendo in considerazione l'insieme $\{2,6\}$ l'astrazione
+di tale insieme, ovvero l'applicazione $\alpha$, può essere visto come la 
+funzione che mappa l'insieme $\{2,6\}$ (\textit{fiore concreto}) in un oggetto astratto
+che rappresenta l'insieme $2\mathbb{Z}$ (\textit{fiore astratto}). L'applicazione 
+della funzione $\gamma$ su tale oggetto astratto, fa si che 
+si ottenga $\{0,2,4,6,\dots\}$ (\textit{fiore riempito}).
+\subsection{Connessione di Galois}
+Queste due funzioni di concretizzazione e astrazione nell'interpretazione
+astratta sono modellate dal concetto di \textbf{connessione di Galois}.
+
+Dice infatti che è una coppia di funzioni, tali che:
+\begin{itemize}
+    \item $\alpha$ è monotona
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.6]{img/galoisconn1.png}
+    \end{figure}
+    \item $\gamma$ è monotona
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.6]{img/galoisconn2.png}
+    \end{figure}
+\end{itemize}
+La monotonia fa si che preservino l'ordine tra i due domini.
+
+In più le connessioni di Galois devono estendere quando si esegue 
+il processo di astrazione, quindi il processo di astrazione può aggiungere 
+rumore:
+\[
+    \textit{per ogni oggetto concreto } x, \gamma \circ \alpha(x) \subseteq x
+\]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/galoisconn3.png}
+\end{figure}
+Inoltre se prima concretizziamo e poi astraiamo, otteniamo
+un oggetto astratto più piccolo di quello di partenza, questo perché 
+nel mondo concreto potrebbero esserci oggetti inutili che non hanno significato.
+\[
+    \textit{per ogni oggetto astratto } y, \alpha \circ \gamma(y) \sqsubseteq  y
+\]
+Tipicamente si ha che $\alpha \circ \gamma(y) = y$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/galoisconn4.png}
+\end{figure}
+\subsection{Ordinamento astratto}
+L'ordinamento astratto è il trasferimento dell'ordinamento concreto
+sul dominio astratto. Quindi un oggetto astratto è più piccolo di un altro
+oggetto astratto se la corrisponde concretizzazione è più piccola.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/abstractordering.png}
+\end{figure}
+In origine ciò che volevamo fare era calcolare delle operazioni sul dominio concreto 
+con l'assunzione che tali operazioni non fossero sempre decidibili. L'obiettivo 
+è trasferire tali operazioni dal mondo concreto al mondo astratto, in modo tale
+da poterle calcolare in modo sempre decidibile.
+Il modo più immediato per farlo è quello di passare attraverso le operazioni concrete.
+Nell'esempio del gambo abbiamo in fatti che:
+\[
+    \overline{\texttt{stem}} = \alpha (\texttt{stem} (\gamma(y)))
+\]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/abstractstem.png}
+\end{figure}
+Non potevamo aggiungere direttamente il gambo alla corolla astratta 
+poiché avremmo avuto un livello di dettaglio diverso dal risultato finale 
+che non avrebbe coinciso con lo spessore del pennarello scelto per 
+osservare l'oggetto concreto.
+È necessario definire un'operazione ad hoc per
+poter lavorare su oggetti astratti, preservando quindi l'informazione che 
+abbiamo sull'oggetto astratto, ovvero che il suo contorno è stato delimitato 
+con un certo spessore e su tutte le operazioni è possibile eseguire 
+tale passaggio.
+\subsection{Punto fisso astratto}
+Esattamente come le operazioni precedenti, anche il calcolo di punto fisso 
+può essere trasferito dal mondo concreto a quello astratto.
+
+Possiamo eseguire direttamente un'astrazione del punto fisso:
+\[
+  \texttt{abstract corolla} = \alpha(\texttt{concrete corolla}) =
+    \alpha(lfp^{\subseteq} F)  
+\]
+Dove $F(X)= \texttt{petal} \cup r[45](X)$.
+Sappiamo però che possa ereditare problemi di decidibilità 
+e di convergenza, poiché il punto fisso se esiste in presenza di 
+funzioni monotone, può divergere. È chiaro che poiché ci spostiamo 
+nel mondo astratto per controllare questo tipo di divergenza, non avrebbe 
+senso calcolare il punto fisso concreto e poi astrarlo. L'obiettivo 
+è quello di costruire un operatore astratto il cui punto fisso nel mondo 
+ideale che sia esattamente l'astrazione del punto fisso concreto, 
+però con il fatto il punto fisso astratto è calcolato su un mondo 
+approssimato e quindi potenzialmente convergente.
+\[
+    \alpha(lfp^{\subseteq} F) = lfp^{\sqsubseteq} \overline{F}
+\]
+In generale si tratta della situazione ideale, in cui abbiamo costruito 
+esattamente l'operatore di punto fisso che sul nostro dominio riesce 
+a raggiungere precisamente la proprietà del punto fisso concreto.
+In generale quello che succede è che il punto fisso astratto sarà 
+un'approssimazione ulteriore della proprietà del punto fisso concreto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/abstractfixpoint.png}
+\end{figure}
+
+\section{Costruzione formale dell'interpretazione astratta}
+Vediamo ora gli strumenti formali che utilizziamo per modellare e 
+descrivere quelle che sono le basi dell'interpretazione astratta.
+
+Il concetto principale utilizzato per descrivere l'interpretazione astratta,
+ovvero il legame che c'è tra mondo concreto, nel quale vogliamo calcolare una 
+semantica e nel quale vorremmo dare risposte, e il mondo astratto,
+nel quale potenzialmente possiamo calcolare la semantica, e nel quale possiamo 
+dare delle risposte, sono le \textbf{connessioni di Galois}.
+Per farlo dobbiamo costruire questo mondo astratto nel rispetto di 
+alcuni vincoli, in modo tale da dare determinate garanzie sul passaggio dal mondo 
+concreto al mondo astratto.
+
+Non si tratta dell'unico strumento formale, ma alcuni di questi sono 
+completamente equivalenti.
+
+\begin{tcolorbox}[title = Connessione di Galois]
+    La connessione di Galois \texttt{GC} è una coppia di funzioni monotone 
+    $\alpha$ e $\gamma$ definite tra un dominio concreto $C$ e un dominio
+    astratto $A$.
+\end{tcolorbox}
+In generale $A$ e $C$ possono essere dei \textit{poset}, per semplicità di 
+formalizzazione consideriamo $A$ e $C$ come reticoli completi, dove è quindi 
+definito un \textit{least upper bound} e un \textit{greatest lower bound}, oltre 
+all'ordine parziale. Gli ordinamenti sono definiti come segue:
+\begin{itemize}
+    \item $(A, \leq)$;
+    \item $(C, \leq)$;
+\end{itemize}
+
+Le due funzioni sono definite come segue:
+\begin{itemize}
+    \item $\alpha: C \rightarrow A$ è detta di \textbf{astrazione}
+    \item $\gamma: A \rightarrow C$ è detta di \textbf{concretizzazione}
+\end{itemize}
+$\alpha$ e $\gamma$ formano una connessione di Galois se sono monotone, ovvero: 
+\[
+    \forall x, y \in C . x \leq_c y \implies \alpha(x) \leq_A \alpha(y)
+\]
+\[
+    \forall x, y \in A . x \leq_A y \implies \gamma(x) \leq_C \gamma(y)
+\]
+e $\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, node distance=2cm]
+
+        % Define styles
+        \tikzstyle{set} = [ellipse, draw, minimum height=4cm, minimum width=6cm, align=center]
+        \tikzstyle{arrow} = [->, thick];
+    
+        % Nodes
+        \node[set] (C) at (0,0) {$C$};
+        \node[set, right=of C] (A) {$A$};
+        
+        
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$c$] (pointC) at (1,-1) {};
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$\alpha(c)$] (pointAlphaC) at (7,-1) {};
+        \draw[arrow, orange] (pointC) to [bend left] (pointAlphaC);
+        \node[circle, draw, fill=black, inner sep=2pt, label=above:$a$] (pointA) at (7,0) {};
+        \draw[-, thick] (pointAlphaC) to (pointA);
+        \node[circle, draw, fill=black, inner sep=2pt, label=above:$\gamma(a)$] (pointGammaA) at (1,0) {};
+        \draw[arrow, green] (pointA) to [bend right] (pointGammaA);
+        \draw[-, thick] (pointGammaA) to (pointC);
+
+        % Scrivo alpha sopra la freccia
+        \node at (4,0.2) {$\alpha$};
+        \node at (4,1.2) {$\gamma$};
+        
+    \end{tikzpicture}
+\end{figure}
+Dire che l'astrazione di un elemento è più piccolo di un certo oggetto 
+astratto equivale a dire che la concretizzazione di tale oggetto astratto 
+è più grande dell'oggetto astratto da cui siamo partiti.
+
+In generale $\alpha$ è chiamata aggiunta a destra,
+mentre $\gamma$ è chiamata aggiunta a sinistra.
+
+La monotonia garantisce di preservare l'ordine, mentre la condizione 
+$\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$ garantisce l'esistenza,
+nel mondo astratto, della migliore approssimazione possibile per 
+ogni elemento concreto.
+
+Come notazione, la connessione di Galois è rappresentata
+come segue: 
+\[(C, \leq_C) \galois{\alpha}{\gamma} (A, \leq_A)\]
+Inoltre la condizione $\alpha(c) \leq_A a \iff c \leq_C \gamma(a)$
+equivale a dire che:
+\[c \leq_C \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) \leq_A a\]
+questo perché non ponendo vincoli sul dominio astratto, può essere che 
+vi siano elementi assolutamente inutili per rappresentare la proprietà
+che ci interessa osservare e tali elementi hanno un significato che coincide al significato di 
+altri elementi astratti. Avendo più elementi astratti con lo stesso significato e supponendo che 
+$a$ abbia lo stesso significato di $\alpha(c)$, applicando la funzione $\gamma$ entrambi gli elementi 
+vengono mappati sullo stesso elemento concreto, e tornando indietro con $\alpha$ si ottiene
+si ottiene $\alpha(c)$.
+
+Le inserzioni di Galois, invece, differiscono dalle connessioni di Galois nel fatto che 
+$c \leq_C \gamma \, \circ \, a(c)$ diventa un'uguaglianza, quindi:
+\[c \leq_C \gamma \, \circ \, a(c) \iff \alpha \, \circ \, \gamma(a) = a\]
+Hanno come caratteristica di non avere nel dominio astratto $A$ nessun elemento inutile, 
+quindi ogni elemento astratto ha uno specifico significato concreto che ci interessa 
+osservare. Catturano meglio perché catturano tutti gli elementi significativi del dominio.
+
+La rappresentazione dell'inserzione di Galois è la seguente:
+\[(C, \leq_C) \galoiS{\alpha}{\gamma} (A, \leq_A)\]
+Poiché $\alpha$ è una funzione suriettiva.
+
+Ogni connessione di Galois può essere ridotta ad una inserzione di Galois, eliminando 
+gli elementi astratti inutili, ovvero quelli per cui esiste un elemento più piccolo che 
+ha lo stesso significato.
+\subsection{Esempio di inserzione e connessione di Galois}
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
+            % Coordinate dei vertici del cubo
+            \coordinate (A) at (0,0,0);
+            \coordinate (B) at (4,0,0);
+            \coordinate (C) at (4,4,0);
+            \coordinate (D) at (0,4,0);
+            \coordinate (E) at (0,0,4);
+            \coordinate (F) at (4,0,4);
+            \coordinate (G) at (4,4,4);
+            \coordinate (H) at (0,4,4);
+        
+            % Disegno del cubo con parentesi angolari
+            \foreach \p/\t in { A/{$\{1,5\}$},
+                                B/{$\{5\}$},
+                                C/{$\{3,5\}$},
+                                D/{$\{1,3,5\}$},
+                                E/{\{1\}},
+                                F/{$\varnothing$},
+                                G/{$\{3\}$},
+                                H/{$\{1,3\}$}}
+                \node[draw, fill, circle, inner sep=2pt, label={135:\t}] at (\p) {};
+            
+            \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+            \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+            \draw (A) -- (E);
+            \draw (B) -- (F);
+            \draw (C) -- (G);
+            \draw (D) -- (H);
+        \end{tikzpicture}
+        \caption{$\mathcal{P}(A)$, dove $A = \{1,3,5\}$}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \begin{tikzpicture}[transform shape, rotate around z=-10, rotate around x=25, rotate around y=-20]
+            % Coordinate dei vertici del cubo
+            \coordinate (A) at (0,0,0);
+            \coordinate (B) at (4,0,0);
+            \coordinate (C) at (4,4,0);
+            \coordinate (D) at (0,4,0);
+            \coordinate (E) at (0,0,4);
+            \coordinate (F) at (4,0,4);
+            \coordinate (G) at (4,4,4);
+            \coordinate (H) at (0,4,4);
+        
+            % Disegno del cubo con parentesi angolari
+            \foreach \p/\t in { A/{$\{4\}$},
+                                B/{$\{4,6\}$},
+                                C/{$\{6\}$},
+                                D/{$\varnothing$},
+                                E/{\{2,4\}},
+                                F/{$\{2,4,6\}$},
+                                G/{$\{2,6\}$},
+                                H/{$\{2\}$}}
+                \node[draw, fill, circle, inner sep=2pt, label={135:\t}] at (\p) {};
+            
+            \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+            \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+            \draw (A) -- (E);
+            \draw (B) -- (F);
+            \draw (C) -- (G);
+            \draw (D) -- (H);
+        \end{tikzpicture}
+        \caption{$\mathcal{P}(B)^d$, dove $B = \{2,4,6\}$}
+    \end{figure}
+\end{minipage}
