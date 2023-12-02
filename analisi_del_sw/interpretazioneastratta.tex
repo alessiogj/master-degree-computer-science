@@ -963,3 +963,230 @@ non osserva nulla, tutti gli elementi concreti sono mappati nel top.
 L'operatore $\lambda x . x$ è il dominio astratto più concreto, ovvero quello che
 osserva tutto, tutti gli elementi concreti sono mappati in se stessi, quindi l'identità.
 \section{Computazioni astratte}
+La computazione astratta tratta di come si trasferisce un calcolo dal dominio concreto al
+dominio astratto.
+L'obiettivo è quello di trasferire il calcolo, partiamo da una funzione definita su
+oggetti concreti: $f : c \to c$, che sono le nostre operazioni su elementi di $\mathcal{C}$, 
+che vogliamo trasferire in operazioni su elementi di $\mathcal{A}$: $f^\# : a \to a$.
+
+Diciamo che $f^\#$ è corretta per $f$ se $\alpha \, \circ \,
+f(c) \leq_\mathcal{A} f^\# \, \circ \, \alpha(c)$.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, node distance=2cm]
+
+        % Define styles
+        \tikzstyle{set} = [ellipse, draw, minimum height=4cm, minimum width=6cm, align=center]
+        \tikzstyle{arrow} = [->, thick];
+    
+        % Nodes
+        \node[set] (C) at (0,0) {$C$};
+        \node[set, right=of C] (A) {$A$};
+        
+        
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$c$] (pointC) at (1,-1) {};
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$\alpha(c)$] (pointAlphaC) at (7,-1) {};
+        \draw[arrow, orange] (pointC) to [bend left =] (pointAlphaC);
+        \node[circle, draw, fill=black, inner sep=2pt] (pointA) at (8,1) {};
+        \draw[->, thick] (pointAlphaC) to [bend right] (pointA);
+
+        \node[circle, draw, fill=black, inner sep=2pt] (result) at (7,0) {};
+
+        \node[circle, draw, fill=black, inner sep=2pt]
+        (pointGammaA) at (1,0) {};
+        \draw[arrow, green] (pointGammaA) to [bend left] (result);
+        \draw[->, thick] (pointC) to [bend left] (pointGammaA);
+
+        % Scrivo alpha sopra la freccia
+        \node at (4,0.2) {$\alpha$};
+        \node at (4,1.2) {$\alpha$};
+        \node at (0.5,-0.5) {$f$};
+        \node at (8,-0.7) {$f^\#$};
+
+        % segmento tra result e pointA
+        \draw[-, thick, blue] (result) to (pointA);
+        
+    \end{tikzpicture}
+\end{figure}
+Il calcolo astratto può perdere informazione rispetto alla proprietà del calcolo concreto. Il 
+calcolo astratto è corretto se approssima la proprietà del calcolo concreto. In modo analogo 
+possiamo caratterizzare la correttezza confrontato i risultati sul mondo concreto.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, node distance=2cm]
+
+        % Define styles
+        \tikzstyle{set} = [ellipse, draw, minimum height=4cm, minimum width=6cm, align=center]
+        \tikzstyle{arrow} = [->, thick];
+    
+        % Nodes
+        \node[set] (C) at (0,0) {$A$};
+        \node[set, right=of C] (A) {$C$};
+        
+        
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$a$] (pointC) at (1,-1) {};
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$\gamma(a)$] (pointAlphaC) at (7,-1) {};
+        \draw[arrow, orange] (pointC) to [bend left =] (pointAlphaC);
+        \node[circle, draw, fill=black, inner sep=2pt] (pointA) at (8,1) {};
+        \draw[->, thick] (pointAlphaC) to [bend right] (pointA);
+
+        \node[circle, draw, fill=black, inner sep=2pt] (result) at (7,0) {};
+
+        \node[circle, draw, fill=black, inner sep=2pt]
+        (pointGammaA) at (1,0) {};
+        \draw[arrow, green] (pointGammaA) to [bend left] (result);
+        \draw[->, thick] (pointC) to [bend left] (pointGammaA);
+
+        % Scrivo alpha sopra la freccia
+        \node at (4,0.2) {$\gamma$};
+        \node at (4,1.2) {$\gamma$};
+        \node at (0.5,-0.5) {$f^\#$};
+        \node at (8,-0.7) {$f$};
+
+        % segmento tra result e pointA
+        \draw[-, thick, blue] (result) to (pointA);
+        
+    \end{tikzpicture}
+\end{figure}
+Il significato del risultato del calcolo astratto approssima il risultato concreto.
+Quindi $f \circ \gamma(a) \leq_\mathcal{C} \gamma \circ f^\#(a)$.
+
+\begin{tcolorbox}
+    Dato $\galois{\alpha}{\gamma} \mathcal{A}, f: c \to c$, allora $f^\# : a \to a$ 
+    soddisfa la relazione  
+    \[\alpha \, \circ \, f(c) \leq_\mathcal{A} f^\# \, \circ \, \alpha(c)\]
+    se e solo se soddisfa
+    \[f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\#(a)\]
+\end{tcolorbox}
+In particolare se partiamo dalla condizione che per ogni $x$ appartenente al dominio concreto,
+$\alpha \, \circ \, f(x) \leq_\mathcal{A} f^\# \, \circ \, \alpha(x) \iff 
+\alpha \, \circ \, f \, \circ \, \gamma(x) \leq_\mathcal{A} f^\#(x)$.
+dove $\alpha \, \circ \, f \, \circ \, \gamma(x)$ è la funzione \textbf{best 
+correct approximation}.
+\[
+  f^\# \textit{ è sound } \iff \textit{ approssima } f^\# \equiv \alpha \, \circ \, f \, \circ \, \gamma 
+  : \mathcal{A} \to \mathcal{A}
+\]
+Tale costruzione va bene per gli operatori, ma non è accettabile come trasferimento per l'intera 
+semantica, perché il nostro obiettivo è non passare da $f$.
+\subsection{Soundness sulle chiusure}
+$\alpha f(x) \leq_\mathcal{A} \alpha \circ f \circ \alpha(x)$ per monotonia di $\gamma$ 
+otteniamo $\gamma \circ \alpha \circ f(x) \leq_\mathcal{C} \gamma \circ \alpha
+\circ f \circ \gamma \circ \alpha(x)$. Osserviamo che abbiamo sempre $\gamma \circ \alpha$
+e questo possiamo ridefinirlo come $\rho \in \texttt{UCO}$ perché abbiamo già detto che  
+$\gamma \circ \alpha$ è \texttt{UCO} del dominio concreto. 
+
+Quindi la relazione di correttezza ottenuta confrontato i due calcoli nel mondo 
+astratto si riscrive in termini di chiusure esattamente in questo modo:
+\[
+    \rho \circ f(x) \leq_\mathcal{C} \rho \circ f \circ \rho(x)
+\]
+
+Considerando $f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\#(a)$, allora
+$f \circ \gamma(a) \leq \gamma \circ \alpha \circ f \circ \gamma(a)$. Essendo $\gamma, \alpha$ 
+connessioni di Galois, allora ogni elemento astratto è l'astrazione di un elemento concreto, 
+$a = \alpha(c)$, quindi:$f \circ \gamma \circ \alpha(c) \leq \gamma
+\circ \alpha \circ f \circ \gamma \circ \alpha(c)$
+
+Otteniamo quindi:
+\[
+  f \circ \rho(c) \leq_\mathcal{C} \rho \circ f \circ \rho(c)
+\]
+La relazione è leggermente diversa, ma è equivalente. 
+
+\begin{tcolorbox}
+    Ragionare con le inserzioni di Galois garantisce per costruzione la correttezza.
+    Le analisi costruite nel contesto di interpretazione astratta sono dette 
+    corrette per costruzione.
+\end{tcolorbox}
+\subsection{Completeness sulle chiusure}
+\subsubsection{Backward completeness - Relazione di precisione sul dominio $\mathcal{A}$}
+Un'analisi è precisa quando eseguire il calcolo nel mondo astratto ed eseguirlo nel mondo concreto 
+non fa differenza. L'informazione scartata durante la costruzione del mondo astratto, non era informazione utile per il calcolo 
+che interessa effettuare. Quello che non osserviamo non è rilevante 
+per il calcolo che vogliamo effettuare.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, node distance=2cm]
+
+        % Define styles
+        \tikzstyle{set} = [ellipse, draw, minimum height=4cm, minimum width=6cm, align=center]
+        \tikzstyle{arrow} = [->, thick];
+    
+        % Nodes
+        \node[set] (C) at (0,0) {$C$};
+        \node[set, right=of C] (A) {$A$};
+        
+        
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$c$] (pointC) at (1,-1) {};
+        \node[circle, draw, fill=black, inner sep=2pt, label=below:$\alpha(c)$] (pointAlphaC) at (7,-1) {};
+        \draw[arrow, orange] (pointC) to [bend left =] (pointAlphaC);
+        \node[circle, draw, fill=black, inner sep=2pt] (pointA) at (7,0) {};
+        \draw[->, thick] (pointAlphaC) to [bend right] (pointA);
+        \node[circle, draw, fill=black, inner sep=2pt]
+        (pointGammaA) at (1,0) {};
+        \draw[arrow, green] (pointGammaA) to [bend left] (pointA);
+        \draw[->, thick] (pointC) to [bend left] (pointGammaA);
+
+        % Scrivo alpha sopra la freccia
+        \node at (4,0.2) {$\alpha$};
+        \node at (4,1.2) {$\alpha$};
+        \node at (0.5,-0.5) {$f$};
+        \node at (7.5,-0.5) {$f^\#$};
+    \end{tikzpicture}
+\end{figure}
+\[
+    \alpha \circ f(x) = f^\# \circ \alpha(x) 
+\]
+Se sostituiamo $f^\#$ con la \texttt{BCA} otteniamo:
+\[
+    \alpha \circ f(x) = \alpha \circ f \circ \gamma \circ \alpha(x)
+\]
+Possiamo applicare $\gamma$ a sinistra e a destra:
+\[
+    \gamma \circ \alpha \circ f(x) = \gamma \circ \alpha \circ f \circ \gamma \circ \alpha(x)
+\]
+Quindi
+\[
+    \rho \circ f(x) = \rho \circ f \circ \rho(x)
+\]
+La proprietà del risultato ottenuto calcolando sugli elementi astratti è la stessa 
+del risultato ottenuto calcolando sugli elementi concreti. Astrarre l'input non genera nessuna 
+approssimazione.
+\subsubsection{Forward completeness - Relazione di precisione sul dominio $\mathcal{C}$}
+Il significato del calcolo astratto coincide con il calcolo concreto; eseguendo le operazioni 
+precedenti:
+\[
+    f^\# = \alpha \circ f \circ \gamma \qquad f \circ \rho(x) = \rho \circ f \circ \rho(x)
+\]
+Approssimare il risultato del calcolo astratto non genera imprecisione.
+\subsubsection{Esempio di backward completeness}
+Supponiamo che $\mathcal{C} = \wp(\mathcal{Z})$, $\mathcal{A} = Segni$ ($\texttt{Pos}, \texttt{Neg},
+\bot, \top$) e che $f=+$.
+
+Allora $f \rho \circ f \circ \rho \to \texttt{Pos} +^\# \texttt{Neg} = ?$ ed è evidente che abbiamo perso informazione.
+
+Se invece facciamo il calcolo completo allora $\rho \circ f \to \texttt{Segni}(5 + (-7)) = \texttt{Neg}$, quindi 
+è evidente che non siamo regolari. In questo caso il problema è nell'input. Aver calcolato la somma 
+sui segni ha fatto si che non ci fosse più l'informazione di cui abbiamo bisogno per calcolare
+in modo abbastanza preciso l'operatore di somma. L'astrazione dell'input ha fatto perdere 
+l'informazione necessaria affinché la somma restituisse un risultato preciso.
+
+Non c'è modo di cambiare l'osservazione in output perché la risposta diventi più precisa. 
+Questo significa che da una parte abbiamo la backward completeness e inoltre dall'altra il 
+fatto che non possa cambiare il modo di osservare il risultato per ottenere precisione mi dice che la 
+proprietà è anche forward complete.
+
+Cambiando $f \circ \rho \to \texttt{Neg} +^\# \texttt{Pos} = ?$ comunque non otteniamo
+precisione.
+
+Abbiamo perso talmente tanta informazione sull'astrazione dell'input che comunque non 
+ho speranze di avere un risultato che abbia significato. 
+
+\begin{tcolorbox}
+    La perdita di precisione è dovuta all'astrazione dell'input e perciò si parla di
+    backward completeness.
+\end{tcolorbox}
+\subsubsection{Esempio di forward completeness}
