@@ -674,3 +674,292 @@ perché $\gamma \circ \alpha \circ \gamma \circ \alpha(c) =
 \gamma \circ \texttt{id} \circ \alpha(c) = \gamma \circ \alpha(c)$, poiché 
 $\gamma \circ \alpha \equiv \texttt{id}$.  
 \end{tcolorbox}
+\subsection{Esempio di \texttt{UCO}}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        \foreach \p/\t in { A/{$\{1,5\}$},
+                            B/{$\{5\}$},
+                            C/{$\{3,5\}$},
+                            D/{$\{1,3,5\}$},
+                            E/{\{1\}},
+                            F/{$\varnothing$},
+                            G/{$\{3\}$},
+                            H/{$\{1,3\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (A\p) at (\p) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw (C) -- (G);
+        \draw (D) -- (H);
+
+        %retta 
+        \coordinate (J) at (12,0,0);
+        \coordinate (K) at (12,2,0);
+        \coordinate (N) at (12,-2,0);
+
+        %connetto i punti
+        \draw (J) -- (K) -- (N); 
+
+
+        \foreach \p/\t in { J/{$[\{4\},\{4,6\}]$},
+                            K/{$[\varnothing,\{6\}]$},
+                            N/{$[\{2,4\},\{2,4,6\},\{2,6\},\{2\}]$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (B\p) at (\p) {};
+
+            \draw[->, color=gray, bend right=20, thick, dashed] (E) to node[above] {} (N);
+            \draw[->, color=gray, bend right=20, thick, dashed] (F) to node[above] {} (N);
+            \draw[->, color=gray, bend left=20, thick, dashed] (E) to node[above] {} (N);
+            % Disegna la freccia che va su se stessa
+            \draw[->, color=red, bend right=20, thick, red] (F) to node[above] {} (E);
+            \draw[->, color=red, bend right=20, thick, red] (G) to node[above] {} (H);
+            \draw[->, color=red, bend left=20, thick, red] (A) to node[above] {} (D);
+            \draw[->, color=red, bend left=20, thick, red] (B) to node[above] {} (D);
+            \draw[->, color=red, bend left=20, thick, red] (C) to node[above] {} (D);
+
+
+\end{tikzpicture}
+\end{figure}
+\[
+    \gamma \circ \alpha (\mathcal{A}') = 
+    \gamma (\{b \in \mathcal{B} \mid \mathcal{A}' \mathcal{R} b\}) = 
+    \{ a \in \mathcal{A} \mid a \mathcal{R} \{ b \in \mathcal{R} b\}\}
+    = \{a \in \mathcal{A} \mid  \forall b \in \mathcal{B} . \mathcal{A}'
+    \mathcal{R} b \implies a \mathcal{R} b\}
+\]
+Se partiamo dall'insieme vuoto $\varnothing$ e applichiamo $\gamma \circ \alpha$
+otteniamo l'insieme $\{1\}$, se applichiamo nuovamente $\gamma \circ \alpha$ 
+otteniamo l'insieme $\{1\}$, ovvero l'insieme di partenza. Quindi è \textbf{idempotente},
+e tale risultato è l'\texttt{UCO}.
+
+L'\texttt{UCO} che definiamo sul dominio concreto permette di associare ad ogni elemento concreto l'osservazione 
+precisa che abbiamo scelto di guardare e che meglio approssima l'oggetto da cui siamo partiti.
+
+Le immagini del nostro \texttt{UCO}, che sono i punti fissi, sono i significati degli oggetti astratti, ovvero 
+gli elementi concreti che abbiamo scelto di osservare con precisione, ed è da qui che cerchiamo di 
+approssimare gli altri elementi.
+
+I punti in questione sono quindi i significati degli oggetti astratti, ovvero esattamente gli
+elementi concreti che
+abbiamo deciso di osservare con precisione. Gli elementi in cui cercare l'approssimazione di tutti 
+gli altri elementi concreti.
+\begin{tcolorbox}
+    L'\texttt{UCO} altro non fa che associare ad ogni elemento concreto la sua migliore 
+    approssimazione. Possiamo ignorare la rappresentazione astratta degli elementi 
+    che abbiamo scelto di osservare con precisione e consideriamo solamente 
+    la trasformazione che associa ad ogni elemento concreto la sua migliore approssimazione,
+    ovvero che associa ad ogni elemento concreto la proprietà astratta di interesse che lo 
+    caratterizza.
+\end{tcolorbox}
+Ciò che ci permette di fare il passaggio agli operatori di chiusura superiore è di 
+dimenticarci del dominio astratto.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        \foreach \p/\t in { A/{$\{1,5\}$},
+                            B/{$\{5\}$},
+                            C/{$\{3,5\}$},
+                            D/{$\{1,3,5\}$},
+                            E/{\{1\}},
+                            F/{$\varnothing$},
+                            G/{$\{3\}$},
+                            H/{$\{1,3\}$}}
+            \node[draw, fill, circle, inner sep=2pt, label={135:\t}] (A\p) at (\p) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G) -- (H) -- cycle; % Top
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw (C) -- (G);
+        \draw (D) -- (H);
+
+        \draw[->, color=red, bend right=20, thick, red] (F) to node[above] {} (E);
+        \draw[->, color=red, bend right=20, thick, red] (G) to node[above] {} (H);
+        \draw[->, color=red, bend left=20, thick, red] (A) to node[above] {} (D);
+        \draw[->, color=red, bend left=20, thick, red] (B) to node[above] {} (D);
+        \draw[->, color=red, bend left=20, thick, red] (C) to node[above] {} (D);
+\end{tikzpicture}
+\end{figure}
+\section{Moore family}
+Siano $\mathcal{P}, \leq_\mathcal{P}$ un reticolo completo, allora
+$x \subseteq \mathcal{P}$ è un \textbf{insieme di Moore} se 
+$x = \mathcal{M}(x)$, ovvero \textbf{chiusura di Moore di x}.
+dove:
+\[
+  \mathcal{M}(x) =  \biggl\{\bigwedge_\mathcal{P} \mathcal{S} \mid \mathcal{S} \subseteq x\biggr\}
+\]
+Dove $x$ è chiuso per $\bigwedge_\mathcal{P}$, ovvero per ogni sottoinsieme $\mathcal{S} \subseteq x$.
+
+In altri termini:
+\[
+  Sia \qquad \mathcal{S} \subseteq x \implies \bigwedge_\mathcal{P} \mathcal{S} \in x  
+\]
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[transform shape]
+
+        \coordinate (A) at (0,0,0);
+        \coordinate (B) at (4,0,0);
+        \coordinate (C) at (4,4,0);
+        \coordinate (D) at (0,4,0);
+        \coordinate (E) at (0,0,4);
+        \coordinate (F) at (4,0,4);
+        \coordinate (G) at (4,4,4);
+        \coordinate (H) at (0,4,4);
+
+        
+        \node[draw, fill, circle, inner sep=2pt, label={135:$0^+$}] (q) at (H) {};
+        \node[draw, fill, circle, inner sep=2pt, label={135:$0^-$}] (r) at (C) {};
+        \node[draw, fill, circle, inner sep=2pt, label={135:$\mathbb{Z}$}] (u) at (D) {};
+        \node[draw, fill, circle, inner sep=2pt, label={135:$\varnothing$}] (t) at (F) {};
+
+        \draw (A) -- (B) -- (C) -- (D) -- cycle; % Base
+        \draw (E) -- (F) -- (G);
+        \draw[red] (G) -- (H);
+        \draw (H) -- (E);
+        \draw (A) -- (E);
+        \draw (B) -- (F);
+        \draw[red] (C) -- (G);
+        \draw (D) -- (H);
+
+\end{tikzpicture}
+\end{figure}
+Considerando il sottoreticolo di $\wp(\mathcal{Z})$ e prendendo come elementi di x: $0^+, 0^-,
+\mathbb{Z}, \varnothing$;  allora $x$ non è Moore family di $\wp(\mathcal{Z})$, perché prendendo
+la congiunzione logica \texttt{AND} tra due elementi di $0^+$ e  $0^-$ otteniamo un elemento che 
+non appartiene a $x$ (\textit{tale elemento è lo zero}).
+\[
+  \exists \mathcal{S} = \{ 0^+, 0^- \} \, t.c. \, \bigwedge_\mathcal{P} \mathcal{S} = 0 \notin x
+\]
+Nella nostra concezione di dominio astratto, l'insieme dei punti fissi di un \texttt{UCO} 
+$\rho:  \mathcal{P} \to \mathcal{P}$ formano una Moore family di $\mathcal{P}$. Di fatto ogni Moore family di un 
+dominio concreto rappresenta una proprietà di un dominio astratto.
+
+\begin{tcolorbox}
+    I punti fissi di $\rho$ sono una Moore family del dominio concreto, ovvero di $\wp(\mathcal{A})$.
+\end{tcolorbox}
+\subsection{Considerazioni}
+Disponiamo di tre modi differenti per rappresentare un dominio astratto:
+\begin{itemize}
+    \item \textbf{UCO}: $\rho: \mathcal{P} \to \mathcal{P}$;
+    \item \textbf{Moore family}: $x \subseteq \mathcal{P}$;
+    \item \textbf{Inserzioni di Galois}: $(\mathcal{C}, \leq_\mathcal{C}) \galoiS{\alpha}{\gamma}
+    (\mathcal{A}, \leq_\mathcal{A})$.
+\end{itemize}
+Ha senso parlare delle tre rappresentazioni, perché ognuno può essere utilizzato in contesti diversi.
+Le connessioni di Galois sono utili per rappresentare dominio astratto, quindi dipende dalla rappresentazione degli elementi, 
+ed è utile durante l'implementazione, in modo da rappresentare in modo semplice le proprietà 
+di oggetti astratti.
+
+Gli altri due metodi di modellazione del dominio astratto sul dominio concreto sono indipendenti 
+dalla rappresentazione di elementi perché si parla di elementi astratti attraverso i loro significati, 
+indipendenti dall'astrazione. Chiaramente meno adatti ai contesti applicativi, ma più adatti 
+in contesti di verifica di proprietà sui domini astratti, o comunque ragionamenti formali sulle 
+caratteristiche del dominio astratto e dell'analisi.
+
+Quindi in base al contesto si decide la metodologia di rappresentazione adatta.
+
+\subsection{Relazione tra Moore family e inserzioni di Galois}
+\begin{itemize}
+    \item Supponiamo di partire da un'inserzione di Galois.
+    \[
+        \mathcal{C} \galoiS{\alpha}{\gamma} \mathcal{A} \iff \mathcal{A} \textit{ è isomorfo a una famiglia di 
+        Moore di } \mathcal{C}
+    \]
+    Quindi
+    \[
+      \exists \mathcal{X} \textit{famiglia di Moore di } \mathcal{C} \, t.c. \, 
+      \exists \iota : \mathcal{A} \rightarrow \mathcal{X}
+    \]
+    Esiste quindi una funzione biunivoca tra $\mathcal{A}$ e $\mathcal{X}$.
+    \item Supponiamo di partire da un \texttt{UCO}.
+    \[
+        \rho \in \texttt{UCO}(\mathcal{C}) \implies \exists \, \textit{isomorfismo tra }
+        \iota: \rho(\mathcal{C}) \to \mathcal{A}
+    \]
+    Dove $\mathcal{A}$ e una qualunque rappresentazione degli elementi di $\rho(\mathcal{C})$.
+    
+    Quindi $\mathcal{C} \galoiS{\iota^{-1}}{  \iota\,\circ\,\rho} \mathcal{A}$.
+\end{itemize}
+\begin{tcolorbox}
+    \[
+        \iota^{-1} \, \circ \, \iota \, \circ \, \rho = \rho
+    \]
+    Questo perché $\iota^{-1} \, \circ \, \iota = \texttt{id}$ e $\iota \, \circ \, \rho = \alpha$.
+
+    \[
+        \iota \, \circ \, \rho \, \circ \, \iota^{-1}(\alpha) 
+        = \iota \, \circ \, \rho \, \circ \, \rho(\alpha) 
+        = \iota \, \circ \, \rho(\alpha)  = \alpha
+    \]
+    Dove $\iota^{-1}(\alpha) \in \rho$
+\end{tcolorbox}
+\subsection{Relazione tra inserzioni di Galois e \texttt{UCO}}
+La relazione è immediata, poiché se $\mathcal{C} \galoiS{\alpha}{\gamma} \mathcal{A}$, allora 
+$\gamma \, \circ \, \alpha \in \texttt{UCO}$
+\subsection{Relazione tra \texttt{UCO} e Moore family}
+La relazione è immediata, poiché se $\rho \in \texttt{UCO}(\mathcal{C})$, allora $\rho(\mathcal{C})$, che 
+è l'insieme dei punti fissi è famiglia di Moore di $\mathcal{C}$.
+\section{Reticolo delle interpretazioni astratte}
+Supponiamo di avere un reticolo completo
+\[
+    \langle \mathcal{C}, \leq_\mathcal{P}, \land, \lor, \top, \bot \rangle
+\]
+Abbiamo inoltre l'insieme di tutti i domini astratti $\mathcal{A}_i \in \texttt{UCO}(\mathcal{C})$.
+\[
+    \langle \texttt{UCO}(\mathcal{C}), \sqsubseteq, \sqcap, \sqcup, \lambda x . \top,
+    \lambda x . x \rangle
+\] 
+\texttt{UCO} ordinato per precisione relativa è un reticolo completo. 
+
+L'ordinamento di precisione relativa permette di confrontare il grado di precisione dei domini 
+astratti, dove un elemento è più preciso se contiene più elementi. 
+\[
+  \mathcal{A}_1 \sqsubseteq \mathcal{A}_2 \iff \mathcal{A}_1 \textit{ corrisponde ad un insieme 
+  di elementi più grande} 
+\]
+\[
+    \rho \sqsubseteq \eta \iff \forall y \in \mathcal{C} \, . \, \rho(y) \leq \eta(y)
+    \iff \rho(\mathcal{C}) \subseteq \eta(\mathcal{C})
+\]
+Con questo ordinamento relativo possiamo definire un operatore di greatest lower bound, 
+chiamato prodotto ridotto, $\sqcap \mathcal{A}_i$. Viene preso il più piccolo dominio astratto tra 
+tutti i domini che contengono $\mathcal{A}_i$. Ricordiamo che non è banalmente l'unione, l'unione 
+può non essere una {Moore family}.
+
+L'operatore di least upper bound, chiamato prodotto esteso, $\sqcup \mathcal{A}_i$.
+Viene preso il più grande dominio astratto contenuto in tutti i domini astratti.
+Quindi:
+\[
+    \bigcap \mathcal{A}_i = \sqcap \mathcal{A}_i
+\]
+
+L'operatore $\lambda x . \top$ è il dominio astratto più astratto, ovvero quello che 
+non osserva nulla, tutti gli elementi concreti sono mappati nel top.
+
+L'operatore $\lambda x . x$ è il dominio astratto più concreto, ovvero quello che
+osserva tutto, tutti gli elementi concreti sono mappati in se stessi, quindi l'identità.
+\section{Computazioni astratte}
