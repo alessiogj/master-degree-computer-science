@@ -1410,7 +1410,7 @@ Il problema è che $x$ ha più di una radice quadrata, che radice bisogna selezi
 \end{theorem}
 
 Sia $n = p \cdot q$ con $p$ e $q$ primi di Blum scelti casualmente, sia 
-$x \in_R \mathcal{z}^*$, allora
+$x \in_R \mathcal{Z}^*$, allora
 \begin{align*}
   \begin{array}{lllll}
     a_1 & a_2 & a_3 & \dots & a_l \\
@@ -1438,3 +1438,46 @@ possiamo restituire i bit in ordine di enumerazione crescente, ovvero $b_1, b_2,
 
 La differenza è che se il numero $n$ è conosciuto da tutti, allora è possibile restituire i bit solamente 
 nell'ordine $b_1, b_2, \dots, b_l$, altrimenti in qualsiasi ordine.
+
+\section{Crittosistema di Blum Goldwasser}
+L'idea è stata di utilizzare un crittosistema dato dai soliti tre algoritmi, quello di generazione 
+della chiave, quello di codifica e quello di decodifica.
+La chiave è data da $p, q$ primi di Blum con $k$ bit, $n = p \cdot q$, dove la chiave pubblica 
+è data da $n$ e la chiave privata è data da $p$ e $q$.
+Chi possiede la chiave segreta riesce a calcolare radici quadrate in modulo $n$. L'algoritmo 
+di codifica è dato da un $x\in_R \mathbb{Z}_n^*$, e attraverso blum blum shub, generiamo 
+$l$ bit pseudocausali $b_1, \dots, b_l$. Supponiamo di avere un messaggio $m$ di lunghezza $l$,
+allora il messaggio cifrato sarà:
+\[
+  c_1, \dots, c_l, x^{2^{l+1}} = m_1 \oplus b_1, \dots, m_l \oplus b_l
+\]
+Dove $x^{2^{l+1}}$ è il primo elemento della sequenza generata da blum blum shub.
+
+Sostanzialmente il messaggio viene cifrato attraverso one time pad, 
+con una chiave non realmente casuale, ma con numeri pseudocasuali mediante un seme.
+
+Se la sequenza $b_1, \dots, b_l$ è casuale, allora il cyphertext non contiene 
+alcuna informazione sul plaintext, quindi il crittosistema è sicuro.
+
+Supponendo per assurdo che dal ciphertext sia possibile ricavare informazioni sul plaintext,
+allora si riesce a distinguere qualunque coppia di messaggi, ma sappiamo che non lo si riesce a 
+fare in presenza di una chiave realmente casuale. Ma nel caso specifico del nostro crittosistema, 
+si dovrebbe riuscire a distinguere sul generato di bit pseudocausali, ma questo è assurdo 
+poiché non siamo in grado di distinguere una sequenza pseudocasuale da una casuale.
+
+La decodifica ricava $x^2$, infatti, data la conoscenza della fattorizzazione di $n$, 
+è possibile calcolare $\sqrt{x^{2^{l+1}}} = x^{2^l}$, e così via. Si ricava quindi
+$x^{2^l}, x^{2^{l-1}}, \dots, x^2$ e si calcolano i bit $b_1, \dots, b_l$. Attraverso 
+questi bit è possibile decifrare il messaggio con l'operazione inversa:
+\[
+  m_i = c_i \oplus b_i
+\]
+
+L'algoritmo in questione effettua il calcolo di $l$ quadrati,
+con un costo di $\Theta(n^2)$ per ciascuna operazione di elevamento
+al quadrato. Pertanto, il costo totale dell'algoritmo è $\Theta(l \cdot n^2)$.
+Questo algoritmo è uno stream cypher, a differenza di \texttt{RSA}, che è invece
+un block cypher. Nonostante questa differenza nel metodo di cifratura, le complessità
+computazionali di entrambi gli algoritmi risultano essere simili. La distinzione principale
+risiede nel fatto che l'algoritmo di Blum Goldwasser gode di una dimostrazione di sicurezza,
+dimostrabilità che manca invece in \texttt{RSA}.

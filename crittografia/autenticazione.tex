@@ -1,0 +1,35 @@
+\chapter{Autenticazione}
+\section{Autenticazione di messaggi}
+I crittosistemi costruiti fino ad ora sono malleabili, quando riceviamo un messaggio vorremmo
+essere sicuri che nessuno l'abbia modificato. Per farlo possiamo usare sistemi non malleabili
+dove le modifiche non sono prevedibili, oppure aggiungere della ridondanza, aggiungendo
+bit di parità o un codice ciclico di ridondanza.
+
+Possedendo però un messaggio cifrato e la sua decifratura, o dalla chiave pubblica,
+è possibile modificare un messaggio 
+cifrato attraverso il non quadrato ricavato, alterando qualsiasi bit in maniera controllata, e 
+quindi modificare in maniera controllata anche i codici di ridondanza.
+
+Per garantire l'integrità e l'autenticità dei messaggi trasmessi, è fondamentale adottare sistemi di autenticazione avanzati. Uno di questi approcci consiste nell'utilizzare una funzione casuale condivisa tra mittente e destinatario.
+
+Quando un mittente invia un messaggio, genera una sequenza di bit aggiuntiva chiamata
+Message Authentication Code (\textit{MAC}). Questo \textit{MAC} viene ottenuto applicando una
+funzione casuale precedentemente concordata al messaggio stesso. La casualità della
+funzione è cruciale e deve essere condivisa solo tra le parti interessate, rimanendo
+sconosciuta agli altri.
+
+Il destinatario, una volta ricevuto il messaggio, applica la stessa funzione casuale
+al messaggio ricevuto per calcolare un nuovo \textit{MAC}. Se il \textit{MAC} calcolato corrisponde a
+quello ricevuto con il messaggio, ciò indica che il messaggio non è stato modificato
+in modo controllato e l'autenticazione è riuscita.
+
+L'uso di una funzione casuale impedisce a un potenziale aggressore di prevedere la
+sequenza di bit aggiuntiva al messaggio. Inoltre, permette di verificare l'autenticità
+del messaggio, poiché solo il mittente e il destinatario conoscono la funzione casuale
+utilizzata.
+
+Un possibile attaccante che dispone di un messaggio, non sarà in grado di produrre 
+il codice di autenticazione corretto, poiché il risultato della applicazione di una funzione 
+causale è una sequenza di bit casuale, e quindi non prevedibile e distinguibile.
+
+\section{Funzioni pseudo-casuali}
