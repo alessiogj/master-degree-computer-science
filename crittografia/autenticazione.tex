@@ -33,3 +33,164 @@ il codice di autenticazione corretto, poiché il risultato della applicazione di
 causale è una sequenza di bit casuale, e quindi non prevedibile e distinguibile.
 
 \section{Funzioni pseudo-casuali}
+Avendo imparato a generare bit pseudocasuali, siamo in grado di generare funzioni pseudo-casuali,
+ovvero funzioni che non sono realmente casuali, ma sono generate da un seme, ma agli occhi 
+di un osservatore esterno sono casuali.
+
+Sia $\mathcal{U}_k$ l'insieme delle funzioni da $\{0,1\}^k$ a $\{0,1\}^k$, 
+vogliamo scegliere $f$ appartenente a $\mathcal{U}_k$ in maniera casuale.
+
+Possiamo generare una sequenza di bit pseudocasuali per generare l'indice di $f$ in 
+una enumerazione di $\{0,1\}^k \to \{0,1\}^k$. Dalla teoria del calcolo combinatorio sappiamo
+che la cardinalità di delle funzioni da $A$ a $B$ è $|B|^{|A|}$, quindi la cardinalità
+di $\mathcal{U}_k$ è $\{0,1\}^{k\cdot \{0,1\}^k} = 2^{k\cdot 2^k}$.
+Per denotare l'indice della funzione avremmo quindi bisogno di $\log_2(2^{k\cdot 2^k}) = k\cdot 2^k$ bit,
+ovvero una quantità di bit esponenziale, cosa che non ci possiamo permettere.
+
+Ci farebbe comodo denotare una funzione con $k$ bit, il problema è che con i nostri indici dovremmo 
+denotare un insieme di funzioni minori dell'insieme delle funzioni in $\mathcal{U}_k$, dobbiamo 
+quindi lavorare con un insieme $\mathcal{F}_k \subseteq \mathcal{U}_k$. Vogliamo comunque 
+far in modo che chiunque non sia in grado di accorgersi che sia stata scelta una funzione
+da un insieme più piccolo.
+
+In un generatore di funzioni pseudocasuali, partiamo dall'idea che:
+\begin{enumerate}
+    \item Troviamo un insieme di funzioni
+    $\mathcal{F}_k \subseteq \mathcal{U}_k$, tale che $|\mathcal{F}_k| = 2^k$; imponendo per definizione
+    tale dimensione, siamo in grado di generare funzioni casuali avendo a disposizione $k$ bit;
+    \item Esiste un algoritmo probabilistico polinomiale che calcola la funzione $(i,x) \mapsto f_i(x)$;
+    \item Sia $\mathcal{D}\in \mathcal{PPT}$ un algoritmo che, su input $1^k$ (\textit{il 
+    security parameter rappresentato in unario, nel valore, ovvero nel numero di bit che
+    usiamo per rappresentare le nostre informazioni}), che interroga $f$ aribitrariamente,
+    anche in maniera adattiva (\textit{scegliendo l'argomento su cui interrogare la funzione 
+    $f$ anche sulla base dei risultati ottenuti dalle precedenti interrogazioni, ma sempre in 
+    tempo polinomiale}). Siano $\mathcal{P}_k^{\mathcal{D}, \mathcal{U}}$ la probabilità che 
+    $\mathcal{D}$ restituisca $1$ quando $f\in_R \mathcal{U}_k$ e $\mathcal{P}_k^{\mathcal{D}, \mathcal{F}}$
+    la probabilità che $\mathcal{D}$ restituisca $1$ quando $f\in_R \mathcal{F}_k$, allora 
+    \[
+        \left| \mathcal{P}_k^{\mathcal{D}, \mathcal{U}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{F}} \right| \leq k^{-\omega(1)}
+    \]
+\end{enumerate}
+\subsection{Costruzione delle funzioni pseudo-casuali}
+\subsubsection{Primo metodo}
+Sia $\mathcal{G}$ un psudo random sequence generator (\texttt{PRSG}), ovvero un algoritmo che
+genera una sequenza di bit pseudocasuali.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+      \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$\mathcal{G}$};
+      \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$i$};
+      %freccia ondulata
+      \draw[decorate, decoration={snake, amplitude=1mm}] (2, 0) -- (10, 0);
+        \draw[-] (4, 0.2) -- (4, -0.2);
+        \draw[-] (6, 0.2) -- (6, -0.2);
+        \draw[-] (8, 0.2) -- (8, -0.2);
+        \draw[-] (10, 0.2) -- (10, -0.2);
+
+        %k bit
+        \draw (3, 0.5) node {$k$};
+        \draw (3, -0.5) node {$x$};
+        \draw (5, 0.5) node {$k$};
+        \draw (5, -0.5) node {$y$};
+    \end{tikzpicture}
+  \end{figure}
+Su input $x$ generiamo $k$ bit e li restituiamo. Oltre a restituirli, ci ricordiamo che $x$ è 
+associata ai primi $k$ bit generati dal \texttt{PRSG}. Sul successivo input $y$ se $y = x$
+restituiamo il risultato precedente, altrimenti generiamo $k$ bit nuovi e li restituiamo.
+
+Ogni volta che abbiamo un nuovo input, generiamo $k$ bit nuovi, altrimenti restituiamo il risultato
+fornito in precedenza. 
+Il problema di fondo abbastanza grosso è che una volta che abbiamo definito il seme $i$, 
+la funzione è definita in maniera univoca da $i$? No, perché la funzione dipende dall'ordine 
+in cui viene interrogata. Quindi passando prima $x$ e poi $y$ oppure prima $y$ e poi $x$
+potremmo ottenere risultati diversi.
+
+Ma agli occhi di chi osserva, siamo in presenza di una funzione casuale, se scegliamo un numero 
+nuovo vediamo un risultato scelto uniformemente a caso, se scegliamo un numero già visto,
+vediamo il risultato che abbiamo visto in precedenza.
+
+Tuttavia questa costruzione non soddisfa la definizione che abbiamo dato, quindi possiamo 
+far in modo che la definizione ammetta questa costruzione per la generazione di funzioni
+pseudo-casuali. Ma per la costruzione che abbiamo in mente, ovvero per l'autenticazione di 
+messaggi, questa costruzione non è adatta.
+\[
+  m, f(m)
+\]
+Chiunque non conosca $f$, e veda in $f(m)$ una sequenza casuale, 
+e non sia in grado di calcolare $f(m')$ per $m' \neq m$. L'autenticazione di 
+un messaggio $m'$ è possibile crearla solo con $f$.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Dispone }i\<\<\text{Dispone }i \\
+\<\sendmessageright*{x, f(x)} \\
+\<\sendmessageleft*{y, f(y)} \\
+}
+Se le cose vanno esattamente come nel diagramma rappresentato, 
+allora tutto va secondo i piani, poiché ogni agente riesce a verificare l'autenticità
+di ogni messaggio.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Dispone }i\<\<\text{Dispone }i \\
+\<\sendmessagerightleft*{y, f(y)\qquad x, f(x)} \\
+}
+Scambiandosi i messaggi in maniera sincrona, poiché Alice utilizza il generatore 
+e la prima volta che lo invoca, lo invoca su $x$, mentre Bob lo invoca su $y$,
+Alice e Bob si trovano in una situazione in cui non sono in grado di verificare
+poiché $f(x) = f(y)$.
+
+Nel momento in cui la funzione $f$ dipende dall'ordine di interrogazione,
+non è possibile distribuire la funzione $f$ a più agenti, e ci vorrebbe 
+un oggetto centralizzato che distribuisce la funzione $f$ a tutti gli agenti.
+
+Tale costruzione è utile in caso di generazione di funzioni pseudocasuali 
+in cui l'utilizzo è locale, tuttavia la crescita di richieste fa si che 
+la dimensione del database cresca e quindi allunghi i tempi di risposta e 
+quindi ci si accorga della pseudocasualità nella generazione.
+\subsubsection{Secondo metodo}
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$\mathcal{G}$};
+    \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$i$};
+    %freccia ondulata
+    \draw[decorate, decoration={snake, amplitude=1mm}] (2, 0) -- (10, 0);
+      \draw[-] (4, 0.2) -- (4, -0.2);
+      \draw[-] (6, 0.2) -- (6, -0.2);
+      \draw[-] (8, 0.2) -- (8, -0.2);
+      \draw[-] (10, 0.2) -- (10, -0.2);
+
+      %k bit
+      \draw (3, 0.5) node {$n$};
+      \draw (3, -0.5) node {$0$};
+      \draw (5, 0.5) node {$n$};
+      \draw (5, -0.5) node {$1$};
+      \draw (7, 0.5) node {$n$};
+      \draw (7, -0.5) node {$\dots$};
+      \draw (9, 0.5) node {$n$};
+      \draw (9, -0.5) node {$\dots$};
+  \end{tikzpicture}
+\end{figure}
+Dove $f_i$ è definita come l'\textit{x-esimo gruppo di $n$ bit restituito da $\mathcal{G}$}.
+In questo caso l'insieme $f_i$ è definito in maniera univoca. Per ogni $i$ c'è 
+una funzione $f_i$ definita in maniera univoca, quindi l'insieme $\mathcal{F}_k$ è 
+l'insieme delle funzioni $f_i$ definite nella maniera appena descritta.
+
+Il problema sorge nella condizione che indica che esiste un algoritmo probabilistico
+polinomiale tale che $(i,x) \mapsto f_i(x)$. Sia $x=1...1 = 2^{k-1} - 1$, per come è 
+definito il generatore, per farlo dobbiamo generare tutti i numeri da $0$ a $2^{k-1} - 1$,
+quindi i bit totali da generare sono $k \cdot 2^{k-1}$, quindi il tempo di esecuzione
+non è polinomiale.
