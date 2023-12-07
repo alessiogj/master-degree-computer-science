@@ -194,3 +194,157 @@ polinomiale tale che $(i,x) \mapsto f_i(x)$. Sia $x=1...1 = 2^{k-1} - 1$, per co
 definito il generatore, per farlo dobbiamo generare tutti i numeri da $0$ a $2^{k-1} - 1$,
 quindi i bit totali da generare sono $k \cdot 2^{k-1}$, quindi il tempo di esecuzione
 non è polinomiale.
+
+\subsubsection{Terzo metodo}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$\mathcal{G}$};
+    \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$i \oplus x$};
+    %freccia ondulata
+    \draw[decorate, decoration={snake, amplitude=1mm}] (2, 0) -- (4, 0);
+      \draw[-] (4, 0.2) -- (4, -0.2);
+
+      %k bit
+      \draw (3, 0.5) node {$k$};
+      
+  \end{tikzpicture}
+\end{figure}
+Come seme usiamo $i \oplus x$, e prendiamo i primi $k$ bit del risultato. Quindi 
+$f_i(x)$ è definita come i primi $k$ bit di $\mathcal{G}(i \oplus x)$.
+Sappiamo che ogni 
+indice $i$ determina una funzione $f_i$ definita in maniera univoca.
+Inoltre l'algoritmo che genera $f_i$ è polinomiale, poiché per generare $f_i$
+è sufficiente eseguire lo \texttt{XOR} tra $i$ e $x$ e, che è un'operazione polinomiale,
+e poi generare con il generatore $\mathcal{G}$ i primi $k$ bit del risultato, e sappiamo che 
+$\mathcal{G}$ è un algoritmo polinomiale.
+
+Dobbiamo capire se esiste distinguisher in grado di distinguere $f_i$ da una funzione
+casuale. Supponiamo che esista $\mathcal{D}$ tale per cui 
+$\left| \mathcal{P}_k^{\mathcal{D}, \mathcal{U}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{F}}
+\right| > k^{-\omega(1)}$, vorremmo trasformare $\mathcal{D}$ in un algoritmo
+che viola la correttezza del generatore $\mathcal{G}$.
+
+Per farlo dobbiamo assicurarci che il distinguisher $\mathcal{D}$ stia facendo 
+implicitamente su $\mathcal{G}$, tutti esperimenti che siano compatibili con quello 
+che abbiamo detto per definire la correttezza di $\mathcal{G}$.
+
+Nel caso specifico il distinguisher $\mathcal{D}$ può scegliere 
+valori distinti di $x$, ma il generatore $\mathcal{G}$ conosce tali 
+valori $x_1, x_2, \dots, x_n$, prendendo lo \texttt{XOR} di uno dei 
+due valori in input a $\mathcal{G}$, otteniamo lo \texttt{XOR} 
+del seme usato in $\mathcal{G}$, allora il distinguisher è in grado 
+di osservare l'output di $\mathcal{G}$ su due semi di cui è nota 
+la differenza.
+
+Se interroghiamo $f(0) = a$ e $f(1^k)= b$, sappiamo che il seme
+usato per generare $a$ è esattamente il complemento del seme usato 
+per generare $b$. In generale se $f(x) = a'$ e $f(y)=a''$, allora
+sappiamo che \texttt{XOR} dei semi usati per generare $a'$ e $a''$
+è esattamente $x \oplus y$. Gli esperimenti che il distinguisher
+riesce a fare implicitamente su $\mathcal{G}$ sono esperimenti 
+che il distinguisher che abbiamo usato per definire la correttezza
+su $\mathcal{G}$ non è in grado di fare.
+Quindi il distinguisher che sta lavorando sulle funzioni pseudocasuali 
+è più potente del distinguisher ammesso nella definizione di
+correttezza di $\mathcal{G}$, quindi abbiamo una contraddizione.
+
+In questo caso i casi possono essere due:
+\begin{itemize}
+  \item Abbiamo definito un generatore troppo debole, poiché 
+  abbiamo bisogno di una definizione più forte, che ammetta 
+  esperimenti di questo tipo;
+  \item Possiamo far vedere che se abbiamo un generatore di bit 
+  pseudocasuali, allora tale generatore resiste ad attacchi di questo
+  tipo.
+\end{itemize}
+In questo caso è possibile costruire un generatore di bit pseudocasuali
+$\mathcal{G}$ e che se usato in questo contesto permette di costruire un 
+distinguisher $\mathcal{D}$.
+
+Incapsuliamo il generatore in un generatore più grande $\mathcal{G}'$, che prende in 
+input $i_0, i_1, \dots, i_{k-1}$. Se $i_0 = 0$ allora si inviano 
+$i_1, i_2, \dots, i_{k-1}$ al generatore $\mathcal{G}$, altrimenti
+si invia $\overline{i_1}, \overline{i_2}, \dots, \overline{i_{k-1}}$
+al generatore $\mathcal{G}$.
+Scegliendo un seme a caso usiamo $\mathcal{G}$ con un seme a caso,
+poiché il complemento di una sequenza di bit casuali è sempre una 
+sequenza casuale, quindi stiamo generando una sequenza di bit casuali con 
+security parameter $k-1$.
+
+Il nuovo generatore $\mathcal{G}'$ è un generatore di bit pseudocasuali
+che soddisfa la definizione di correttezza. L'output di $\mathcal{G}'$
+è effettivamente un seme distribuito 
+uniformemente tra tutti i possibili semi, e quindi si comporta 
+come $\mathcal{G}$. Tuttavia usando tale oggetto nel contesto 
+riportato sopra, scopriamo che $f(0) = f(1^k)$. Il distinguisher 
+$\mathcal{D}$ in questo caso riusciamo quindi a costruirlo facilmente,
+poiché basta che controlli se $f(0) = f(1^k)$, e se questo è vero
+allora $\mathcal{D}$ restituisce $1$, altrimenti restituisce $0$. Di fronte 
+ad una funzione pseudocasuale risponderà sempre $1$, di fronte ad 
+una funzione casuale risponderà $1$ solamente quando $f(0) = f(1^k)$,
+ma tale uguaglianza avviene con probabilità $2^{-k}$, perché 
+è la probabilità che due sequenze di $k$ bit siamo uguali, la differenza 
+essendo enorme distingue con probabilità $1$.
+
+La soluzione alla quale vogliamo ambire è una soluzione che cercherà 
+di evitare il problema.
+\subsubsection{Quarto metodo}
+Torniamo al secondo metodo, dove $f_i(x)$ è l'$x-esimo$ gruppo di 
+$\mathcal{G}$, eravamo rimasti al fatto che non riuscissimo a calcolare 
+$f_i(x)$ in tempo polinomiale. Per poter calcolare $f_i(x)$ in tempo
+polinomiale, usiamo un generatore di Blum-Blum-Shub, lavorando con il 
+logaritmo discreto non siamo in grado di calcolare elementi molto distanti,
+ma se dobbiamo calcolare $f_i(2^k - 1)$ servono solamente i bit dalla 
+posizione $k \cdot (2^k - 1) - 1$ a $k \cdot k \cdot 2^k$.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$\texttt{BBS}$};
+    \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$i$};
+    %freccia ondulata
+    \draw[decorate, decoration={snake, amplitude=1mm}] (2, 0) -- (10, 0);
+      \draw[-] (4, 0.2) -- (4, -0.2);
+      \draw[-] (6, 0.2) -- (6, -0.2);
+      \draw[-] (8, 0.2) -- (8, -0.2);
+      \draw[-] (10, 0.2) -- (10, -0.2);
+
+      %k bit
+      \draw (3, 0.5) node {$n$};
+      \draw (3, -0.5) node {$0$};
+      \draw (5, 0.5) node {$n$};
+      \draw (5, -0.5) node {$1$};
+      \draw (7, 0.5) node {$n$};
+      \draw (7, -0.5) node {$\dots$};
+      \draw (9, 0.5) node {$n$};
+      \draw (9, -0.5) node {$2^{k-1}$};
+  \end{tikzpicture}
+\end{figure}
+
+Per calcolare tali bit, avendo a disposizione il seme $i$, per 
+calcolare il bit $k \cdot (2^k - 1) - 1$ dobbiamo calcolare
+$i^{k \cdot (2^k - 1) - 1}$, che è abbastanza complicato da calcolare.
+Tuttavia gli esponenti lavorano in modulo $\phi(n)$ e una volta 
+calcolato l'esponente possiamo lavorare in modulo $n$, quindi
+possiamo calcolare $i^{(k \cdot (2^k - 1) - 1)\mod \phi(n)} \mod n$,
+in tempo polinomiale $k^3$ dove $k$ è il numero di bit.
+Di conseguenza l'oggetto è calcolabile in tempo polinomiale,
+quindi abbiamo un algoritmo \texttt{PPT} che è in grado di calcolare 
+$f_i(x)$.
+
+Questa operazione non è possibile con tutti i generatori, il 
+generatore di Blum-Blum-Shub lavora in un gruppo di cardinalità 
+finita ed ha una struttura particolare che permette di fare
+questo tipo di operazioni.
+
+Dobbiamo vedere se tale oggetto soddisfa la terza proprietà di un 
+oggetto pseudocasuale, ovvero che sia indistinguibile da una funzione
+realmente casuale. Il distinguisher $\mathcal{D}$ interroga 
+la funzione $f$ e nell'interrogare la funzione $f$ sta implicitamente 
+facendo degli esperimenti du $\mathcal{G}$, ma gli esperimenti possono essere 
+fatti in tempo polinomiale, quindi un numero esponenziale di bit non 
+può essere vista dal distinguisher. Quindi con il generatore di funzioni 
+pseudocasuali siamo in grado di vedere dei bit che il distinguisher non è 
+in grado di vedere.
