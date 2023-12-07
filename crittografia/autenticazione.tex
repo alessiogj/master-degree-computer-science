@@ -348,3 +348,96 @@ fatti in tempo polinomiale, quindi un numero esponenziale di bit non
 può essere vista dal distinguisher. Quindi con il generatore di funzioni 
 pseudocasuali siamo in grado di vedere dei bit che il distinguisher non è 
 in grado di vedere.
+
+In questa situazione però non siamo riusciti a costruire un controesempio.
+
+\subsubsection{Quinto metodo}
+Usiamo l'indice della funzione $i$ di $k$ bit, come seme e di base usiamo un 
+generatore pseudocasuale $\mathcal{G}$, per generare $2k$ bit,
+$\mathcal{G}(s)[0,\dots,k-1]$ ovvero $s_0$ e lo stesso per $\mathcal{G}(s)[k,\dots,2k-1]$
+ovvero $s_1$. e ripetiamo ricorsivamente il procedimento generando $s_{00}, s_{01}, s_{10}$
+e $s_{11}$, che sono rispettivamente $s_0[0,\dots,k-1], s_0[k,\dots,2k-1], s_1[0,\dots,k-1]$.
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[level distance=1.5cm,
+  level 1/.style={sibling distance=3cm},
+  level 2/.style={sibling distance=1.5cm}]
+    \node {$s$}
+      child { 
+        node {$s_0$}
+        child {
+          node {$s_{00}$}
+        }
+        child {
+          node {$s_{01}$}
+        }
+      }
+      child {
+        node {$s_1$}
+        child {
+          node {$s_{10}$}
+        }
+        child {
+          node {$s_{11}$}
+        }
+      };
+  \end{tikzpicture}
+\end{figure}
+Scendendo nell'albero, arriviamo al seme indicizzato da $x$, ovvero
+$s_x$, che è un seme di $k$ bit, che è il risultato della funzione
+$f_i(x)$. Ovviamente questo albero ha $2^k$ nodi e le foglie rappresentano i 
+valori delle funzioni sui diversi argomenti a partire da $s$ in radice,
+quindi la funzione $f_s(x)$ ovvero $f_i(x)$ è ben definita.
+
+Per calcolare tale funzione in tempo polinomiale, dobbiamo calcolare
+calcolare solamente un cammino dell'albero, quindi il tempo di calcolo
+è polinomiale. Infatti per calcolare un nodo dell'albero nel caso pessimo 
+calcoliamo $2k$ bit per $k$ volte a cui si moltiplica il tempo di generazione 
+di $2k$ bit dal generatore di Blum-Blum-Shub, che esegue un elevamento al 
+quadrato per ogni bit, quindi il tempo di calcolo è
+$\theta(k^4)$.
+
+Dobbiamo verificare che non esista un distinguisher $\mathcal{D}$ che
+sia in grado di distinguere la funzione $f_s(x)$ da una funzione
+realmente casuale. Creiamo un distinguisher $\mathcal{D}$ che 
+interroga la funzione $f_s(x)$; implicitamente sta facendo degli esperimenti
+sul generatore $\mathcal{G}$, in maniera nidificata.
+Guardando l'albero a livelli, un generatore pseudocasuale trasforma una 
+certa quantità di casualità in una quantità di casualità diversa.
+
+Per ogni livello $i= 0, \dots, k$ definiamo l'albero $\mathcal{T}_i$ tale che:
+\begin{itemize}
+  \item I nodi dei livelli $0, \dots, i$ sono tutti casuali;
+  \item I nodi dei livelli $i+1, \dots, k$ sono tutti pseudocasuali.
+\end{itemize}
+Sappiamo che:
+\begin{align*}
+  \begin{array}{r c lllllllll}
+  \mathcal{T}_0 & = & s^1 &\dots &s^{i-1} & s^i &s^{i+1} & s^{i+2} &\dots &s^l \\
+  \mathcal{T}_{l}& = & r^1 &\dots &r^{i-1} & r^i &r^{i+1} & r^{i+2} &\dots &r^l \\
+  \end{array}
+\end{align*}
+Definiamo $H_i$ costruita da un albero $\mathcal{T}_i$ e $\mathcal{P}(i)$ 
+come la probabilità che $\mathcal{D}$ restituisca $1$ quando interroga
+con una funzione generata secondo lo schema $\mathcal{T}_i$, è chiaro che
+$\mathcal{P}(0) = \mathcal{P}_k^{\mathcal{D}, \mathcal{G}}$ e
+$\mathcal{P}(k) = \mathcal{P}_k^{\mathcal{D}, \mathcal{U}}$.
+
+Supponiamo che il distinguisher $\mathcal{D}$ sia in grado di distinguere:
+\[
+  \mathcal{P}_k^{\mathcal{D}, \mathcal{G}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{U}} > k^{-c}
+  \qquad\text{quindi}\qquad
+  \mathcal{P}(0) - \mathcal{P}(k) > k^{-c}
+\]
+Sapendo distinguere gli schemi estremi siamo in grado di distinguere per interpolazione 
+anche gli schemi adiacenti, quindi:
+\[
+  \exists \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c}
+\]
+\[
+  \exists i \in \{0, \dots, k-1\} \quad \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c}
+\]
+Di conseguenza un esistenza di un attaccante al generatore di funzioni si traduce 
+in un attaccante al generatore di bit pseudocasuali $\mathcal{G}$, quindi 
+il distinguisher non esiste se assumiamo  che il generatore di partenza soddisfi 
+la definizione.
