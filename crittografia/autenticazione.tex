@@ -343,7 +343,7 @@ Dobbiamo vedere se tale oggetto soddisfa la terza proprietà di un
 oggetto pseudocasuale, ovvero che sia indistinguibile da una funzione
 realmente casuale. Il distinguisher $\mathcal{D}$ interroga 
 la funzione $f$ e nell'interrogare la funzione $f$ sta implicitamente 
-facendo degli esperimenti du $\mathcal{G}$, ma gli esperimenti possono essere 
+facendo degli esperimenti su $\mathcal{G}$, ma gli esperimenti possono essere 
 fatti in tempo polinomiale, quindi un numero esponenziale di bit non 
 può essere vista dal distinguisher. Quindi con il generatore di funzioni 
 pseudocasuali siamo in grado di vedere dei bit che il distinguisher non è 
@@ -405,38 +405,54 @@ sul generatore $\mathcal{G}$, in maniera nidificata.
 Guardando l'albero a livelli, un generatore pseudocasuale trasforma una 
 certa quantità di casualità in una quantità di casualità diversa.
 
-Per ogni livello $i= 0, \dots, k$ definiamo l'albero $\mathcal{T}_i$ tale che:
-\begin{itemize}
-  \item I nodi dei livelli $0, \dots, i$ sono tutti casuali;
-  \item I nodi dei livelli $i+1, \dots, k$ sono tutti pseudocasuali.
-\end{itemize}
-Sappiamo che:
+Definiamo gli alberi:
 \begin{align*}
   \begin{array}{r c lllllllll}
   \mathcal{T}_0 & = & s^1 &\dots &s^{i-1} & s^i &s^{i+1} & s^{i+2} &\dots &s^l \\
   \mathcal{T}_{l}& = & r^1 &\dots &r^{i-1} & r^i &r^{i+1} & r^{i+2} &\dots &r^l \\
   \end{array}
 \end{align*}
-Definiamo $H_i$ costruita da un albero $\mathcal{T}_i$ e $\mathcal{P}(i)$ 
-come la probabilità che $\mathcal{D}$ restituisca $1$ quando interroga
-con una funzione generata secondo lo schema $\mathcal{T}_i$, è chiaro che
-$\mathcal{P}(0) = \mathcal{P}_k^{\mathcal{D}, \mathcal{G}}$ e
-$\mathcal{P}(k) = \mathcal{P}_k^{\mathcal{D}, \mathcal{U}}$.
+Dove $\mathcal{T}_0$ è l'albero che rappresenta esattamente l'albero definito 
+per la generazione di funzioni pseudocasuali, mentre $\mathcal{T}_l$ corrispondente ad una funzione 
+casuale campionata uniformemente dell'insieme $\mathcal{U}_k$.
 
-Supponiamo che il distinguisher $\mathcal{D}$ sia in grado di distinguere:
+Il distinguisher secondo la nostra ipotesi vede la differenza tra un albero 
+costruito secondo la prima tecnica e un albero costruito secondo la seconda.
+
 \[
   \mathcal{P}_k^{\mathcal{D}, \mathcal{G}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{U}} > k^{-c}
   \qquad\text{quindi}\qquad
   \mathcal{P}(0) - \mathcal{P}(k) > k^{-c}
 \]
-Sapendo distinguere gli schemi estremi siamo in grado di distinguere per interpolazione 
-anche gli schemi adiacenti, quindi:
+
+In questo caso costruiamo tutti gli alberi intermedi dove 
+per ogni livello $i= 0, \dots, k$ definiamo l'albero $\mathcal{T}_i$ tale che:
+\begin{itemize}
+  \item I nodi dei livelli $0, \dots, i$ sono tutti casuali;
+  \item I nodi dei livelli $i+1, \dots, k$ sono tutti pseudocasuali.
+\end{itemize}
+Con la solita tecnica di interpolazione, possiamo affermare che se il distinguisher è
+in grado di rilevare la differenza tra un albero costruito secondo lo schema $\mathcal{T}_0$
+e un albero costruito secondo lo schema $\mathcal{T}_k$, allora può individuare la differenza
+tra livelli adiacenti mediante interpolazione. Poiché due livelli adiacenti differiscono solamente
+per un livello specifico, otteniamo due alberi distinti che si differenziano solo per quel livello
+particolare. Pertanto, calcolando $f_s(x)$ risulterebbe equivalente a retrocedere al nodo $i$-esimo
+dell'albero $\mathcal{T}$ e osservarlo casualmente in un caso e pseudocasualmente nell'altro, con un
+seme generato al livello precedente in maniera veramente casuale. L'esperimento di calcolare $f_s(x)$
+è quindi il classico test su un generatore di bit pseudocasuali.
 \[
-  \exists \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c}
+  \exists i \in \{0, \dots, k-1\} \quad \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c'}
 \]
-\[
-  \exists i \in \{0, \dots, k-1\} \quad \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c}
-\]
+Effettuando un esperimento su $f_s(y)$ che proviene dall'istanza dello stesso nodo $i$-esimo dell'albero
+$\mathcal{T}$, possiamo considerarlo come un'istanza dello stesso esperimento, ossia un esperimento sui
+bit di livello $i$ casuali o pseudocasuali. Se l'esperimento è condotto su $f_s(z)$ proveniente da una
+nuova istanza di un nodo $i$-esimo dell'albero $\mathcal{T}$, allora può essere considerato un nuovo
+esperimento indipendente, consentendo la realizzazione di più esperimenti indipendenti.
+
+Se la probabilità di successo con un singolo esperimento è inferiore a qualsiasi polinomio,
+la probabilità di successo
+con un numero polinomiale di esperimenti indipendenti è comunque inferiore a qualsiasi polinomio.
+
 Di conseguenza un esistenza di un attaccante al generatore di funzioni si traduce 
 in un attaccante al generatore di bit pseudocasuali $\mathcal{G}$, quindi 
 il distinguisher non esiste se assumiamo  che il generatore di partenza soddisfi 
