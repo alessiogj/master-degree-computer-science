@@ -1,5 +1,5 @@
 \chapter{Autenticazione}
-\section{Autenticazione di messaggi}
+\section{Introduzione}
 I crittosistemi costruiti fino ad ora sono malleabili, quando riceviamo un messaggio vorremmo
 essere sicuri che nessuno l'abbia modificato. Per farlo possiamo usare sistemi non malleabili
 dove le modifiche non sono prevedibili, oppure aggiungere della ridondanza, aggiungendo
@@ -420,9 +420,9 @@ Il distinguisher secondo la nostra ipotesi vede la differenza tra un albero
 costruito secondo la prima tecnica e un albero costruito secondo la seconda.
 
 \[
-  \mathcal{P}_k^{\mathcal{D}, \mathcal{G}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{U}} > k^{-c}
+  \big|\mathcal{P}_k^{\mathcal{D}, \mathcal{G}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{U}}\big| > k^{-c}
   \qquad\text{quindi}\qquad
-  \mathcal{P}(0) - \mathcal{P}(k) > k^{-c}
+  \big|\mathcal{P}(0) - \mathcal{P}(k)\big| > k^{-c}
 \]
 
 In questo caso costruiamo tutti gli alberi intermedi dove 
@@ -457,3 +457,176 @@ Di conseguenza un esistenza di un attaccante al generatore di funzioni si traduc
 in un attaccante al generatore di bit pseudocasuali $\mathcal{G}$, quindi 
 il distinguisher non esiste se assumiamo  che il generatore di partenza soddisfi 
 la definizione.
+
+\section{Autenticazione}
+Ci sono due o più agenti che si scambiano messaggi, non necessariamente orientati alla segretezza 
+dei messaggi, ma vogliono essere sicuri che i messaggi siano creati solo da loro e non da altri.
+
+Una possibilità è quella di scegliere una funzione pseudocasuale $f$ da condividere tra gli agenti, 
+la funzione può essere generata con un qualsiasi schema, per esempio lo schema precedente che sfrutta 
+l'utilizzo di un seme, e questo seme viene scambiato tra gli agenti attraverso un canale sicuro.
+Ad ogni messaggio $m$ si aggiunge il valore $f(m)$, spedendo quindi la coppia $(m, f(m))$, in altri 
+termini $f(m)$ è l'autenticazione di $m$, non mandando quindi solo il messaggio $m$, ma anche la 
+sequenza di bit che è l'autenticazione di $m$.
+
+La funzione è pseudocasuale, di conseguenza chiunque non conosca il seme di partenza vede di fianco 
+ad ogni messaggio una sequenza di $k$ bit scelta uniformemente a tra le sequenze di $k$ bit. Qualunque 
+agente che conosce il seme può calcolare autonomamente $f(m)$ e confrontarlo con il secondo elemento della 
+coppia, se sono uguali allora il messaggio è autentico, altrimenti non è autentico.
+\subsection{Forger}
+Sia $\mathcal{F}$ un \textbf{forger}, ovvero un algoritmo probabilistico polinomiale che interroga $f$ su una 
+sequenza di messaggi $m_1, m_2, \dots, m_l$, anche in modo adattivo e alla fine restituisce una coppia
+$(m, \sigma)$, diciamo che $\mathcal{F}$ ha successo se $f(m) = \sigma$ e $\forall i \, m \neq m_i$, quindi 
+restituisce una coppia $(m, \sigma)$ dove $m$ non è mai stato interrogato e $\sigma$ è l'autenticazione di $m$.
+
+\[
+  \forall \mathcal{F} \in \texttt{PPT} \quad \mathcal{P}
+  \big[ \text{Succ}(\mathcal{F}) = 1 \big] \leq k^{-\omega(1)}
+\]
+\subsection{Autenticare messaggi lunghi}
+L'idea è quella di dividere il messaggio in blocchi di lunghezza $k$, quindi $m = m_1, \dots, m_l$, possiamo 
+cercare di creare l'autenticazione applicando la funzione $f$ a ogni blocco, quindi $f(m_1), \dots, f(m_l)$ e 
+definire il messaggio $m$ come:
+\[
+  m = m_1 \oplus f(m_1) \oplus f(m_2) \oplus \dots \oplus f(m_l)
+\]
+Il problema è che il forger in questo caso può combinare i blocchi in modo diverso, quindi può creare un
+messaggio $m'$ che è diverso da $m$, ma che ha la stessa autenticazione.
+Infatti chiedendo la coppia $(m_1m_2, f(m_1 m_2))$, la coppia $(m_2 m_1, f(m_2 m_1))$ è una coppia
+autentica.
+
+Costruire un messaggio autenticato senza interrogare la funzione $f$ in questo caso è molto semplice, 
+infatti costruendo la coppia $(m_1 m_1, f(m_1 m_1))$, lo \texttt{XOR} di due messaggi uguali è sempre $0$,
+e dal punto di vista della definizione abbiamo trovato il forger, quindi abbiamo la necessità di utilizzare 
+un meccanismo più complesso per autenticare messaggi lunghi vietando inoltre lo scambio dei blocchi.
+Per farlo la posizione di ogni singolo blocco deve avere un impatto sulla funzione $f$.
+\[
+  f(m) = f(\langle 1 \rangle m_1) \oplus f(\langle 2 \rangle m_2) \oplus
+  \dots \oplus f(\langle l \rangle m_l)
+\]
+Dove $\langle i \rangle$ è una stringa di pochi bit che rappresenta la posizione del blocco $m_i$.
+Purtroppo però anche con questo sistema il forger può creare un messaggio autentico in modo semplice:
+
+\begin{align*}
+  \begin{array}{r c l}
+    f(m_1 m_2) & = & f(\langle 1 \rangle m_1) \oplus f(\langle 2 \rangle m_2) \\
+    f(m_1' m_2) & = & f(\langle 1 \rangle m_1') \oplus f(\langle 2 \rangle m_2) \\
+    f(m_1 m_2') & = & f(\langle 1 \rangle m_1) \oplus f(\langle 2 \rangle m_2') \\
+    \hline
+    f(m_1' m_2') & = & f(\langle 1 \rangle m_1') \oplus f(\langle 2 \rangle m_2') \\
+  \end{array}
+\end{align*}
+
+L'idea per risolvere il problema potrebbe essere l'applicazione nidificata della funzione $f$
+in stile cypher block chaining, ovvero:
+\[
+  f'(m_1\dots m_l) =   f(m_l \oplus \dots \oplus f(m_3 \oplus f(m_2 \oplus f(m_1))))
+\]
+Questo sistema è dimostrabilmente sicuro; difatti, ciò che viene realizzato è
+la costruzione di una nuova funzione $f' : \{0, 1\}^{kl} \to \{0, 1\}^k$, partendo
+da una funzione pseudocasuale di $k$ bit in $k$ bit, che incrementa la dimensione dell'input.
+Possiamo concepire questo concetto come un'estensione dell'idea di generazione di funzioni pseudocasuali.
+Supponiamo di avere una funzione scelta in modo uniforme tra le funzioni da $\{0, 1\}^k$ a $\{0, 1\}^k$,
+oppure una funzione da $kl$ bit a $k$ bit, selezionata da un insieme di dimensione più ridotta, poiché
+dipende dallo stesso seme utilizzato per $f$. Il nostro obiettivo è affermare che questo sistema è
+sicuro nel senso che non esiste alcun algoritmo probabilistico polinomiale in grado di distinguere
+una funzione pseudocasuale da una funzione casuale.
+
+L'eventuale forger può essere convertito in un distinguisher; pertanto, affermare che si tratta
+di un sistema di autenticazione o di una funzione pseudocasuale da $kl$ bit a $k$ bit è equivalente, 
+quindi l'esistenza di un forger implica l'esistenza di un distinguisher, e viceversa.
+
+Dimostriamo quindi che la costruzione della funzione $f'$ è una costruzione di una funzione pseudocasuale
+da $kl$ bit a $k$ bit, partendo da una funzione pseudocasuale da $k$ bit a $k$ bit, e dimostriamo che è
+una funzione pseudocasuale nel senso delle definizioni date sulle funzioni pseudocasuali, ovvero 
+non esiste alcun algoritmo probabilistico polinomiale in grado di distinguere una funzione pseudocasuale
+da una funzione casuale.
+
+Per farlo costruiamo $\mathcal{F}_i (m_1, \dots, m_i)$ prende i primi $i$ blocchi del messaggio e applica 
+la funzione $f$ pseudocasuale a questi blocchi e per i successivi $l - i$ blocchi applica la funzione
+$r$ casuale, quindi:
+
+\[
+  \mathcal{F}(m_1\dots m_l) =   r(m_l \oplus \dots \oplus r(m_{i+1} \oplus f(m_i \oplus \dots \oplus f(m_3 \oplus
+  f(m_2 \oplus f(m_1))))))
+\]
+A questo punto, sapendo che $f_0$ è sempre casuale in tutti i punti e $f_1$ è pseudocasuale in tutti i punti, 
+sapendo distinguere i due estremi possiamo, per interpolazione, distinguere anche i punti intermedi.
+Sappiamo che $\mathcal{P}(i)$ è la probabilità che il distinguisher restituisca $1$ se la funzione 
+di autenticazione è la funzione $\mathcal{F}_i$, allora:
+\[
+  \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c}
+\]
+Quindi distinguere sul livello $i$-esimo e il livello $i+1$-esimo si traduce in una distinzione
+nell'utilizzo di una funzione pseudocasuale e una funzione casuale, quindi:
+\[
+  \exists i \in \{0, \dots, k-1\} \quad \big| \mathcal{P}(i) - \mathcal{P}(i+1) \big| > k^{-c'}
+\]
+Diventando quindi un distinguisher per la funzione pseudocasuale $f$.
+\subsection{Problema della non ripudiabilità}
+Vorremmo avere a disposizione un sistema che permetta di autenticare un messaggio, in modo tale che
+il mittente non possa negare di averlo inviato, poiché con le tecniche utilizzate fino ad ora i messaggi 
+potrebbero essere stati creati da chiunque. Tale problema è legato al concetto di firma digitale, chi firma 
+il messaggio non può negare di averlo firmato, in quanto la firma è univoca e non può essere riprodotta da
+nessun altro. 
+
+In sostanza, solo un agente può firmare un messaggio, e tutti possono verificare la firma. Chi può verificare 
+non può firmare, nel momento in cui la firma è stata apposta non può essere contestata.
+Devono quindi esistere due chiavi, una chiave privata per firmare e una chiave pubblica per verificare, e 
+dalla chiave pubblica non deve essere possibile risalire alla chiave privata.
+
+\subsubsection{\texttt{RSA} nella firma digitale}
+L'algoritmo \texttt{RSA} può essere utilizzato per la firma digitale, in quanto è un algoritmo a
+chiave pubblica e privata, e la chiave pubblica non può essere utilizzata per risalire alla chiave privata.
+
+In \texttt{RSA} classico, il messaggio da criptare si eleva alla potenza $e$ e si prende il modulo $n$, e 
+per decriptare si eleva alla potenza $d$ e si prende il modulo $n$. Per il teorema di Eulero, $n$ elevato 
+alla cardinalità del gruppo fornisce l'unità, quindi $m^{\phi(n)} \equiv 1 \mod n$, quindi $m^{k\phi(n) + 1}
+\equiv m \mod n$.
+
+Per firmare un messaggio $m$ si calcola $m^d \mod n$, e per verificare la firma si calcola $(m^d)^e \mod n$,
+che è uguale a $m$. Solamente chi possiede la chiave privata può firmare, mentre la verifica può essere
+effettuata da chiunque.
+\[
+  (m^d)^e \equiv m^{de} \equiv m^{k\phi(n) + 1} \equiv m \mod n
+\]
+\subsection{Definizione di sistema di firma digitale}
+Un sistema di firma digitale è una tripla di algoritmi $(\mathsf{Gen}, \mathsf{Sign}, \mathsf{Ver})$ probabilistici 
+polinomiali.
+\begin{itemize}
+  \item $\mathcal{G}$ è un algoritmo probabilistico polinomiale che prende in input $1^n$ (\textit{poiché 
+  l'algoritmo deve essere polinomiale nel valore del security parameter, ovvero il numero di bit che usiamo 
+  per rappresentare le nostre chiavi, visto che sulle macchine di Turing la dimensione del problema è 
+  pari al numero di celle che usiamo nel nastro di input}) che produce una coppia di chiavi $(p_k, s_k)$;
+  \item $\mathcal{S}$ è un algoritmo probabilistico polinomiale che prende in input una chiave privata $s_k$
+  e il messaggio $m$ e produce una firma $\sigma$;
+  \item $\mathcal{V}$ è un algoritmo probabilistico polinomiale che prende in input una chiave pubblica $p_k$,
+  e la firma $\sigma$ e restituisce $1$ se la firma è valida, $0$ altrimenti.
+\end{itemize}
+La probabilità di verificare una firma costruito secondo lo schema di firma digitale è $1$.
+\[
+  \forall \mathcal{P}\left[ \mathcal{V}(p_k, \mathcal{S}(s_k, m)) = 1 \right] = 1
+\]
+Si parla di probabilità perché l'algoritmo di verifica potrebbe essere un algoritmo probabilistico polinomiale,
+e di conseguenza sbagliare, ma la probabilità che questo accada è $0$.
+
+Sia $\mathcal{F} \in \texttt{PPT}$ un algoritmo che chiede la firma di messaggi $m_0, m_1, \dots, m_l$, anche 
+in modo adattivo, e che produce una coppia $(m, \sigma)$, dove $m$ è il messaggio che viene firmato e $\sigma$ 
+ed $\mathcal{F}$ ha successo se $\mathcal{V}(p_k, \sigma) = 1$ e $m \notin \{m_0, m_1, \dots, m_l\}$.
+\[
+  \forall \mathcal{F} \in \texttt{PPT} \qquad \mathcal{P}\left[ \mathcal{F} \text{ ha successo} \right] 
+  \leq k^{-\omega(1)}
+\]
+Se $\mathcal{F}$ non riesce a produrre una firma falsa avendo a disposizione la chiave pubblica, è 
+evidente che chiunque abbia la chiave pubblica non può produrre firme; non è possibile ricavare la chiave privata, 
+perché l'unico modo che conosciamo per produrre una firma è mediante l'algoritmo $\mathcal{S}$, che prende in 
+input la chiave privata e di conseguenza un crittosistema di firma digitale che soddisfa queste definizioni 
+è un sistema che soddisfa la proprietà di non ripudiabilità.
+
+\texttt{RSA} però non è un buon sistema di firma digitale, nel senso che non soddisfa la definizione data, 
+infatti non è vero che ogni forger ha una probabilità di successo trascurabile, infatti è possibile forgiare
+messaggi, dati $(m_1, m_1^d)$ e $(m_2, m_2^d)$, creando un nuovo messaggio $(m_1m_2, (m_1m_2)^d)$. Chiaro che 
+inserendo sufficiente ridondanza ai messaggi in modo tale che molto difficilmente $m_1m_2$ sia un messaggio significativo 
+questi attacchi non producono nulla.
+
+\subsection{Firma di messaggi lunghi}
