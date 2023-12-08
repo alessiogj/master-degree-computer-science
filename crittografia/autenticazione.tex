@@ -630,3 +630,115 @@ inserendo sufficiente ridondanza ai messaggi in modo tale che molto difficilment
 questi attacchi non producono nulla.
 
 \subsection{Firma di messaggi lunghi}
+L'idea alla base è quella dell'utilizzo di \textbf{funzioni hash} crittograficamente sicure, quindi 
+il messaggio $\sigma$ viene calcolato come $\sigma = H(m)^d$. Il motivo per cui viene firmato l'hash 
+di un messaggio è per poter firmare messaggi lunghi, evitando quindi di utilizzare firme lunghe tanto 
+quanto il messaggio originale. Utilizzando questa metodologia cosa succede se dati due messaggi 
+$m_1$ e $m_2$, $H(m_1) = H(m_2)$? In questo caso è possibile forgiare un messaggio, infatti 
+chiedendo la firma del messaggio $m_1$, è possibile forgiare la firma del messaggio $m_2$ utilizzando 
+la firma del messaggio $m_1$.
+
+Per la natura intrinseca delle funzioni hash, tali funzioni hanno collisioni, quindi è necessario
+utilizzare delle funzioni hash crittograficamente sicure, ovvero funzioni hash collision resistant, 
+su cui è difficile trovare collisioni. Quindi è computazionalmente difficile trovare due messaggi
+$m_1$ e $m_2$ tali che $H(m_1) = H(m_2)$.
+\begin{tcolorbox}[title = Funzione collision resistant]
+  Una funzione $H$ è \textbf{collision resistant} se per ogni algoritmo $\mathcal{A}$ che lavora in tempo 
+  polinomiale, la probabilità che $\mathcal{A}$ produca una coppia $(m_1, m_2)$ tale che $H(m_1) = H(m_2)$ 
+  è trascurabile, più piccola di qualsiasi polinomio.
+\end{tcolorbox}
+degli esempi di funzioni hash collision resistant possono essere \texttt{MD5}, \texttt{SHA-1}, \texttt{SHA-2}.
+\texttt{SHA-2} al momento è considerata lo stato dell'arte, ma è possibile che in futuro vengano 
+trovati attacchi che permettono di trovare collisioni in \texttt{SHA-2}.
+
+Utilizzando funzioni hash collision resistant all'interno di \texttt{RSA} per firmare messaggi, 
+allora il sistema di firma digitale è sicuro, ovvero soddisfa la definizione data in precedenza, poiché 
+non siamo in grado di produrre la firma di un messaggio $m_1 \cdot m_2$ a partire dalla firma di $m_1$
+e $m_2$, perché l'hash di $m_1 \cdot m_2$ è diverso dall'hash di $m_1$ e $m_2$.
+
+\subsection{Funzioni hash one way}
+Una funzione hash $H$ è one way se dato $x$ è difficile trovare un qualsiasi $m$ tale che $H(m) = x$,
+ovvero facile da calcolare, ma difficile da invertire. In una funzione iniettiva, dove ogni elemento
+dell'immagine (\textit{codominio}) ha un unico elemento dell'insieme di partenza, quindi 
+trovare l'inversa è semplice, siccome $f: A \rightarrow B$ è iniettiva
+allora $f^{-1}: B \rightarrow A$ è definita. Per invertire una funzione hash, che non è iniettiva,
+è necessario utilizzare tecniche di \textbf{brute force}, ovvero provare tutti i possibili input
+e trovare un qualsiasi input che produce l'hash $x$.
+
+\begin{proposizione}
+  Se $H$ è una funzione collision resistant, allora $H$ è anche una funzione one way.
+\end{proposizione}
+\begin{proof}
+  Supponiamo che $H$ non sia one way, mostriamo quindi che $H$ non è collision resistant. 
+
+  Sia $m$ un messaggio casuale e calcoliamo $x = H(m)$, quindi $x$ è un valore casuale che 
+  viene dato in input alla macchina che inverte la funzione hash e che produrrà un messaggio
+  $m'$ tale che $H(m') = x$.
+
+  \begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+      \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$H^{-1}$};
+      \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$x$};
+      %freccia ondulata
+      \draw[->] (2, 0) -- (5, 0);
+      \draw (3, 0.5) node {$m_1$};
+    \end{tikzpicture}
+  \end{figure}
+
+  Con il fatto di aver scelto $m$ in modo casuale, la probabilità che $H^{-1}$ restituisca lo stesso 
+  messaggio $m$ è trascurabile, quindi con probabilità $1$ abbiamo trovato una collisione.
+\end{proof}
+\section{Blind signature}
+\textbf{Blind signature} è un protocollo che permette di firmare un messaggio senza che il firmatario 
+sappia cosa sta firmando. Esiste un messaggio $m$ che l'agente $B$ deve firmare e $B$ non può 
+conoscere $m$. L'agente $A$ che ha bisogno della firma sceglie un elemento $b$ casuale appartenente 
+al gruppo $\mathbb{Z}_n^*$ chiamato \textbf{blinding factor} e calcola $m \cdot b^e$, dove 
+$e$ è la chiave pubblica di $B$, e ne chiede 
+la firma l'agente $B$ calcola la firma $\sigma = (m \cdot b^e)^d = m^d \cdot b$ e 
+comunica $\sigma$ ad $A$. In questo caso 
+non si utilizza la funzione hash essendo fondamentale l'utilizzo della struttura dei messaggi,
+quindi bisognerà utilizzare tecniche alternative, come la ridondanza 
+dei messaggi, per evitare gli attacchi visti precedentemente.
+L'agente $A$ calcola quindi $\sigma' = \sigma \cdot b^{-1}$ ottenendo $m, \sigma'$, quindi
+$\sigma'$ è la firma del messaggio $m$.
+
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Sceglie }x \in_R \mathbb{Z}_n^*\<\< \\
+\<\sendmessageright*{m \cdot b^e} \\
+\<\sendmessageleft*{\sigma = (m \cdot b^e)^d} \\
+\text{Produce $\sigma'$ dove }\sigma' = \sigma \cdot b^{-1} = m^d\<\<\\
+}
+$A$ interagendo con $B$ riesce a far produrre una firma per il messaggio $m$ senza che $B$ sappia
+cosa stia firmando.
+\[
+  \sigma' = \sigma \cdot b^{-1} = (m \cdot  b^e)^d \cdot b^{-1} = m^d \cdot b^{ed} \cdot b^{-1} = 
+  m^d \cdot b \cdot b^{-1} = m^d
+\]
+Vorremmo migliorare il sistema, in modo tale che $B$ firmi comunque alla cieca, ma che abbia la garanzia 
+che sia un messaggio costruito in maniera adeguata a quello che doveva effettivamente firmare. Per farlo 
+abbiamo due modi:
+\begin{enumerate}
+  \item La chiave pubblica usata da $B$ può essere usata solo per spedire pin.
+  \item Complicando il protocollo. Per farlo $A$ genera $m_1, m_2, \dots, m_l$
+  differenti messaggi di comunicazione pin e tali messaggi devono essere tutti 
+  identici, ma differiscono solo per il valore del pin. $A$ genera $b_1, b_2, \dots, b_l$
+  blinding factor secondo il protocollo e spedisce a $B$ i messaggi $m_1 \cdot b_1^e,
+  m_2 \cdot b_2^e, \dots, m_l \cdot b_l^e$. A questo punto $B$ sceglie $i \in_R \{1, \dots, l\}$,
+  scegliendo quindi una lettera e comunica $b$ ad $A$, a questo punto $A$ comunica 
+  $m_1, b_1, \dots, m_{i-1},b_{i-1},m_{i+1},b_{i+1}, \dots, m_l, b_l$ ad $B$,
+  comunicando tutte le informazioni tranne quelle relative al messaggio $i$-esimo.
+  $B$ verifica la correttezza dei dati ricevuti e se la verifica ha successo produce 
+  la firma $\sigma = (m_i \cdot b_i^e)^d$, altrimenti rifiuta la firma.
+\end{enumerate}
+Scegliendo $l$ sufficientemente grande, la probabilità che $B$ riesca a trovare il valore
+del pin si abbassa, ma la probabilità di attacco resta comunque alta, implicando quindi 
+la necessità di trovare altri strumenti per contrastare gli attacchi.
