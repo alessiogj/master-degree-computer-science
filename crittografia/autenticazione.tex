@@ -680,9 +680,7 @@ e trovare un qualsiasi input che produce l'hash $x$.
     \begin{tikzpicture}
       \node[draw, rectangle, minimum width=4cm, minimum height=3cm] (A) at (0,0) {$H^{-1}$};
       \draw[->] (-5, 0) -- (-2, 0) node[midway, above] {$x$};
-      %freccia ondulata
-      \draw[->] (2, 0) -- (5, 0);
-      \draw (3, 0.5) node {$m_1$};
+      \draw[->] (2, 0) -- (5, 0) node[midway, above] {$m_1$};
     \end{tikzpicture}
   \end{figure}
 
@@ -742,3 +740,110 @@ abbiamo due modi:
 Scegliendo $l$ sufficientemente grande, la probabilità che $B$ riesca a trovare il valore
 del pin si abbassa, ma la probabilità di attacco resta comunque alta, implicando quindi 
 la necessità di trovare altri strumenti per contrastare gli attacchi.
+\section{Bit commitment}
+\textbf{Bit commitment} è un protocollo che permette di inviare un bit in modo che il ricevente
+non possa sapere il valore del bit fino a quando non viene rivelato, senza che il mittente possa
+cambiare il valore del bit. 
+In questo caso il lavoro viene fatto lavorando su un singolo bit, ovviamente il protocollo può
+essere esteso per lavorare su stringhe di bit più lunghe.
+Non essere in grado di capire il valore del bit $b$ significa che l'agente $B$ che riceve il bit
+se applica una qualsiasi algoritmo $\mathcal{A}$ al bit $b$ indovina il valore del bit con
+probabilità non maggiore di $\frac{1}{2} + \epsilon$, dove $\epsilon$ è una quantità trascurabile.
+
+L'apertura della ``busta'' avviene quando $A$ comunica $b$ l'informazione trapdoor in modo che
+$B$ possa verificare che il bit $b$ sia effettivamente quello che $A$ ha inviato. Ovviamente 
+$A$ non deve riuscire a creare due coppie $m'$ e $m''$ che producano due ``buste'' diverse. 
+\subsection{Primo protocollo}
+In questo protocollo la collaborazione di $B$ è fondamentale, infatti $A$ non può fare nulla
+se $B$ non collabora. L'algoritmo utilizza un algoritmo di crittografia simmetrica.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\< \text{Sceglie }R \in_R \{0,1\}^n\\
+\<\sendmessageleft*{R} \\
+\text{Sceglie }k \in_R \{0,1\}^n\<\< \\
+\<\sendmessageright*{E_k(R\cdot b)} \\
+\<\sendmessageright*{k} \\
+}
+Sulla base delle analisi fatte fino ad ora, non è possibile ricavare la 
+chiave di cifratura $k$ a partire dal plaintext, anche se scegliamo parte 
+del plaintext. 
+$B$ verifica l'autenticità del messaggio ricevuto non appena riceve la chiave $k$, 
+ovvero l'informazione trapdoor. 
+$A$ non può imbrogliare perché dovrebbe trovare due chiavi $k_0$ e $k_1$ tali per cui
+$E_{k_0}(R \cdot 0) = E_{k_1}(R \cdot 1)$, ma su un algoritmo di crittografia simmetrica
+come \texttt{AES} non è possibile trovare due chiavi che producano lo stesso ciphertext.
+
+In tale algoritmo però ci sono due problemi:
+\begin{enumerate}
+  \item $B$ deve collaborare, altrimenti $A$ non può fare nulla.
+  \item Non è buona cosa scegliere un protocollo che si basa su un algoritmo di crittografia
+  non dimostrabilmente sicuro.
+\end{enumerate}
+\subsection{Secondo protocollo}
+Sia $H$ una funzione hash one way.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\text{Sceglie }R_1, R_2 \in_R \{0,1\}^n\<\< \\
+\<\sendmessageright*{H(R_1  R_2  b), R_1} \\
+\<\sendmessageright*{R_2, b} \\
+}
+Quando $A$ invia il messaggio codificato con la funzione hash nota e parte dell'informazione 
+che è stata codificata, $B$ può verificare che il messaggio sia corretto, solamente se
+$A$ invia l'informazione restante, che non sarà in grado di manipolare, perché dovrebbe 
+creare una situazione tale che $H(R_1 R_2 0) = H(R_1 R_2' 1)$, ma questo è
+equivalente a trovare un confitto nella funzione hash, che è un problema difficile.
+$B$ non può ricavare l'informazione $b$ perché non può invertire la funzione hash.
+Se non ci fosse $R_2$ allora $B$ potrebbe facilmente ricavare $b$ provando le combinazioni 
+$H(R_1 0)$ e $H(R_1 1)$, ma con $R_2$ non è possibile fare questo tipo di attacco.
+
+\subsection{Terzo protocollo}
+Questo protocollo è dimostrabilmente sicuro, ma in termini di complessità è molto più
+costoso degli altri due.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[businessman, monitor, female, minimum size=2cm,label=below:{Alice}] (alice) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\< \text{Sceglie }R \in_R \{0,1\}^l\\
+\<\<\text{ dove }R=r_1r_2\dots r_l \\
+\<\sendmessageleft*{R} \\
+\text{Genera un seme }s \in_R \{0,1\}^n\<\< \\
+\text{Genera una pseudostringa di bit}x \in_R \{0,1\}^l \<\<\\
+\text{Dove }x=x_1x_2\dots x_l\<\< \\
+y_i = x_i\text{ se } r_i = 0\text{ e }y_i = x_i \oplus b\text{ se }r_i = 1 \<\<\\
+\text{Produce }y_0y_1\dots y_l\<\<\\
+\<\sendmessageright*{y_1y_2\dots y_l} \\
+\<\sendmessageright*{s} \\
+}
+  
+La sequenza $y$ inviata è una sequenza di bit che sono generati o in maniera pseudocasuale 
+o in \texttt{XOR} con il bit $b$ quando $r_i = 1$, nel momento in cui un oggetto è casuale,
+lo è anche la sua \texttt{XOR} con un altro oggetto casuale, non contenendo quindi nessuna 
+informazione circa il bit $b$.
+
+Una volta che $B$ riceve il seme $s$, è in grado di ricostruire la sequenza $x$ e quindi
+verificare che tutti gli $y_i$ siano corretti, se così non fosse, allora $B$ può
+interrompere la comunicazione.
+
+$A$ non può imbrogliare perché dovrebbe trovare due semi $s_0$ e $s_1$ tali
+per cui $s_0$ porti a $y_1,\dots,y_l$ e $s_1$ porti a
+$y_1',\dots,y_l'$ e per ogni $i$ se $r_i = 1$ allora $x_i = \bar{x_i}$, ma per essere più precisi 
+$0 \oplus x_i = 1 \oplus x_i'$, in modo tale che $y$ da spedire sia uguale in entrambi i casi.
