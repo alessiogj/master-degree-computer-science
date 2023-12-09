@@ -847,3 +847,71 @@ $A$ non può imbrogliare perché dovrebbe trovare due semi $s_0$ e $s_1$ tali
 per cui $s_0$ porti a $y_1,\dots,y_l$ e $s_1$ porti a
 $y_1',\dots,y_l'$ e per ogni $i$ se $r_i = 1$ allora $x_i = \bar{x_i}$, ma per essere più precisi 
 $0 \oplus x_i = 1 \oplus x_i'$, in modo tale che $y$ da spedire sia uguale in entrambi i casi.
+
+\section{Schemi a barriera}
+Negli schemi a barriera disponiamo di un segreto $s$ che vogliamo proteggere, lo distribuiamo 
+ad $n$ agenti creando delle parti chiamate \textit{share} $s_1,\dots,s_n$, in modo che 
+mettendo assieme $n$ parti si possa ricostruire il segreto, ma con meno di $n$ parti non si possa 
+ricavare alcuna informazione sul segreto, quindi nemmeno un'informazione binaria del segreto $s$.
+\subsection{Schema \texttt{XOR}}
+Per farlo proviamo con lo \texttt{XOR}, siano $s_1,\dots,s_{n - 1}$ sequenze di bit casuali, 
+sia $s$ il segreto e sia 
+$s_n \equiv s \oplus s_1 \oplus \dots \oplus s_{n-1}$,
+essendo $s_1,\dots,s_{n - 1}$ casuali, $s_n$ è casuale,
+quindi non contiene alcuna informazione sul segreto $s$, e lo sarebbe di qualunque sottoinsieme.
+Vale infatti che, per come è stato costruito, $s_1 \oplus s_n = s$, e lo \texttt{XOR} con qualunque 
+sottoinsieme di $s_1,\dots,s_k = s \oplus s_{k+1} \oplus \dots \oplus s_n$, non fornendo quindi 
+alcuna informazione sul segreto.
+
+Questo schema ha però un problema, un agente non collaborativo potrebbe non inviare la sua parte
+e quindi impedire la ricostruzione del segreto, vorremmo che fosse possibile ricostruire il segreto
+anche con un numero minore di parti, ma non con meno di un numero fissato $k$.
+
+\subsection{Schema di Shamir}
+Lo schema di Shamir è un metodo per distribuire un segreto $s$ in $n$ parti, in modo che con $k$
+parti si possa ricostruire il segreto, ma con meno di $k$ parti non si possa ricavare alcuna
+informazione sul segreto $s$.
+
+\begin{theorem}
+  Un polinomio di grado $k - 1$ è individuato univocamente da $k$ punti. Per $k$ punti passa
+  esattamente un polinomio di grado $k - 1$.
+\end{theorem}
+
+Costruiamo un polinomio $P$ casuale di grado $k$ tale che $P(0) = s$.
+\[
+  P(x) = a_0x + a_1x^2 + \dots + a_{k-1}x^k
+\]
+\[
+  P(0) = a_0 = s
+\]
+Scegliendo quindi $a_1, \dots, a_{k-1}$ casuali e $a_0 = s$ otteniamo un polinomio $P$ casuale.
+
+Gli agenti sono $n$, e ad ognuno di essi viene assegnato in valore del polinomio $P$ in un punto
+casuale $x_i$, che non sia il punto $0$. 
+
+\subsubsection{Distribuzione delle Parti}
+
+Dopo aver costruito il polinomio $P$, il possessore del segreto $s$ distribuisce le sue $n$ parti
+agli agenti, assegnando a ciascun agente $i$ il valore $P(x_i)$. Ogni agente conosce solo il suo
+valore assegnato e non può dedurre nulla circa il segreto complessivo.
+
+Il polinomio $P(x)$ è definito come:
+
+\[ P(x) = a_0 + a_1x + a_2x^2 + \dots + a_{k-1}x^{k-1} \]
+
+dove $a_0 = s$ e $a_1, a_2, \dots, a_{k-1}$ sono scelti casualmente. Ogni agente riceve il proprio
+valore $P(x_i)$, con $x_i$ scelto casualmente da una distribuzione che non include lo zero.
+
+\subsubsection{Ricostruzione del Segreto}
+
+Per ricostruire il segreto $s$, è necessario un insieme di almeno $k$ parti. Questo è garantito
+dal teorema precedentemente enunciato, secondo il quale $k$ punti sono sufficienti per individuare
+univocamente un polinomio di grado $k-1$.
+
+La ricostruzione del segreto può essere effettuata utilizzando una tecnica come l'interpolazione
+polinomiale. Ad esempio, utilizzando l'interpolazione di Lagrange, il segreto può essere recuperato
+con la seguente formula:
+
+\[ s = P(0) = \sum_{i=1}^{k} P(x_i) \prod_{j=1, j\neq i}^{k} \frac{x_j}{x_i - x_j} \]
+
+Dove $x_1, x_2, \dots, x_k$ sono i punti in cui gli agenti hanno valori del polinomio $P$.
