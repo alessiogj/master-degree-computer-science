@@ -89,3 +89,199 @@ Il protocollo ha però dei difetti, è infatti molto dispendioso in termini di r
 tutti gli agenti devono essere sempre attivi ed è soggetto ad un attacco chiamato \textbf{denial of service},
 se qualcuno vuole oscurare il canale può trasmettere
 sequenze di bit casuali e nessuno saprà mai chi ha oscurato il canale.
+\section{La caverna di Ali Baba}
+L'idea si basa sul fatto che ci siano due agenti, Peggy e Victor. Peggy (\textit{prover}) vuole
+dimostrare a Victor (\textit{verifier}) di conoscere una certa informazione, senza però rivelare
+l'informazione stessa. Si vole inoltre che la conoscenza di Victor sull'informazione sia
+\textbf{zero}, ovvero Victor non deve imparare nulla sull'informazione che Peggy vuole dimostrare
+e che non sia nemmeno in grado di dimostrare di conoscere l'informazione a terzi.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{img/zero_knowledge1.png}
+    \includegraphics[width=0.3\textwidth]{img/zero_knowledge2.png}
+    \includegraphics[width=0.3\textwidth]{img/zero_knowledge3.png}
+    \caption{Peggy è in grado di dimostrare a Victor di conoscere l'informazione senza rivelarla,
+    dimostrando di riuscire ad uscire dall'estremità corretta del labirinto.}
+\end{figure}
+Se Victor seguisse Peggy, potrebbe imparare l'informazione, quindi Peggy deve essere in grado di 
+dimostrare di conoscere l'informazione senza che Victor possa impararla.
+Se invece Victor andasse dalla parte opposta, non imparerebbe nulla, ma sarebbe in grado di 
+dimostrare a terzi che Peggy conosce l'informazione, filmando l'apertura della porta.
+
+Quello che si può fare è far scegliere da Peggy una delle due direzioni attraverso il lancio 
+di una moneta, dopo che Peggy ha raggiunto la direzione decisa attraverso il lancio della moneta,
+Victor raggiunge lo stesso punto di partenza di Peggy e lancia 
+la moneta per decidere la direzione che Peggy deve prendere, Peggy deve quindi prendere la direzione
+decisa da Victor. Se Peggy conosce l'informazione, riuscirà sempre a prendere la direzione decisa
+da Victor, altrimenti con probabilità $\frac{1}{2}$ non sarà in grado di prendere la direzione
+decisa da Victor.
+Per abbassare la probabilità di errore, si può ripetere il protocollo più volte, in questo modo
+se Peggy non conosce l'informazione, la probabilità di errore sarà $\frac{1}{2^k}$, dove $k$ è il
+numero di volte che si ripete il protocollo.
+
+Victor non sarà in grado di dimostrare a terzi che Peggy conosce l'informazione, poiché dall'ipotetico 
+filmato che Victor potrebbe girare, non si capirebbe se i due hanno deciso la direzione in anticipo
+o se Peggy conosce l'informazione, essendo che si vedrebbe solo la comunicazione della direzione da parte di Victor e
+l'uscita di Peggy dalla direzione decisa da Victor.
+\section{Classe \texttt{P} e \texttt{NP}}
+Un problema decisionale $Q$ appartiene a \texttt{P} se esiste una macchina di Turing
+deterministica (\textit{o equivalente}) che, in tempo polinomiale rispetto alla dimensione dell'input,
+può risolvere il problema $Q$.
+
+Un problema decisionale $Q$ appartiene a \texttt{NP} se e solo se esiste una macchina di Turing deterministica
+(\textit{o equivalente}) che, in tempo polinomiale rispetto alla dimensione dell'input, può verificare soluzioni
+proposte per ogni istanza $x$ di $Q$. 
+
+\begin{theorem}
+    Un linguaggio $\mathcal{L} \in \texttt{NP}$ se e solo se esiste un linguaggio 
+    $\mathcal{L'}$ appartenente alla classe \texttt{P} tale che $\forall x \in \mathcal{L}$, esiste
+    un certificato $y$ tale che $(x,y) \in \mathcal{L'}$.
+\end{theorem}
+In generale quindi dimostrare un teorema è più difficile che verificare che un teorema sia vero.
+Se volessimo dimostrare che verificare non è più difficile che dimostrare potremmo farlo dando una 
+potenza di calcolo limitata a chi verifica e una potenza di calcolo illimitata a chi dimostra.
+\section{Interactive proof system}
+Un \textbf{interactive proof system} è una coppia di algoritmi (\textit{macchine di Turing}) $(P,V)$, tali 
+che $P$ ha potenza di calcolo illimitata e $V \in \texttt{PPT}$. $P$ e $V$ interagiscono scambiandosi 
+messaggi e alla fine $V$ deve decidere se accettare o rifiutare l'input $x$.
+
+Un linguaggio $\mathcal{L}$ ammette un \texttt{IPS} (\textit{Interactive Polynomial time Space}) se
+esistono due algoritmi, \(P\) e \(V\), tali che:
+
+\[
+\forall x \in \mathcal{L} \quad \mathcal{P}[(P,V) \text{ accetta } x] > \frac{2}{3}
+\] 
+
+\[
+\forall x \notin \mathcal{L} \quad \forall P' \quad \mathcal{P}[(P',V) \text{ accetta } x] \leq \frac{1}{3}
+\]
+
+La classe di linguaggi che ammettono un \texttt{IPS} si chiama \texttt{IP}. Quindi, un linguaggio $\mathcal{L}$
+appartiene a \texttt{IP} se ammette un \texttt{IPS}.
+
+Inoltre, si ha l'inclusione di classi di complessità:
+
+\[
+\texttt{NP} \subseteq \texttt{IP}
+\]
+
+Il seguente teorema afferma l'equivalenza tra le classi di complessità
+\texttt{IP} e \texttt{PSPACE}:
+
+\begin{theorem}
+    \texttt{IP} $=$ \texttt{PSPACE}
+\end{theorem}
+\begin{proof}
+La dimostrazione di questa equivalenza coinvolge la costruzione di trasformazioni tra le classi \texttt{IP} e \texttt{PSPACE}
+in entrambe le direzioni.
+Per dimostrare \( \texttt{IP} \subseteq \texttt{PSPACE} \), si mostra che ogni problema risolvibile in modo interattivo
+in tempo polinomiale ha anche una soluzione in spazio polinomiale.
+La direzione opposta, \( \texttt{PSPACE} \subseteq \texttt{IP} \), richiede la costruzione di un protocollo interattivo
+che possa simulare una macchina di Turing con spazio limitato e risolvere il problema in modo interattivo.
+Pertanto, si conclude che \( \texttt{IP} \) e \( \texttt{PSPACE} \) sono equivalenti in termini di potenza computazionale.
+\end{proof}
+\subsection{Quadratic non-residuosity}
+Abbiamo un numero in $\mathbb{Z}_n^*$ che non è un quadrato e vogliamo costruire un interactive proof system
+per dimostrare che non è un quadrato.
+
+L'input del problema è la coppia $(n,x)$, e l'output accetta se $x$ è un non-residuo quadratico in $\mathbb{Z}_n^*$.
+Victor manda a Peggy $w_1, w_2, \dots, w_l$ dove:
+\[
+  w_i = \begin{cases}
+    z_i^2 & \text{con } z_i \in_R \mathbb{Z}_n^* \text{ se }b_i = 0 \text{ dove }b_i \in_R \{0,1\} \\
+    x \cdot z_i^2 & \text{altrimenti}  
+    \end{cases}
+\]
+Peggy invia a Victor la sequenza $c_1, c_2, \dots, c_l$ dove:
+\[
+  c_i = \begin{cases}
+    0 & \text{se }w_i \text{ è un quadrato} \\
+    1 & \text{altrimenti}
+    \end{cases}
+\]
+Se $x$ non è un quadrato, allora $w_i$ è un quadrato se e solo se $b_i = 0$ e
+non è un quadrato se e solo se $b_i = 1$. Victor accetta solo se $c_i = b_i$ per ogni $i$.
+La se Peggy non conosce la soluzione, la probabilità che Victor accetti è $\frac{1}{2^l}$, 
+mentre se la conosce la probabilità è $1$.
+L'idea intuitiva è che la capacità di rispondere coincida con la conoscenza del segreto, in questo caso 
+visto che nel mondo reale prover con potenza di calcolo illimitata non esistono, e visto 
+che Peggy riesce a rispondere alle domande di Victor, allora Peggy conosce la fattorizzazione 
+di $n$.
+\subsection{Graph non-isomorphism}
+Abbiamo due grafi $G_1$ e $G_2$ e vogliamo costruire un interactive proof system per dimostrare che non sono isomorfi,
+$G_1 \simeq  G_2$. Ricordiamo che due grafi sono isomorfi se esiste una funzione biunivoca tra i vertici dei due
+grafi che preserva gli archi.
+
+\begin{figure}[H]
+    \centering
+        \begin{tikzpicture}
+            \begin{scope}[every node/.style={circle,thick,draw}]
+                \node (A) at (0,0) {A};
+                \node (B) at (2.5,1) {B};
+                \node (C) at (5,0) {C};
+                \node (D) at (2.5,-3) {D};
+                \node (E) at (0,2) {E};
+                \node (F) at (5,2) {F} ;
+            \end{scope}
+            
+            \begin{scope}[>={Stealth[black]},
+                          every edge/.style={draw=red,very thick}]
+                \path [-] (A) edge node {} (E);
+                \path [-] (E) edge node {} (F);
+                \path [-] (E) edge node {} (B);
+                \path [-] (B) edge node {} (D);
+                \path [-] (D) edge node {} (F);
+                \path [-] (F) edge node {} (C);
+                \path [-] (C) edge node {} (D);
+                \path [-] (C) edge node {} (F);
+                \path [-] (B) edge node {} (C); 
+            \end{scope}
+        \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{scope}[every node/.style={circle,thick,draw}]
+                \node (A) at (0,0) {A};
+                \node (B) at (0,3) {B};
+                \node (C) at (2.5,4) {C};
+                \node (D) at (2.5,1) {D};
+                \node (E) at (2.5,-3) {E};
+                \node (F) at (5,3) {F} ;
+            \end{scope}
+            
+            \begin{scope}[>={Stealth[black]},
+                          every edge/.style={draw=red,very thick}]
+                \path [-] (A) edge node {} (B);
+                \path [-] (B) edge node {} (C);
+                \path [-] (D) edge node {} (C);
+                \path [-] (D) edge node {} (E);
+                \path [-] (D) edge node {} (F);
+                \path [-] (C) edge node {} (F);
+                \path [-] (E) edge node {} (F); 
+                \path [-] (B) edge[bend right=60] node {} (E); 
+            \end{scope}
+        \end{tikzpicture}
+    \caption{Esempio di due grafi isomorfi}
+\end{figure}
+$V$ sceglie un grafo $G\in \{G_1, G_2\}$ e lo permuta casualmente in $G'$. $V$ invia $G'$ a $P$ e $P$ 
+stabilisce se $G'$ è isomorfo a $G_1$ o $G_2$ e invia il risultato a $V$. $V$ accetta se $P$ indovina correttamente.
+
+Il fatto che $P$ sia in grado di rispondere è dovuto al fatto che abbia potenza di calcolo illimitata e non 
+è dovuto al fatto che vi siano informazioni trapdoors. 
+
+Vorremo arrivare al punto che $V$ non impari nulla di più se non il non isomorfismo tra i grafi, poiché 
+potrebbe esistere un $V$ che ha come obiettivo di sapere qualcosa in più, come ad esempio capire se $G_2$
+è isomorfo a un altro grafo $G_3$. Per farlo parte dall'istanza di $G_1$ e $G_2$ per interagire con $P$, 
+e la prima richiesta sarà proprio $G_3$. Usando quindi $P$ per risolvere problemi di cui non ha 
+l'informazione. 
+
+L'idea è che $V$ avrebbe potuto simulare l'interazione con $P$ senza interagire con $P$ stesso.
+Se $P$ e $V$ interagiscono vengono prodotti una serie di messaggi, che in realtà sono una sequenza casuale,
+perché $P$ e $V$ sono algoritmi stocastici, dove vengono effettuate scelte casuali, producendo quindi
+una \textbf{misura di probabilità} su sequenze di messaggi chiamata $\texttt{view}(P,V,x,h)$. 
+Con $h$, che rappresenta l'\textit{hint}, si vuole catturare l'idea che qualcuno possa fornire informazioni 
+aggiuntive a $V$ per aiutarlo a rispondere alle domande di $P$.
+
+\begin{tcolorbox}
+    Diciamo che $P,V$ è zero-knowledge se per ogni $V'\in \texttt{PPT}$ esiste un simulatore $M \in \texttt{PPT}$
+    tale che $M(P,V',x,h) = \texttt{view}(P,V,x,h)$. In grado quindi di produrre una sequenza di messaggi
+    distribuite esattamente come quelle di \texttt{view}.   
+\end{tcolorbox} 
