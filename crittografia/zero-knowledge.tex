@@ -209,7 +209,7 @@ che Peggy riesce a rispondere alle domande di Victor, allora Peggy conosce la fa
 di $n$.
 \subsection{Graph non-isomorphism}
 Abbiamo due grafi $G_1$ e $G_2$ e vogliamo costruire un interactive proof system per dimostrare che non sono isomorfi,
-$G_1 \simeq  G_2$. Ricordiamo che due grafi sono isomorfi se esiste una funzione biunivoca tra i vertici dei due
+$G_1 \not\simeq  G_2$. Ricordiamo che due grafi sono isomorfi se esiste una funzione biunivoca tra i vertici dei due
 grafi che preserva gli archi.
 
 \begin{figure}[H]
@@ -225,7 +225,7 @@ grafi che preserva gli archi.
             \end{scope}
             
             \begin{scope}[>={Stealth[black]},
-                          every edge/.style={draw=red,very thick}]
+                          every edge/.style={draw=black,very thick}]
                 \path [-] (A) edge node {} (E);
                 \path [-] (E) edge node {} (F);
                 \path [-] (E) edge node {} (B);
@@ -248,7 +248,7 @@ grafi che preserva gli archi.
             \end{scope}
             
             \begin{scope}[>={Stealth[black]},
-                          every edge/.style={draw=red,very thick}]
+                          every edge/.style={draw=black,very thick}]
                 \path [-] (A) edge node {} (B);
                 \path [-] (B) edge node {} (C);
                 \path [-] (D) edge node {} (C);
@@ -285,3 +285,226 @@ aggiuntive a $V$ per aiutarlo a rispondere alle domande di $P$.
     tale che $M(P,V',x,h) = \texttt{view}(P,V,x,h)$. In grado quindi di produrre una sequenza di messaggi
     distribuite esattamente come quelle di \texttt{view}.   
 \end{tcolorbox} 
+\subsection{Ciclo hamiltoniano}
+\begin{tcolorbox}
+    Un ciclo hamiltoniano è un ciclo che passa per tutti i vertici di un grafo una e una sola volta.
+\end{tcolorbox}
+\begin{figure}[H]
+    \centering
+        \begin{tikzpicture}
+            \begin{scope}[every node/.style={circle,thick,draw}]
+                \node (A) at (0,0) {A};
+                \node (B) at (2.5,1) {B};
+                \node (C) at (5,0) {C};
+                \node (D) at (2.5,-3) {D};
+                \node (E) at (0,2) {E};
+                \node (F) at (5,2) {F} ;
+            \end{scope}
+            
+            \begin{scope}[>={Stealth[black]},
+                          every edge/.style={draw=black,very thick}]
+                \path [-] (A) edge node {} (E);
+                \path [-] (E) edge node {} (F);
+                \path [-] (E) edge node {} (A);
+                \path [-] (B) edge node {} (D);
+                \path [-] (F) edge node {} (C);
+                \path [-] (C) edge node {} (D);
+                \path [-] (C) edge node {} (F);
+                \path [-] (B) edge node {} (C);
+                \path [-] (B) edge node {} (A);
+            \end{scope}
+        \end{tikzpicture}
+    \caption{Esempio di un ciclo hamiltoniano}
+\end{figure}
+Per farlo $P$ permuta $G$ per ottenere $H$, grafo isomorfo a $G$ e codifica tutti i bit della matrice di adiacenza
+di $H$ con bit commitment, e sia $H'$ il risultato. $P$ invia $H'$, sapendo che il dato inviato non rivela alcuna 
+informazione circa i bit al suo interno. $V$ lancia una moneta per decidere se chiedere a $P$ l'evidenza 
+che $G \simeq H$ o l'evidenza che $H$ ammette un ciclo hamiltoniano. 
+$P$ obbedisce e nel caso in cui $V$ abbia chiesto l'evidenza che $G \simeq H$ allora rivela $H$ e l'isomorfismo
+tra $G$ e $H$ (\textit{se uno ammette ciclo hamiltoniamo, lo ammettee anche l'altro}).
+Se invece $V$ ha chiesto l'evidenza che $H$ ammette un ciclo hamiltoniano, scopre solo i bit di $H$ che 
+costituiscono un ciclo hamiltoniano.
+
+Se $G$ non ammette ciclo hamiltoniamo allora il grafo $H$ inviato dal prover, non è possibile che sia sia isomorfo 
+a $G$ e che ammetta un ciclo hamiltoniano. Se è isomorfo a $G$, visto che $G$ non ammette ciclo hamiltoniano, allora 
+$H$ non può ammetterlo. In quel caso il verifier saprà solamente fornire la risposta ad una delle due domande.
+Visto che il verifier sceglie le domande casualmente, con probabilità $\frac{1}{2}$ il verifier sceglierà la domanda
+a cui il prover non sa rispondere.
+Di conseguenza se $G$ ammette ciclo hamiltoniano, il prover risponderà sempre in qualsiasi caso e quindi 
+risponderà correttamente con probabilità $1$.
+\subsection{Costruzione del simulatore $M$}
+Vogliamo far si che $V$ non possa utilizzare l'interazione con $V$ per convincere terzi.
+Per farlo scegliamo casualmente la domanda di $V$, se la domanda che fa $V$ è di dimostrare che $G \simeq H$,
+allora costruiamo $H'$ secondo il protocollo.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[bob, minimum size=2cm,label=below:{Prover}] (Prover) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[bob, mirrored, minimum size=2cm, label=below:{Verifier}] (Verifier) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\< \text{Codifica }H' \text{ con bit commitment} \\
+\< \sendmessageleft*{H'}\< \\
+\<\sendmessageleft*{\text{Dimostra che } G \simeq H}\<\\
+\<\sendmessageright*{\text{Rivela } H \text{ e }G \simeq H}\<\\
+}
+Se invece la domanda è di dimostrare che $H$ ammette un ciclo hamiltoniano, allora $P$ invia $H'$ 
+bit commitment del grafo \textbf{completo}, scegliendo una permutazione casuale dei nodi come ciclo.
+\pseudocodeblock{
+\begin{tikzpicture}
+    \node[bob, minimum size=2cm,label=below:{Prover}] (Prover) {};
+\end{tikzpicture}
+    \<\<
+\begin{tikzpicture}
+    \node[bob, mirrored, minimum size=2cm, label=below:{Verifier}] (Verifier) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\< \text{Codifica }H' \text{ con bit commitment} \\
+\<\sendmessageleft*{H'}\< \\
+\<\sendmessageleft*{H \text{ hamiltoniano}}\<\\
+\text{Codifica $H'$ con bit commitment} \<\< \\
+\text{del grafo completo con un ciclo} \<\< \\
+\text{hamiltoniamo casuale.} \<\< \\
+\<\sendmessageright*{\text{Invia } H'}\<\\
+}
+La distribuzione di probabilità delle domande che può effettuare il prover è di $\frac{1}{2}$ per ciascuna domanda.
+La distribuzione di probabilità delle risposte che può dare il prover è corretta nel primo caso, è infatti 
+dovuta alla permutazione casuale che può assumere il grafo. Nel secondo caso invece si tratta di una permutazione 
+casuale dei nodi del grafo $H'$.
+Permutando un grafo con ciclo hamiltoniano, il ciclo diventa una permutazione 
+dei nodi del grafo, quindi qualunque permutazione ha la stessa probabilità di essere un ciclo hamiltoniamo, quindi 
+la probabilità 
+che una determinata permutazione sia un ciclo hamiltoniano è sempre la stessa
+
+Nel primo caso la misura di probabilità è sempre la stessa, nel secondo caso invece la misura di probabilità è diversa.
+
+Un qualunque terzo osservatore che abbia potenza di calcolo polinomiale
+che osserva l'interazione tra $P$ e $V$, non può distinguere
+l'interazione reale che avviene tra $P$ e $V$ da un'interazione simulata tra $P$ e $V$. Un osservatore che osserva $H'$
+fornito dalla seconda interazione (\textit{ovvero quello che ha la permutazione casuale dei nodi del grafo completo}),
+non riesce a capire che l'$H'$ inviato dal verifier è la matrice di adiacenza di un grafo completo o meno.
+
+Supponendo di avere un algoritmo $\mathcal{D} \in \texttt{PPT}$ che campiona i messaggi tra \texttt{View} e \texttt{M}
+e che riesce a distinguere tra l'interazione reale e quella simulata, allora siamo in grado di distinguere tra 
+il bit commitment di un grafo con ciclo hamiltoniamo da il bit commitment di un grafo completo, ma ciò si traduce 
+in un algoritmo che risolve il problema del bit commitment, che è un problema non risolvibile in \texttt{PPT}.
+
+Quello che viene effettivamente visto esternamente è la distribuzione di probabilità tra le domande e le risposte, ma 
+non viene effettivamente vista la differenza tra le due versioni di $H'$.
+\begin{tcolorbox}[title = Perfect Zero Knowledge]
+    In questo caso le due distribuzioni di probabilità sono identiche, ovvero:
+    \[
+      \texttt{view}(P,V,x,h) = M(P,V,x,h)
+    \]
+\end{tcolorbox}
+\begin{tcolorbox}[title = Statistical Zero Knowledge]
+    In questo caso la differenza tra le due distribuzioni di probabilità è trascurabile, ovvero
+    non esiste un algoritmo \texttt{PPT} che riesce a distinguere tra le due distribuzioni di probabilità.
+    \[
+      \sum \big| \texttt{view}(P,V,x,h) - M(P,V,x,h) \big| \leq k^{-\omega(1)}
+    \]
+\end{tcolorbox}
+\begin{tcolorbox}[title = Computational Zero Knowledge]
+    In questo caso le due misure di probabilità sono polinomialmente indistinguibili, ovvero
+    $\forall \mathcal{D} \in \texttt{PPT}$ sia $\mathcal{P}_k^{\mathcal{D}, \mathcal{V}}$ la
+    probabilità che $\mathcal{D}$ restituisca $1$ campionando da \texttt{view} e 
+    sia $\mathcal{P}_k^{\mathcal{D}, \mathcal{M}}$ la probabilità che $\mathcal{D}$
+    restituisca $1$ campionando da $M$,
+    \[
+        \big| \mathcal{P}_k^{\mathcal{D}, \mathcal{V}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{M}} \big| \leq k^{-\omega(1)}
+    \]
+    Non esiste un algoritmo \texttt{PPT} che riesce a distinguere tra le due distribuzioni di probabilità.
+\end{tcolorbox}
+\subsection{Tre colorabilità di un grafo}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{scope}[every node/.style={circle,thick,draw}]
+            \node[fill=blue!30] (A) at (0,0) {A};
+            \node[fill=green!30] (B) at (2.5,1) {B};
+            \node[fill=red!30] (C) at (5,0) {C};
+            \node[fill=green!30] (D) at (2.5,-1) {D};
+            \node[fill=red!30] (E) at (0,2) {E};
+            \node[fill=blue!30] (F) at (5,2) {F} ;
+        \end{scope}
+        
+        \begin{scope}[>={Stealth[black]},
+                      every edge/.style={draw=black,very thick}]
+            \path [-] (A) edge node {} (E);
+            \path [-] (A) edge node {} (C);
+            \path [-] (A) edge node {} (D);
+            \path [-] (E) edge node {} (B);
+            \path [-] (E) edge node {} (F);
+            \path [-] (B) edge node {} (E);
+            \path [-] (B) edge node {} (F);
+            \path [-] (F) edge node {} (C);
+            \path [-] (C) edge node {} (D);
+        \end{scope}
+    \end{tikzpicture}
+\end{figure}
+Nel contesto della dimostrazione della tre-colorabilità di un grafo senza rivelare la
+colorazione effettiva dei nodi, si adotta un protocollo computational zero knowledge.
+L'obiettivo è dimostrare che un grafo può essere colorato con tre colori in modo tale che
+nodi adiacenti abbiano colori distinti, senza mai rivelare la specifica colorazione adottata.
+
+Il protocollo inizia con un accordo tra il prover e il verifier su un grafo G. Il prover si
+impegna a dimostrare la tre-colorabilità del grafo senza rivelare direttamente la colorazione.
+
+Per mantenere la confidenzialità, il prover sceglie casualmente una permutazione tra tre colori
+(\textit{ad esempio, rosso, verde e blu}) senza rivelarla al verifier. Questa permutazione sarà
+utilizzata per colorare i nodi del grafo.
+
+Il verifier, a sua volta, sfida il prover selezionando casualmente due nodi adiacenti, A e B,
+e richiede la rivelazione dei colori associati secondo la permutazione scelta. Il prover risponde
+rivelando i colori senza svelare la permutazione effettiva. Il verifier può verificare se i colori
+sono diversi, confermando così la corretta tre-colorabilità del grafo.
+Questo processo può essere ripetuto per diverse coppie di nodi adiacenti, ma la casualità nella
+selezione delle sfide impedisce al verifier di dedurre la permutazione specifica attraverso tentativi
+ripetuti.
+
+Il prover, per evitare la possibile deduzione della permutazione da parte del verifier attraverso
+esperimenti multipli, permuta casualmente i colori ad ogni sfida successiva. In questo modo, il verifier
+non può accumulare informazioni utili per dedurre la tre-colorabilità del grafo.
+
+Alla conclusione del protocollo, se il prover ha superato con successo tutte le sfide, il verifier acquisisce
+la convinzione della tre-colorabilità del grafo, senza mai venire a conoscenza della specifica
+permutazione dei colori utilizzata dal prover. Questo dimostra l'efficacia della computational zero knowledge
+nel preservare la riservatezza della colorazione dei nodi.
+\section{Ripetizione parallela della zero knowledge}
+Per come abbiamo definito la zero knowledge, il protocollo può essere ripetuto più volte
+eseguendo arbitrariamente la sequenza di \textit{challenge, question, response}.
+Se il protocollo seguisse uno schema parallelo di esecuzione, ovvero se il verifier 
+ponesse più domande in parallelo, il prover potrebbe rispondere a tutte le domande
+con una singola risposta, senza dover ripetere il protocollo per ogni domanda.
+\pseudocodeblock{
+\begin{tikzpicture}
+  \node[bob, minimum size=2cm,label=below:{Prover}] (Prover) {};
+\end{tikzpicture}
+\<\<
+\begin{tikzpicture}
+  \node[bob, mirrored, minimum size=2cm, label=below:{Verifier}] (Verifier) {};
+\end{tikzpicture}
+\\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
+\<\<\text{Challenge }c_1, c_2, \dots c_l\< \\
+\<\sendmessageleft*{\text{Question }q_1, q_2,\dots,q_l}\<\\
+\<\sendmessageright*{\text{Response }r_1,r_2,\dots,r_l}\<\\
+}
+Per uno schema sequenziale, dove gli eventi sono mutuamente indipendenti, è possibile creare
+misure di probabilità che risultano indistinguibili dall'originale. Tuttavia, la zero knowledge
+proof in uno schema parallelo presenta delle sfide. Questo è evidente definendo $q_1, q_2, \dots, q_l$
+come una funzione hash unidirezionale $H(c_1, c_2, \dots, c_l)$. Nel contesto dello schema parallelo,
+la tecnica per simulare la sequenza di messaggi diventa impraticabile. La difficoltà principale risiede
+nella necessità di invertire la funzione hash, che è di tipo unidirezionale, al fine di costruire le
+challenge $c_1, c_2, \dots, c_l$ per la simulazione.
+
+Una proof zero knowledge in cui il verifier pone domande al prover sulla base di una funzione hash 
+one way applicata alle challenge, è qualcosa che riesce a convincere terze parti che il prover
+conosce la soluzione.
+\section{Non interactive zero knowledge}
+La non interactive zero knowledge è una variante della zero knowledge proof in cui qualcuno 
+conosce il segreto senza rivelare chi sia, non rivelando nessuna informazione circa il segreto
+stesso. L'aspetto cruciale delle non interactive zero knowledge è la capacità di dimostrare
+la conoscenza di un segreto in modo autonomo e senza rivelare
+dettagli sensibili, rendendole particolarmente utili in applicazioni decentralizzate come le blockchain.
