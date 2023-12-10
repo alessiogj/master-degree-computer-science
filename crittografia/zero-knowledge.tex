@@ -1,0 +1,91 @@
+\chapter{Zero knowledge}
+\section{Crittografi mangiatori}
+Ci sono 3 crittografi che cenano insieme, durante la loro cena discutono di tutto, ma essendo 
+paranoici non possono far a meno di notare un personaggio misterioso che li osserva. Al momento 
+del conto decidono di pagare ognuno la propria parte, ma il cameriere gli dice che il conto è
+stato già pagato. I crittografi vogliono capire se il personaggio misterioso ha pagato il conto
+o se è stato uno di loro, ma non vogliono rivelare il proprio contributo. Come possono fare?
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    % Filosofi
+    \node[groom, female, minimum size=1cm, label=below:{Alice}] (A) at (0,0) {};
+    \node[groom, mirrored, minimum size=1cm, label=below:{Bob}] (B) at (5,0) {};
+    \node[groom, minimum size=1cm, label=below:{Charlie}] (C) at (2.5,4) {};
+    % Personaggio oscuro 
+    \node[criminal, minimum size=1cm, label=below:{David}] (D) at (-5, 2.5) {};
+    % Nodi
+    \draw[->] (A) -- (B) node[midway, below] {$C_2$};
+    \draw[->] (B) -- (C) node[midway, right] {$C_3$};
+    \draw[->] (C) -- (A) node[midway, left] {$C_1$};
+  \end{tikzpicture}
+  \caption{Crittografi mangiatori}
+\end{figure}
+L'idea è quella di utilizzare un protocollo di \textbf{zero knowledge}, ovvero un protocollo che
+permette di dimostrare di conoscere una certa informazione senza rivelarla. Ognuno di loro 
+nasconde un bit $b_i$ che indica se ha pagato o meno il conto, il bit varrà $1$ se ha pagato e $0$
+altrimenti. 
+Ovviamente è chiaro che se il risultato di tutti i bit è $0$ allora nessuno ha pagato, se invece
+il risultato è $1$ allora ogni crittografo sa che almeno uno di loro ha pagato, ma non sa chi. Possiamo vedere 
+questo calcolo come il calcolo di una funzione $f$ che prende in input i bit $b_i$ e restituisce
+$1$ se almeno uno di loro ha pagato, $0$ altrimenti, partendo dall'assunzione che i partecipanti siano
+onesti.
+
+Ognuno di loro lancia una propria moneta a destra, ed ogni crittografo vede il risultato della
+moneta del crittografo alla sua sinistra e ovviamente sa il risultato della propria moneta.
+A questo punto ogni crittografo calcola lo \texttt{XOR} delle due monete a cui ha accesso.
+\[
+  x_{mine} = C_{other} \oplus C_{mine}
+\]
+$x_i$ varrà $0$ se le monete sono uguali, $1$ altrimenti. Il crittografo che ha pagato il conto 
+complementa il proprio $x$.
+\[
+  x_{mine} = \overline{x_{mine}}
+\]
+A questo punto notiamo che ogni singolo elemento viene considerato due volte, quindi il risultato
+dello \texttt{XOR} di tutti gli $x$ sarà $0$ se nessuno ha pagato, $1$ altrimenti. 
+Ogni crittografo sa quello che può sapere conoscendo il proprio bit e il risultato della funzione, 
+quindi da questo protocollo ogni crittografo può apprendere solo ed esclusivamente ciò che si può apprendere 
+dalla conoscenza del proprio argomento e dalla conoscenza del risultato della funzione.
+Chiaramente l'agente che sa di essere il crittografo che ha pagato sa il risultato degli altri 
+crittografi.
+\subsection{Generalizzazione del protocollo}
+Il protocollo può essere generalizzato a \(n\) crittografi, ognuno dei quali lancia una moneta e
+ognuno di loro vede il risultato della moneta del crittografo alla sua sinistra, calcolando 
+lo \texttt{XOR} tra le due monete. Ogni singola moneta viene conteggiata due volte, quindi
+il risultato dello \texttt{XOR} di tutte le monete sarà \(0\) se nessuno ha pagato, \(1\) altrimenti
+(\textit{eseguendo il complemento}), partendo dal presupposto che tutti i crittografi siano onesti.
+
+\subsubsection{Agente esterno che incarica la trasmissione di un messaggio}
+Supponiamo che qualcuno incarichi un crittografo di spedire un bit, ma non vuole comunicare 
+chi è l'incaricato. Se il crittografo in questione si comporta come l'unico crittografo che 
+può aver pagato, ha la capacità di spedire un bit senza che nessuno si accorga di chi è
+stato l'incaricato.
+
+\subsubsection{Agente interno che vuole spedire un messaggio}
+Supponiamo che il tempo sia scandito da un clock. Al primo ciclo di clock, il crittografo \(i\) lancia la
+moneta e la passa al crittografo alla sua destra. Al secondo ciclo di clock, il crittografo \(i\) calcola 
+lo \texttt{XOR} tra la moneta che ha ricevuto e la moneta che ha lanciato. Il crittografo 
+che vuole spedire il bit complementa il risultato, chi non vuole spedire il
+bit lascia il risultato così com'è. 
+
+Supponendo che il crittografo che vuole spedire il bit sia uno solo, riuscirà a spedire il bit
+con successo.
+
+Con questo protocollo però potrebbero esserci dei conflitti, ovvero potrebbe capitare che due
+crittografi vogliano spedire un bit. I crittografi hanno modo di accorgersi di questo conflitto,
+ogni crittografo riesce ad osservare il bit che è stato spedito nella rete, se il bit è diverso
+da quello che ha spedito lui, allora sa che c'è stato un conflitto. In questo caso il crittografi 
+che hanno spedito il bit e si accorgono gli il risultato non è andato a buon fine,
+spediscono il bit ad un ciclo di clock casuale e riprovano.
+
+\subsubsection{Agente interno che vuole spedire un messaggio ad un agente nascondendo il destinatario}
+Per farlo basta utilizzare il metodo precedente criptando il messaggio con la chiave pubblica del
+destinatario. In questo modo solo il destinatario potrà leggere il messaggio.
+
+Il risultato è un sistema di comunicazione totalmente non tracciabile, non si sa chi ha spedito, 
+non si sa il destinatario del messaggio e non si sa il contenuto del messaggio.
+Il protocollo ha però dei difetti, è infatti molto dispendioso in termini di risorse, poiché 
+tutti gli agenti devono essere sempre attivi ed è soggetto ad un attacco chiamato \textbf{denial of service},
+se qualcuno vuole oscurare il canale può trasmettere
+sequenze di bit casuali e nessuno saprà mai chi ha oscurato il canale.
