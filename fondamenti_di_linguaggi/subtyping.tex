@@ -1,19 +1,21 @@
 \chapter{Subtyping}
 Il subtyping è un concetto che rende facile la vita del programmatore, 
 facendo si che possa riutilizzare il codice. Prende una particolare valenza 
-nella programmazione ad oggetti. Rende meno rigido il type system, consentendo 
+nella programmazione ad oggetti, rendendo meno rigido il type system, consentendo 
 di compilare programmi che a runtime non darebbero problemi nonostante non siano 
 tipabili.
 \section{Polimorfismo}
 \begin{itemize}
     \item \textbf{Polimorfismo ad-hoc}:
-    opratori opverloaded, che possono lavorare con tipi diversi.
-    \item \textbf{Polimorfismo parametrico}: tipi polimorfi 
-    che possono essere istanziati con tipi diversi.
+    si tratta del classico overloading, data per esempio 
+    dalla possibilità di sommare due interi o due float.
+    \item \textbf{Polimorfismo parametrico}: per esempio, una funzione 
+    \item che prende in input un argo,mento di tipo $\texttt{list }\alpha$ 
+    e la computa per una parametrica lunghezza. 
     \item \textbf{Polimorfismo di subtyping}: un tipo può essere
-    usato al posto di un altro. CI focalizzeremo su questo.
+    usato al posto di un altro, e noi ci focalizzeremo su questo.
 \end{itemize}
-Motivazioni:
+Ridefiniamo le regole di subtyping per il nostro linguaggio funzionale:
 \begin{prooftree}
     \AxiomC{$\Gamma ,x, T \vdash e : T'$}
     \LeftLabel{(fun)}
@@ -25,31 +27,68 @@ Motivazioni:
     \LeftLabel{(app)}
     \BinaryInfC{$\Gamma \vdash e_1 e_2 : T'$}
 \end{prooftree}
-Prendendo in considerazione le nostre regole:
+Il type system presentato introduce una funzione rappresentata come:
+
 \[
-\Gamma \vdash (\texttt{fn }x : \texttt{left : int} \implies 
-\# \texttt{left }x): \textcolor{red}{\texttt{\{left : int\} }}
-\textcolor{red}{\rightarrow \texttt{int}}
+\Gamma \vdash (\texttt{fn }x : \texttt{left : int} \implies \#
+\texttt{left }x): \{ \texttt{left : int} \} \rightarrow \texttt{int}
 \]
-In qualche modo introduciamo una relazione d'ordine tra i tipi,
-in modo che un tipo possa essere usato al posto di un altro.
-Quindi:
+
+Questa funzione accetta un argomento \(x\) con un campo \texttt{left}
+di tipo \texttt{int} e restituisce il valore associato a \texttt{left},
+dichiarato come \(\# \texttt{left }x\), producendo un risultato di tipo
+\texttt{int}. Tuttavia, è evidente che non è possibile applicare la
+stessa funzione a un argomento \(x\) che ha un tipo diverso da
+\(\{ \texttt{left : int} \}\).
+
+Nel secondo esempio, si cerca di applicare la stessa funzione a un
+argomento di tipo 
+\[\{ \texttt{left = 3$, $right = 5} \}\]
+che è
+chiaramente incompatibile con il tipo richiesto dalla funzione.
+Questo viene espresso come:
+
 \[
-  \{\texttt{left : int, right : int}\} <: \{left : int\} <: \{\}  
+\Gamma \not \vdash (\texttt{fn }x : \texttt{left : int} \implies
+\# \texttt{left }x): \{ \texttt{left = 3, right = 5} \}
 \]
-Il sottotipo relazione $<:$ è introdotto per introdurre per introdurre la regola 
-di subtyping:
+
+Per gestire casi in cui si desidera consentire l'utilizzo di
+tipi più specifici in contesti che richiedono tipi più generali,
+viene introdotto il concetto di subtyping. La relazione di subtyping
+\(<:\) viene definita in modo che un tipo possa essere considerato
+come un sottotipo di un altro. Nell'esempio fornito, il
+tipo \(\{ \texttt{left : int, right : int} \}\) è un sottotipo di
+\(\{ \texttt{left : int} \}\), che a sua volta è un sottotipo di
+\(\{\}\).
+
+\[
+\{ \texttt{left : int, right : int} \} <: \{ \texttt{left : int} \}
+<: \{\}
+\]
+
+Tuttavia, l'introduzione di subtyping può portare alla perdita
+dell'unicità dei tipi. La regola di subtyping (\texttt{sub}) è
+aggiunta al sistema di tipi per consentire la sostituzione di
+un tipo con uno dei suoi sottotipi, ma ciò può portare a ambiguità
+nelle assegnazioni di tipo, poiché un'espressione potrebbe avere più
+tipi validi.
+
+In breve, mentre il subtyping offre maggiore flessibilità nell'uso
+dei tipi, è importante considerare l'effetto sulla chiarezza e
+sull'unicità dei tipi nel contesto del sistema specifico che si sta
+definendo.
 \begin{prooftree}
     \AxiomC{$\Gamma \vdash e : T$}
-    \AxiomC{$T <: T'$}
+    \AxiomC{$T<:T'$}
     \LeftLabel{(sub)}
-    \BinaryInfC{$\Gamma \vdash e : T'$}
+    \BinaryInfC{$\Gamma \vdash e : T$}
 \end{prooftree}
-In questo modo però non abbiamo più \textbf{l'unicità dei tipi}
-\subsection{Relazione $T <: T'$}
+
+\subsection{Il sottotipo relazione $T <: T'$}
 Si tratta di una relazione riflessiva e transitiva.
 \begin{prooftree}
-    \AxiomC{}
+    \AxiomC{$-$}
     \LeftLabel{(s-refl)}
     \UnaryInfC{$T <: T$}
 \end{prooftree}
@@ -59,19 +98,108 @@ Si tratta di una relazione riflessiva e transitiva.
     \LeftLabel{(s-trans)}
     \BinaryInfC{$T<:T''$}
 \end{prooftree}
-\subsection{Subsection sui record}
+In accordo con il riordino dei campi:
 \begin{prooftree}
-    \AxiomC{$\pi \textit{ una permutazione di }1,2,\dots,k$}
-    \LeftLabel{(s-rec)}
-    \UnaryInfC{$\Gamma \vdash e : \{l_1 : T_1', \dots, l_n : T_k\}
+    \AxiomC{$\pi$ una permutazione di $1,2,\dots,k$}
+    \LeftLabel{(rec-perm)}
+    \UnaryInfC{$\{p_1 : T_1', \dots, p_n : T_k\}
     <: \{p_{\pi(1)}: T_{\pi(1)},\dots, p_{\pi(k)}: T_{\pi(k)}\}$}
 \end{prooftree}
-La relazione di subtyping sui record non è simmetica e non è transitiva: un 
-preordine e non un ordine parziale:
 
-\dots
+La relazione di subtyping sui record è antisimmetrica: un preordine
+e non un ordine parziale. 
+Dimenticandoci dei campi a destra otteniamo:
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{(rec-width)}
+    \UnaryInfC{$\{p_1 : T_1, \dots, p_k : T_k, p_{k+1}: T_{k+1}, \dots, p_z : T_z\}
+    <: \{p_1 : T_1, \dots, p_k : T_k\}$}
+\end{prooftree}
+
+Quindi se volessimo riordinare prima, possiamo dimenticarci dei
+campi e in accordo con il riordino dei campi otteniamo:
+\begin{prooftree}
+    \AxiomC{$T_1 <: T_1' \dots T_k <: T_k'$}
+    \LeftLabel{(rec-perm)}
+    \UnaryInfC{$\{p_1 : T_1, \dots, p_k : T_k \} <: \{p_1 : T'_1, \dots, p_k : T'_k\}$}
+\end{prooftree}
+
+Si dice infatti che il subtyping sui record è \textbf{covariante}.
+
+Per quanto riguarda il sistema di tipi precedentemente discusso,
+l'introduzione del sottotipaggio sui record aggiunge ulteriore
+flessibilità nel trattamento dei tipi di dati strutturati.
 \section{Subtyping e funzioni}
 Contesto in cui si aspetta un certo algoritmo. Potrei avere una funzione 
 che si presta a funzionare in quel contesto, come tipo argomento vuole di meno 
 rispetto a quello che gli passo. Il subtyping è un modo per dire che una funzione
 che si aspetta un tipo, può essere usata con un tipo più generale.
+
+La regola di sottotipo è la seguente:
+\begin{prooftree}
+    \AxiomC{$T_1 :> T'_1$}
+    \AxiomC{$T_2 <: T'_2$}
+    \LeftLabel{(fun-sub)}
+    \BinaryInfC{$T_1 \rightarrow T_2 <: T'_1 \rightarrow T'_2$}
+\end{prooftree}
+Diremo che il sottotipaggio sulle funzioni è \textbf{controvariante} a 
+sinistra della freccia e \textbf{covariante} a destra della freccia.
+
+Così, se $f: T_1 \rightarrow T_2$ allora possiamo usare $f$ in ogni contesto 
+dove forniamo ad $f$ un qualsiasi argomento di tipo $T'_1$
+dove $T_1 <: T'_1$, e usiamo il risultato di $f$ in ogni contesto dove
+ci aspettiamo un risultato di tipo $T'_2$ dove $T_2 <: T'_2$.
+
+Per istanza, definiamo $f$ in un costruttore \texttt{let}:
+\[
+    \texttt{let } f : T = \texttt{fn } x :
+    \{ p : \texttt{int} \} \rightarrow 
+    \{ a = \# p\, x , b = 28\} \texttt{ in } e
+\]
+allora quando tipiamo $e$ dobbiamo usare il tipe environment $\Gamma$ 
+tale che:
+\[
+    \Gamma (f) = T = \{ p : \texttt{int} \} \rightarrow
+    \{ a : \texttt{int}, b : \texttt{int} \}
+\]
+Dalle regole di sottotipaggio usiamo $f$ in $e$ tale che abbia uno 
+dei seguenti tipi:
+\[
+\begin{array}{lll}
+    \{ p : \texttt{int} \} & \rightarrow & \{ a : \texttt{int} \}\\
+    \{ p : \texttt{int}, q: \texttt{int} \} & \rightarrow & \{ a : \texttt{int}, b : \texttt{int} \}\\
+    \{ p : \texttt{int}, q: \texttt{int}\} & \rightarrow & \{ a : \texttt{int}\}\\
+\end{array}
+\]
+perché:
+\[
+  \begin{array}{lll}
+    \{ p : \texttt{int} \} & <: & \{ p : \texttt{int}, q: \texttt{int} \}\\
+    \{ a : \texttt{int}, b : \texttt{int} \} & <: & \{ a : \texttt{int} \}\\
+  \end{array}  
+\]
+
+D'altro canto, nel programma:
+\[
+    \texttt{let } f : \hat{T} = \texttt{fn } x :
+    \{ p : \texttt{int}, q: \texttt{int} \} \rightarrow 
+    \{ a = (\# p\,x) + (\# q\,x)\} \texttt{ in } e
+\]
+quando tipiamo $e$ dobbiamo usare il tipe environment $\Gamma$ tale che:
+\[
+  \Gamma(f) = \hat{T} = \{ p : \texttt{int}, q: \texttt{int} \}
+  \rightarrow \{ a : \texttt{int} \}  
+\]
+Dalle regole di sottotipaggio usiamo $f$ in $e$ tale che abbiamo come 
+tipo:
+\[
+    \{ p : \texttt{int}, q: \texttt{int} \} \rightarrow
+    \{ a : \texttt{int} \}
+\]
+Tuttavia, non possiamo usare $f$ in $e$ con tipi:
+\[
+  \begin{array}{lll}
+    \{ p : \texttt{int} \} & \rightarrow & T \quad \textit{per ogni } \Gamma \textit{ e } T\\
+    T & \rightarrow & \{ a : \texttt{int} \} \quad \textit{per ogni } \Gamma \textit{ e } T\\
+  \end{array}  
+\]
