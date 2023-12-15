@@ -1,0 +1,149 @@
+\chapter{Analisi non distributive}
+Le analisi distributive sono analisi statiche che si basano su ciò che viene 
+calcolato, entrando quindi nel merito del valore che viene attribuito alle variabili 
+cercando proprietà su tali valori.
+\section{Propagazione delle costanti}
+La propagazione delle costanti è un'analisi che ha come obiettivo quello di determinare 
+se una variabile ha sempre lo stesso valore in un certo punto di programma.
+
+Dato un punto di programma $p$, determina se una variabile nel punto di programma $p$ è sempre 
+un valore costante. Tale analisi collegata alla \textbf{valutazione parziale}, che in un certo senso, 
+che è collegata al concetto di \textbf{specializzazione}, discusso nell'ambito dei linguaggi 
+di programmazione.
+
+Cerchiamo quindi di capire se in un certo punto di programma una variabile ha sempre
+lo stesso valore e in questo caso è possibile utilizzare tale valore per valutare parzialmente 
+il programma preso in considerazione, vedendo quindi se alcuni dei calcoli possono essere
+elaborati in funzione di un valore costante che il programma in quel punto di programma assume.
+
+In un caso pratico, se in un certo
+punto di programma una variabile che è utilizzata come condizione di un \textit{branching},
+assume sempre lo stesso valore, talvolta è possibile eliminare il \textit{branching} e
+eseguire solo una delle due parti del \textit{branching}.
+
+\begin{algorithm}[H]
+    $x \gets 1$\;
+    \dots\;
+    \If{$x > 0$}{
+        $e$\;
+    }
+    \Else{
+        $e'$\;
+    }
+\end{algorithm}
+\begin{algorithm}[H]
+    $x \gets 1$\;
+    \dots\;
+    $e$\;
+\end{algorithm}
+
+In questo senso l'informazione può essere utilizzata in vari ambiti permettendoci inoltre 
+di capire quali valori possono assumere le variabili in un certo punto di programma.
+Come \textit{side effect} di tale analisi, possiamo inoltre capire se un punto di 
+programma è raggiungibile o meno.
+\subsubsection{Esempio}
+Supponiamo di avere il seguente programma:
+
+\begin{algorithm}[H]
+    $a:=1; b:=2; c:=3; d:=3; e:=0$\;
+    \While{$B$}
+    {
+        $b := 2 \cdot a; d:=d+1; e:=e-a$\;
+        $c :=e + d; a:= b - a$\;
+    }
+\end{algorithm}
+Dove $B$ indica che la condizione sul ciclo non è nota staticamente.
+Verifichiamo lo stato delle variabili dopo ogni punto di programma:
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{c|ccccc}
+        & \texttt{a} &\texttt{b} & \texttt{c} & \texttt{d} & \texttt{e} \\
+        \hline
+        \textbf{1} & $1$ & $2$ & $3$ & $3$ & $0$ \\
+        \textbf{2} & $1$ & $2$ & $3$ & \redtext{$3$} & \redtext{$0$} \\
+        \textbf{3} & $1$ & $2$ & $3$ & $4$ & $-1$ \\
+        \textbf{4} & $1$ & $2$ & $3$ & \redtext{$4$} & \redtext{$-1$} \\
+        \hline
+        \textbf{1} & $1$ & $2$ & $3$ & $3$ & $0$ \\
+        \textbf{2} & $1$ & $3$ & $3$ & $?$ & $?$ \\
+        \textbf{3} & $1$ & $3$ & $2$ & $?$ & $?$ \\
+        \textbf{4} & $2$ & $3$ & $?$ & $?$ & $?$ \\
+    \end{tabular}
+\end{figure}
+Dopo la prima iterazione, al punto di programma $2$, viene collezionato 
+ciò che viene fatto al punto di programma $4$, visto che dal punto $4$ si ritorna al punto $2$
+data la presenza del ciclo.
+
+Collezionando valori vediamo che variano sono i valori di $d$ e $e$, quindi 
+non possiamo dire nulla sui loro valori. Calcolando il valore di $d$, viene 
+eseguita una somma con un valore non conosciuto, quindi $?$ non può essere
+a sua volta conosciuto.
+
+Concludiamo quindi che non possiamo dire nulla sul valore di $c$, $d$ e $e$, 
+mentre possiamo dire che $a$ e $b$ sono sempre uguali a $1$ e $2$ rispettivamente.
+A differenza dell'analisi astratta, nel caso concreto il valore di $c$ sarebbe 
+sempre $3$, di fatto costante.
+\subsection{Costruzione dell'analisi}
+Il primo passo per costruire l'analisi è quello di definire il dominio delle 
+informazioni astratte, ovvero delle proprietà che vogliamo osservare con precisione.
+
+Nel dominio concreto $\mathcal{C}= \wp(\mathbb{Z})$, lavoriamo su valori interi, 
+insiemi di interi. Tra questi insiemi di interi, l'obiettivo è osservare con 
+precisione i singoletti, quindi:
+\[
+    \mathcal{A} = \{n \mid n \in \mathbb{Z}\} \cup \{\bot, \top\} = \mathbb{Z}^\top
+\]
+
+Dal momento in cui una variabile colleziona più di un valore possibile,
+l'informazione non è più precisa, quindi non è più possibile dire nulla 
+sul fatto che possa essere costante o meno.
+
+L'inserzione di Galois tra i due domini $\mathcal{C}$ e $\mathcal{A}$ è 
+data dalle funzioni: 
+\[
+    \alpha(x) = 
+    \begin{cases}
+        \top & \text{se } x = \emptyset \\
+        n & \text{se } S = \{n\} \quad n\in \mathbb{Z} \\
+        \top & \text{altrimenti}
+    \end{cases}
+\]
+\[
+    \gamma(a) = 
+    \begin{cases}
+        \emptyset & \text{se } a = \top \\
+        \{n\} & \text{se } a = n \quad n\in \mathbb{Z} \\
+        \mathbb{Z} & \text{altrimenti}
+    \end{cases}
+\]
+dove $x \in \wp(\mathbb{Z})$ e $a \in \mathcal{A}$ e
+con $\alpha$ che è la funzione di astrazione e $\gamma$ che è la funzione di concretizzazione, 
+entrambe funzioni monotone; si può dimostrare che formano una \textit{inserzione di Galois}.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \node (top) at (0, 2) {$\top$};
+        \node (f1) at (6, 0) {$\dots$};
+        \node (z) at (4, 0) {$2$};
+        \node (a) at (2, 0) {$1$};
+        \node (c) at (0, 0) {$0$};
+        \node (e) at (-2, 0) {$-1$};
+        \node (f2) at (-4, 0) {$-2$};
+        \node (f3) at (-6, 0) {$\dots$};
+        \node (bot) at (0, -2) {$\bot$};
+
+        % Linee verso \top
+        \draw (z.north) -- (top.south);
+        \draw (a.north) -- (top.south);
+        \draw (c.north) -- (top.south);
+        \draw (e.north) -- (top.south);
+        \draw (f2.north) -- (top.south);
+
+        % Linee verso \bot
+        \draw (z.south) -- (bot.north);
+        \draw (a.south) -- (bot.north);
+        \draw (c.south) -- (bot.north);
+        \draw (e.south) -- (bot.north);
+        \draw (f2.south) -- (bot.north);
+    \end{tikzpicture}
+\end{figure}
