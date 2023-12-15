@@ -1,0 +1,246 @@
+\chapter{Refactoring}
+\section{Introduzione}
+\begin{tcolorbox}[title = Refactoring]
+    Il codice sorgente, soprattutto con approcci incrementali, tende a 
+    subire cambiamento nel tempo. Questi cambiamenti possono degradare 
+    la struttura interna del software, rendendolo difficile da
+    comprendere e mantenere. Il refactoring è un processo di
+    trasformazione del codice sorgente che non altera il comportamento
+    esterno del software ma migliora la sua struttura interna.
+\end{tcolorbox}
+Si tratta di una manutenzione preventiva, la qualità del codice è normale 
+che degradi. Limitando la normale decadenza del codice, migliorare  
+la leggibilità (\textit{non muore una volta scritto, bisogna 
+continuare a modificarlo}), non migliorando è più facile inserire 
+bug. 
+
+Il refactoring è diverso dal reingegnering. Il reingegnering è un
+processo che mira a riprogettare il software che è stato scritto
+per architetture datate o tecnologie obsolete (\textit{soprattutto 
+cambio di architetture, come per esempio da monolitiche e cloud}).
+Il refactoring
+invece è un processo che mira a migliorare la struttura interna
+e va in parallelo con lo sviluppo del software.
+
+\begin{tcolorbox}[title = Debito tecnico]
+    I debiti tecnici sono tutti i problemi di comprensione del codice 
+    che sono disposto ad avere per qualcosa che serve attualmente, 
+    ma probabilmente causerà in futuro.
+\end{tcolorbox}
+Per ridurre il debito tecnico si può fare refactoring. Ci sono solamente 
+in cui è opportuno fare refactoring, ad esempio quando si deve iniziare 
+a sviluppare nuove funzionalità, in modo che sia facile nel codice recepire 
+questa nuova funzionalità. Oppure quando si deve correggere un bug, o 
+in caso di identificazione di \textit{code smell}. 
+\subsection{Code smell}
+Sensazione che qualcosa nel codice non va, e che gli sviluppatori
+esperti sanno che è un problema. Gli sviluppatori esperti hanno 
+una sensazione di disagio quando vedono un code smell, lo sviluppatore 
+non avrebbe fatto così.
+\subsubsection{Code smell comuni}
+Duplicazione di codice, quando avviene si utilizza una funzione
+per rimuovere la duplicazione. Preventivamente vengono evitati 
+problemi, riducendo il costo di manutenzione futuro.
+
+I metodi e le funzioni troppo lunghi, sono difficili da capire, 
+e ci si accorge quando si tende a commentare il codice ad ogni step. In 
+questo caso è utile spezzare il codice in più segmenti, già individuati 
+dai commenti.
+
+Spesso lo switch case rappresenta un code smell, soprattutto quando
+si utilizza in un linguaggi ad oggetti. In questo caso è meglio
+sfruttare il polimorfismo.
+In termine di oggetti è più naturale.
+
+Data clumping quando delle strutture dati sono sempre usate insieme,
+è un code smell. Ha senso creare una classe che racchiude queste
+strutture dati.
+
+Generalità speculativa, quando si crea un'interfaccia 
+per qualcosa che non è ancora necessario, ma questo crea difficoltà
+nella complessità del codice. 
+
+\subsection{Classi di smell}
+\begin{itemize}
+    \item Troppo codice:
+    \begin{itemize}
+        \item \textbf{Large class}: una classe che ha troppe responsabilità
+        \item \textbf{Long method}: un metodo che è troppo lungo.
+        \item \textbf{Long parameter list}: una lista di parametri troppo lunga.
+        \item \textbf{Duplicated code}: codice duplicato.
+        \item \textbf{Dead code}: codice che non viene mai eseguito.
+    \end{itemize}
+    \item Troppo poco codice:
+    \begin{itemize}
+        \item \textbf{Classi con poco codice}: una classe che non ha abbastanza
+        codice.
+        \item \textbf{Empty catch clause}: un blocco catch che non fa nulla.
+        \item \textbf{Classi di dati}: classi con solo getter e setter.
+    \end{itemize}
+    \item Codice con troppi commenti: il codice non è autoesplicativo.
+\end{itemize}
+\section{Software clone}
+\begin{tcolorbox}[title = Clone]
+    Un clone è un frammento di codice che è simile ad un altro frammento
+    di codice.
+\end{tcolorbox}
+Spesso in copia incolla e vengono fatte modifiche, ma non sempre. Tuttavia 
+abbiamo problemi di manutenzione, perché se si modifica un frammento
+di codice, bisogna ricordarsi di modificare anche il clone. Attorno 
+al 5\%. Esistono tool per identificare i cloni.
+\subsubsection{Tipi di cloni}
+\begin{itemize}
+    \item \textbf{Type 1}: cloni identici, copia incolla.
+    \item \textbf{Type 2}: cloni simili, ma con modifiche, a meno di 
+    ridenominazioni di identificatori.
+    \item \textbf{Type 3}: cloni simili, ma con modifiche e aggiunte, 
+    ad esempio quando i parametri sono di tipi diversi e anche il valore 
+    di ritorno.
+\end{itemize}
+\section{Refactoring}
+Il fatto di avere i test automatizzati è importante, perché
+si può fare refactoring in modo sicuro. Test di non regressione,
+per verificare che il comportamento non cambi. 
+Quando tutti i test passano, si può fare refactoring, si identifica 
+il code smell e si determina il refactoring appropriato. Una volta completata 
+questa modifica si rieseguono i test, se passano si può continuare.
+
+Il ritmo da seguire è quello su scala piccola, si fa refactoring
+su una piccola parte di codice, si eseguono i test, si fa refactoring 
+su un'altra piccola parte di codice, si eseguono i test, e così via.
+In questo modo si riduce il rischio di introdurre bug e ci si accorge
+subito se si è introdotto un bug.
+\subsection{Applicazione del refactoring}
+La ridenominazione è il refactoring più semplice, si cambia il nome
+di una variabile, di una funzione, di una classe, di un metodo. Per farlo possiamo 
+utilizzare tool automatici, che ci permettono di fare refactoring
+in modo sicuro, e vengono gestite in automatico dipendenze.
+
+I tool riescono anche a rilevare dipendenze anche in altri file,
+che possono sfuggire all'occhio umano. Lo svantaggio è che automatizzano 
+solamente i refactoring più semplici, quelli più complessi vanno fatti
+manualmente. Ovviamente i casi di test devono esserci e devono coprire 
+la funzionalità.
+
+Di solito capita di dare nomi sbagliati alle variabili, soprattutto 
+quando non è chiaro il dominio del problema. In questo caso è utile
+fare refactoring per rendere più chiaro il codice. Poiché le nuove funzionalità 
+tenderanno a seguire la vita del progetto.
+\subsubsection{Estrazione di interfaccia}
+Una classe dipendente non dalla struttura, ma gli si da un'interfaccia
+che deve essere implementata. In questo modo si può cambiare la struttura
+della classe, ma la classe dipendente non cambia, riducendo il numero di 
+cambiamenti da fare sulla classe. Si ragiona meglio in termini di funzionalità 
+e non di implementazione in termini di cambiamento.
+\subsubsection{Pull up method}
+Si spostano dei metodi da una classe a una superclasse, in modo che
+le sottoclassi ereditino il metodo. In questo modo si evita di avere
+codice duplicato. 
+\subsubsection{Extract method}
+Si estrae un metodo da una classe, in modo da avere un metodo che
+fa una sola cosa. In questo modo si evita di avere metodi troppo lunghi.
+\subsubsection{Move method}
+Si sposta un metodo da una classe a un'altra, in modo che il metodo
+sia più vicino ai dati che utilizza. In questo modo si evita di avere
+metodi che utilizzano dati di altre classi.
+Come ad esempio:
+\[
+    \textit{La persona partecipa al progetto}\qquad \texttt{p.partecipate(x)}
+\]
+\[
+    \textit{Il progetto contiene la persona} \qquad \texttt{x.partecipate(p)}
+\]
+In questo modo il progetto viene controllato la classe progetto,
+poiché si tratta di una proprietà del progetto.
+\subsubsection{Replace temp}
+Si sostituisce una variabile temporanea con un metodo, in modo da
+rendere più chiaro il codice.
+\begin{lstlisting}
+    double basePrice = quantity * itemPrice;
+    if(basePrice > 1000)
+        return basePrice * 0.95;
+    else
+        return basePrice * 0.98;
+\end{lstlisting}
+
+Si crea il metodo \texttt{basePrice()} che restituisce il
+prezzo base, in questo modo il codice diventa più chiaro.
+\begin{lstlisting}
+    if(basePrice() > 1000)
+        return basePrice() * 0.95;
+    else
+        return basePrice() * 0.98;
+\end{lstlisting}
+\subsubsection{Replace method with method object}
+Si sostituisce un metodo con un oggetto, in modo da avere un metodo
+che fa una sola cosa. In questo modo si evita di avere metodi troppo lunghi.
+\begin{lstlisting}
+    int basePrice = quantity * itemPrice;
+    double discountLvel = getDiscountLevel();
+    double finalPrice = computeFinalPrice(basePrice, discountLevel);
+\end{lstlisting}
+Si elimina il parametro discountLevel, chiamando il metodo al suo interno 
+per ridurre la complessità del metodo.
+\subsection{Extract class}
+Si estrae una classe da un'altra, in modo da avere una classe che
+fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
+\subsection{Replace inheritance with delegation}
+Si sostituisce l'ereditarietà con la delega, in modo da avere una classe che
+fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
+
+Pensando all'esempio dello stack, potremmo utilizzare un design dove lo stack 
+che al posto di ereditare informazioni del vettore come, utilizzerà funzionalità 
+di delega. incapsulando il vettore all'interno della classe. Una eredità 
+selettiva e parziale.
+\begin{lstlisting}
+    public void push(Object elemento)
+    {
+        _vector.insertElementAt(elemento, 0);
+    }
+\end{lstlisting}
+\subsection{Replace conditional with polymorphism}
+Si sostituisce un costrutto condizionale con il polimorfismo, in modo da
+avere una classe che fa una sola cosa. In questo modo si evita di avere
+classi troppo grandi.
+
+Prendiamo il calcolo dell'area:
+\begin{lstlisting}
+    private double a, b, r;
+    ...
+    public double area()
+    {
+        switch(type)
+        {
+            case SQUARE:
+                return a * a;
+            case RECTANGLE:
+                return a * b;
+            case CIRCLE:
+                return Math.PI * r * r;
+        }
+    }
+\end{lstlisting}
+A seconda della forma geometrica, si calcola l'area
+in modo diverso.
+Ha più senso creare una classe astratta \texttt{Shape} che
+ha un metodo \texttt{area()} che viene implementato dalle classi
+\texttt{Square}, \texttt{Rectangle}, \texttt{Circle}.
+\begin{lstlisting}
+interface class Shape
+{
+    public double area();
+}
+
+class Square implements Shape
+{
+    public double area()
+    {
+        return side * side;
+    }
+}
+...
+\end{lstlisting}
+\subsection{Separate domain from presentation}
+Separazione dal dominio della presentazione, in modo da avere una classe che
+fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
+Dividendo quindi le responsabilità.
