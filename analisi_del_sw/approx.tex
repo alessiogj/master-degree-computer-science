@@ -7,15 +7,15 @@ oggetti e non riuscissimo a dire se uno specifico oggetto appartiene a un gruppo
 
 Quello che dobbiamo fare è trovare un modo per approssimare l'insieme $\llbracket P \rrbracket$
 in modo da poter prendere decisioni più facili su $Q$. In altre parole, dobbiamo trovare un altro
-insieme, $\llbracket P \rrbracket^\#$, che contiene la maggior parte degli oggetti di $\llbracket P \rrbracket$,
+insieme, $\llbracket P \rrbracket^\sharp$, che contiene la maggior parte degli oggetti di $\llbracket P \rrbracket$,
 ma che sia più facile da analizzare. Questo insieme deve avere due caratteristiche importanti: tutti gli
-oggetti di $\llbracket P \rrbracket$ devono essere anche in $\llbracket P \rrbracket^\#$, e l'insieme
-$\llbracket P \rrbracket^\#$ deve essere tale che possiamo dire con certezza se un oggetto appartiene a $Q$ o meno.
+oggetti di $\llbracket P \rrbracket$ devono essere anche in $\llbracket P \rrbracket^\sharp$, e l'insieme
+$\llbracket P \rrbracket^\sharp$ deve essere tale che possiamo dire con certezza se un oggetto appartiene a $Q$ o meno.
 
-Quando abbiamo questo insieme $\llbracket P \rrbracket^\#$, possiamo utilizzarlo per fare deduzioni
-su $Q$. Se tutti gli oggetti in $\llbracket P \rrbracket^\#$ appartengono a $Q$, allora possiamo dire
+Quando abbiamo questo insieme $\llbracket P \rrbracket^\sharp$, possiamo utilizzarlo per fare deduzioni
+su $Q$. Se tutti gli oggetti in $\llbracket P \rrbracket^\sharp$ appartengono a $Q$, allora possiamo dire
 con sicurezza che tutti gli oggetti in $\llbracket P \rrbracket$ devono appartenere a $Q$. Ma se non
-tutti gli oggetti in $\llbracket P \rrbracket^\#$ appartengono a $Q$, non possiamo essere certi se gli
+tutti gli oggetti in $\llbracket P \rrbracket^\sharp$ appartengono a $Q$, non possiamo essere certi se gli
 oggetti in $\llbracket P \rrbracket$ appartengono o meno a $Q$.
 
 In sostanza, il nostro obiettivo è rendere più facile prendere decisioni su questi oggetti, anche se non
@@ -24,11 +24,11 @@ di ragionare in modo più chiaro su questi insiemi e di trarre conclusioni ragio
 
 La correttezza ci consente di sfruttare la decidibilità dell'approssimazione:
 \[
-  \llbracket P \rrbracket \subseteq Q \implies \llbracket P \rrbracket^\# \subseteq Q  
+  \llbracket P \rrbracket \subseteq Q \implies \llbracket P \rrbracket^\sharp \subseteq Q  
 \]
 Altrimenti, non possiamo saperlo con certezza!
 \subsection{Astrazione della semantica}
-Vediamo come costruire l'insieme $\llbracket P \rrbracket^\#$ a partire da $\llbracket P \rrbracket$.
+Vediamo come costruire l'insieme $\llbracket P \rrbracket^\sharp$ a partire da $\llbracket P \rrbracket$.
 Specificheremo la semantica come una coppia: una funzione $f$ (\textit{con punto fisso}) e un
 dominio di calcolo $D$ (\textit{ordinato}).
 
@@ -160,16 +160,16 @@ Ovvero in $\wp(D)$ tale che $A \subseteq X$ e $A \subseteq Y$.
   \end{tikzpicture}
 \end{figure}
 \section{Approssimazione dei dati}
-Sia $P^\#$ una proprietà di $D$ se e solo se $P^\#$ e $\wp(D)$. Vogliamo quindi capire la relazione tra gli 
-elementi di $D$ e $\wp(D)$ e poi, preso $D^\# \subseteq \wp(D)$ la relazione tra gli elementi di $D$ e gli elementi 
-di $D^\#$.
-Per approssimare $D$ scegliamo un sottoinsieme $D^\#$ che fissa le proprietà che vogliamo osservare (\textit{con precisione}).
-In generale $d \in D \implies d^\# \in D \subseteq \wp(D)$.
+Sia $P^\sharp$ una proprietà di $D$ se e solo se $P^\sharp$ e $\wp(D)$. Vogliamo quindi capire la relazione tra gli 
+elementi di $D$ e $\wp(D)$ e poi, preso $D^\sharp \subseteq \wp(D)$ la relazione tra gli elementi di $D$ e gli elementi 
+di $D^\sharp$.
+Per approssimare $D$ scegliamo un sottoinsieme $D^\sharp$ che fissa le proprietà che vogliamo osservare (\textit{con precisione}).
+In generale $d \in D \implies d^\sharp \in D \subseteq \wp(D)$.
 
 Potremmo quindi avere:
 \begin{itemize}
-  \item $d \subseteq d^\#$ ovvero \textbf{over approximation}.
-  \item $d \supseteq d^\#$ ovvero \textbf{under approximation}.
+  \item $d \subseteq d^\sharp$ ovvero \textbf{over approximation}.
+  \item $d \supseteq d^\sharp$ ovvero \textbf{under approximation}.
 \end{itemize}
 \subsection{Approssimazione dal basso}
 \begin{figure}[H]
@@ -179,8 +179,8 @@ Potremmo quindi avere:
 Per rispondere alla domanda $\langle x, y \rangle \in P$ utilizziamo un'astrazione $\bar{P}$,
 tale che $P \supseteq \bar{P}$.
 \begin{itemize}
-  \item Se $\langle x, y \rangle \in \bar{P}$, quindi $d \subseteq d^\#$, allora $\langle x, y \rangle \in P$.
-  \item Se $\langle x, y \rangle \notin \bar{P}$, quindi $d \supseteq d^\#$, allora non lo sappiamo.
+  \item Se $\langle x, y \rangle \in \bar{P}$, quindi $d \subseteq d^\sharp$, allora $\langle x, y \rangle \in P$.
+  \item Se $\langle x, y \rangle \notin \bar{P}$, quindi $d \supseteq d^\sharp$, allora non lo sappiamo.
 \end{itemize}
 In sintesi prendiamo un insieme più piccolo che comprende una sottoparte del nostro insieme di partenza e
 analizziamo tale insieme più piccolo. Se troviamo una risposta positiva allora abbiamo risposto alla domanda,
@@ -193,15 +193,15 @@ altrimenti non lo sappiamo.
 Per rispondere alla domanda $\langle x, y \rangle \in P$ utilizziamo un'astrazione $\bar{P}$,
 tale che $P \subseteq \bar{P}$.
 \begin{itemize}
-  \item Se $\langle x, y \rangle \in \bar{P}$, quindi $d \supseteq d^\#$, allora non sappiamo rispondere.
-  \item Se $\langle x, y \rangle \notin \bar{P}$, quindi $d \subseteq d^\#$, allora no.
+  \item Se $\langle x, y \rangle \in \bar{P}$, quindi $d \supseteq d^\sharp$, allora non sappiamo rispondere.
+  \item Se $\langle x, y \rangle \notin \bar{P}$, quindi $d \subseteq d^\sharp$, allora no.
 \end{itemize}
 In sintesi prendiamo un insieme più grande che comprende il nostro insieme di partenza e
 analizziamo tale insieme più grande. Più grande non è sinonimo di più complesso, ma spesso 
 ricondurci a proprietà più generali potrebbe aiutarci nell'analisi, la rappresentazione estensionale 
 potrebbe quindi risultare più semplice. Tale approccio ci permette 
 di rispondere alla domanda solo che la proprietà non è soddisfatta per il nuovo insieme più grande, 
-ovvero $P^\#$.
+ovvero $P^\sharp$.
 
 In sostanza:
 \begin{tcolorbox}[title=Proprietà concrete]
@@ -248,7 +248,7 @@ Tra tutti gli elementi più piccoli di quelli in $X$, è il più grande.
 \subsubsection{Semantica concreta}
 Abbiamo a disposizione programmi che manipolano numeri interi: \(f: \mathbb{Z} \to \mathbb{Z}\). Una delle 
 proprietà osservate è quella di \textit{sign}, ovvero che il risultato tra due numeri dipenderà dal segno
-dei due numeri. Dobbiamo indicare cosa inseriremo in $D^\#$ ovvero \texttt{Sign}.
+dei due numeri. Dobbiamo indicare cosa inseriremo in $D^\sharp$ ovvero \texttt{Sign}.
 \begin{itemize}
   \item $+ = \{n \mid n > 0\} \in \wp(\mathbb{Z})$
   \item $- = \{n \mid n < 0\} \in \wp(\mathbb{Z})$
@@ -261,16 +261,16 @@ Quindi:
 
 \subsubsection{Semantica astratta}
 Il dominio astratto, noto come \texttt{Sign}, viene utilizzato per approssimare
-l'insieme di interi manipolati dai programmi. La funzione $f^\#$ manipola quindi i segni. 
+l'insieme di interi manipolati dai programmi. La funzione $f^\sharp$ manipola quindi i segni. 
 \[
-  D^\# = \{+, -, 0, \mathbb{Z}, \varnothing\} = \texttt{Sign}
+  D^\sharp = \{+, -, 0, \mathbb{Z}, \varnothing\} = \texttt{Sign}
 \]
 In \texttt{Sign},
 gli interi possono essere rappresentati come:
 
 \begin{itemize}
-  \item $x \subseteq \mathbb{Z} \rightarrow x^\# \in D^\#$ è il più piccolo 
-  insieme in $D^\#$ che contiene $x$.
+  \item $x \subseteq \mathbb{Z} \rightarrow x^\sharp \in D^\sharp$ è il più piccolo 
+  insieme in $D^\sharp$ che contiene $x$.
   \item \(\{-,5,4 \} \rightarrow \mathbb{Z}\)
   \item \(\{ 3 \} \rightarrow + \equiv \mathbb{Z}\)
   \item \(\{ 7 \}  \rightarrow + \equiv \mathbb{Z}^{+}\)

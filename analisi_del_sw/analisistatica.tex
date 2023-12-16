@@ -1,4 +1,4 @@
-\chapter{Analisi statica di Data Flow basata su \texttt{CFG}}
+\chapter{Analisi distributive}
 Recuperiamo il concetto di analizzatore statico, che è un software che prende
 in input un programma, una proprietà $\mathcal{Q}$ e ne restituisce un risultato.
 
@@ -532,7 +532,7 @@ in un punto di programma. Per rappresentare tale espressione utilizziamo gli ins
 $x \notin \texttt{Var}$ e $e \in \texttt{Exp}$. Tale insieme è denominato \texttt{Assign}, a questo punto il dominio 
 astratto sarà $\wp(\texttt{Assign}), A \subseteq \texttt{Assign}$.
 
-Caratterizziamo quindi la funzione di trasferimento $\llbracket \cdot \rrbracket^\#\mathcal{A}$. 
+Caratterizziamo quindi la funzione di trasferimento $\llbracket \cdot \rrbracket^\sharp\mathcal{A}$. 
 Tale funzione è definita sulla semantica astratta, 
 per induzione strutturale del \texttt{CFG}.
 \[
@@ -540,11 +540,11 @@ per induzione strutturale del \texttt{CFG}.
   \text{ ovvero }\llbracket \texttt{lab} \rrbracket \mathcal{A}
 \]
 \begin{itemize}
-    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{A} = \mathcal{A}$
-    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{A} = 
-    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{A}
+    \item $\llbracket\texttt{;} \rrbracket^\sharp \mathcal{A} = \mathcal{A}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{A} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\sharp \mathcal{A}
     = \mathcal{A}$
-    \item $\llbracket x \gets e \rrbracket^\# \mathcal{A} = 
+    \item $\llbracket x \gets e \rrbracket^\sharp \mathcal{A} = 
     \begin{cases}
         \mathcal{A} \setminus \texttt{Occ}(x) & x \in \texttt{Var}(e)\\
         (\mathcal{A} \setminus \texttt{Occ}(x)) \cup \{x \gets e\} & x \notin \texttt{Var}(e)\\
@@ -552,8 +552,8 @@ per induzione strutturale del \texttt{CFG}.
     \\
     dove $\texttt{Occ}(x) = \{x \gets e \in \mathcal{A} \mid y = x \lor x \in \texttt{Var}(e)\}$, ovvero qualunque
     assegnamento dove compare $x$, o a destra o a sinistra del simbolo di assegnamento.
-    \item $\llbracket k_0,K_1,\dots,k_n \rrbracket^\# \mathcal{A} = 
-    \llbracket k_0 \rrbracket^\# \circ \llbracket k_1 \rrbracket^\# \circ \dots \circ \llbracket k_n \rrbracket^\# \mathcal{A}$
+    \item $\llbracket k_0,K_1,\dots,k_n \rrbracket^\sharp \mathcal{A} = 
+    \llbracket k_0 \rrbracket^\sharp \circ \llbracket k_1 \rrbracket^\sharp \circ \dots \circ \llbracket k_n \rrbracket^\sharp \mathcal{A}$
 \end{itemize}
 
 \subsection{Espressione definitivamente disponibile}
@@ -561,8 +561,8 @@ Un assegnamento $x \gets e$ è definitivamente disponibile in un punto di progra
 disponibile in tutti i cammini che partono dall'\textit{entry point} e arrivano in $v$. Siccome
 la soluzione cercata è definitiva, l'operatore di combinazione è l'intersezione.
 \begin{equation}
-    \mathcal{A}^*[v] = \bigcap \{ \llbracket \pi \rrbracket^\# \varnothing \mid 
-    \pi : \texttt{start} \longrightarrow^* v \} 
+    \mathcal{A}^\star[v] = \bigcap \{ \llbracket \pi \rrbracket^\sharp \varnothing \mid 
+    \pi : \texttt{start} \longrightarrow^\star v \} 
 \end{equation}
 Dove $\pi$ rappresenta tutti i cammini. La terminazione di tale calcolo è garantita dal fatto che 
 la funzione di trasferimento è monotona e che $\wp(\texttt{Assign})$ non ha catene ascendenti infinite.
@@ -588,7 +588,7 @@ In generale utilizziamo contenimento invece di uguaglianza, in quanto si tratta 
 disequazioni in modo che la combinazione di ciò che arriva allo stesso nodo avviene per intersezione, sovrastimando ciò 
 che avviene nel nodo. 
 \[
-\mathcal{A}[v] \subseteq \llbracket lab \rrbracket^\# (\mathcal{A}[u]) \qquad \forall k = (u,lab,v)
+\mathcal{A}[v] \subseteq \llbracket lab \rrbracket^\sharp (\mathcal{A}[u]) \qquad \forall k = (u,lab,v)
 \]
 Quindi l'informazione si propaga attraverso ciò che viene manipolato dall'etichetta, ovvero dall'operazione che su quell'arco viene 
 eseguita.
@@ -643,20 +643,20 @@ Prendiamo in considerazione la funzione fattoriale.
 Procediamo con l'algoritmo:
 \begin{itemize}
     \item $\mathcal{A}[1] \subseteq \varnothing$
-    \item $\mathcal{A}[2] \subseteq \llbracket y \gets 1\rrbracket^\#\mathcal{A}[1] = \llbracket y \gets 1\rrbracket^\# \cap 
-    \varnothing = \llbracket y \gets 1\rrbracket^\#$
-    \item $\mathcal{A}[2] \subseteq \llbracket x \gets x - 1\rrbracket^\#\mathcal{A}[4]$
-    \item $\mathcal{A}[3] \subseteq \llbracket \texttt{NonZero}(x > 1)\rrbracket^\#\mathcal{A}[2]$
-    \item $\mathcal{A}[4] \subseteq \llbracket y \gets x \cdot y\rrbracket^\#\mathcal{A}[3]$
-    \item $\mathcal{A}[5] \subseteq \llbracket y \gets x - 1\rrbracket^\#\mathcal{A}[4]$
+    \item $\mathcal{A}[2] \subseteq \llbracket y \gets 1\rrbracket^\sharp\mathcal{A}[1] = \llbracket y \gets 1\rrbracket^\sharp \cap 
+    \varnothing = \llbracket y \gets 1\rrbracket^\sharp$
+    \item $\mathcal{A}[2] \subseteq \llbracket x \gets x - 1\rrbracket^\sharp\mathcal{A}[4]$
+    \item $\mathcal{A}[3] \subseteq \llbracket \texttt{NonZero}(x > 1)\rrbracket^\sharp\mathcal{A}[2]$
+    \item $\mathcal{A}[4] \subseteq \llbracket y \gets x \cdot y\rrbracket^\sharp\mathcal{A}[3]$
+    \item $\mathcal{A}[5] \subseteq \llbracket y \gets x - 1\rrbracket^\sharp\mathcal{A}[4]$
 \end{itemize}
 ovvero
 \begin{itemize}
     \item $\mathcal{A}[1] \subseteq \varnothing$
-    \item $\mathcal{A}[2] \subseteq \{y \gets 1\} \cap \llbracket y \gets x - 1\rrbracket^\#\mathcal{A}[4]$
-    \item $\mathcal{A}[3] \subseteq \llbracket \texttt{NonZero}(x > 1)\rrbracket^\#\mathcal{A}[2]$
-    \item $\mathcal{A}[4] \subseteq \llbracket y \gets x \cdot y\rrbracket^\#\mathcal{A}[3]$
-    \item $\mathcal{A}[5] \subseteq \llbracket y \gets x - 1\rrbracket^\#\mathcal{A}[4]$
+    \item $\mathcal{A}[2] \subseteq \{y \gets 1\} \cap \llbracket y \gets x - 1\rrbracket^\sharp\mathcal{A}[4]$
+    \item $\mathcal{A}[3] \subseteq \llbracket \texttt{NonZero}(x > 1)\rrbracket^\sharp\mathcal{A}[2]$
+    \item $\mathcal{A}[4] \subseteq \llbracket y \gets x \cdot y\rrbracket^\sharp\mathcal{A}[3]$
+    \item $\mathcal{A}[5] \subseteq \llbracket y \gets x - 1\rrbracket^\sharp\mathcal{A}[4]$
 \end{itemize}
 
 Risolviamo quindi il sistema di equazioni:
@@ -1185,13 +1185,13 @@ Ciò che essenzialmente varia è il modo di generare le variabili.
 \end{equation}
 \subsection{Analisi true liveness e l'approccio semantico}
 \begin{itemize}
-    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{L} = \mathcal{L}$
-    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{L} = 
-    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{L}
+    \item $\llbracket\texttt{;} \rrbracket^\sharp \mathcal{L} = \mathcal{L}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{L} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\sharp \mathcal{L}
     = \mathcal{L} \cup \texttt{Var(e)}$
-    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{L} =
+    \item $\llbracket \texttt{input(x)} \rrbracket^\sharp \mathcal{L} =
     \mathcal{L} \setminus \{x\}$
-    \item $\llbracket y \gets e \rrbracket^\# \mathcal{L} = 
+    \item $\llbracket y \gets e \rrbracket^\sharp \mathcal{L} = 
     \begin{cases}
         (\mathcal{L} \setminus \{x\}) \cup \texttt{Var(e)} & x \in \mathcal{L}\\
         \mathcal{L} \setminus \{x\} & \textit{altrimenti}
@@ -1335,9 +1335,9 @@ mai \textit{live}.
 
 \begin{itemize}
     \item $\mathcal{L}(6) \supseteq \varnothing$
-    \item $\mathcal{L}(5) \supseteq \llbracket x \gets x - 1\rrbracket^\# \mathcal{L}(3)
+    \item $\mathcal{L}(5) \supseteq \llbracket x \gets x - 1\rrbracket^\sharp \mathcal{L}(3)
     = \mathcal{L}(3) \setminus \{x\} \cup \{ x \mid x \in \mathcal{L}(3)\}$
-    \item $\mathcal{L}(4) \supseteq \llbracket y \gets x \cdot y\rrbracket^\# \mathcal{L}(5)
+    \item $\mathcal{L}(4) \supseteq \llbracket y \gets x \cdot y\rrbracket^\sharp \mathcal{L}(5)
     = \mathcal{L}(5) \setminus \{y\} \cup \{ x,y \mid x \in \mathcal{L}(5) \}$
     \item $\mathcal{L}(3) \supseteq \mathcal{L}(6) \cup \mathcal{L}(4)\cup \{x\}$
     \item $\mathcal{L}(2) \supseteq \mathcal{L}(3) \cup \mathcal{L}(6) \setminus \{y\}$
@@ -1509,13 +1509,13 @@ l'\textbf{abstract edge effect}. Definita in modo induttivo sulla struttura sint
 $\mathcal{C} \subseteq \texttt{Var} \times \texttt{Var}$.
 Quindi:
 \begin{itemize}
-    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{C} = \mathcal{C}$
-    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{C} = 
-    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{C}
+    \item $\llbracket\texttt{;} \rrbracket^\sharp \mathcal{C} = \mathcal{C}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{C} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\sharp \mathcal{C}
     = \mathcal{C}$
-    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{C} =
+    \item $\llbracket \texttt{input(x)} \rrbracket^\sharp \mathcal{C} =
     \mathcal{C} \setminus \{x\}$
-    \item $\llbracket x \gets e \rrbracket^\# \mathcal{C} = 
+    \item $\llbracket x \gets e \rrbracket^\sharp \mathcal{C} = 
     \begin{cases}
         (\mathcal{C} \setminus \texttt{Copy}(x)) \cup \{(x,y)\} & e \equiv y \\
         \mathcal{C} \setminus \texttt{Copy}(x) & \text{altrimenti}
@@ -1529,11 +1529,11 @@ Dove:
 \]
 Ricordiamo che la soluzione migliore che vogliamo ottenere è la \textbf{MOP}, quindi:
 \[
-    \mathcal{C}^* [v] = \bigcap  \{\llbracket \pi \rrbracket^\# x \mid \pi : \texttt{entry} \rightarrow c \}
+    \mathcal{C}^\star [v] = \bigcap  \{\llbracket \pi \rrbracket^\sharp x \mid \pi : \texttt{entry} \rightarrow c \}
 \]
-Dove la semantica del cammino $\pi$ è calcolata in modo forward: $\llbracket \pi \rrbracket^\# =
-\llbracket k_n \rrbracket^\# \circ \dots \circ \llbracket k_1 \rrbracket^\# x$.
-La semantica è monotona e distributiva, quindi $\mathcal{C}^* [v]$ può essere calcolata come 
+Dove la semantica del cammino $\pi$ è calcolata in modo forward: $\llbracket \pi \rrbracket^\sharp =
+\llbracket k_n \rrbracket^\sharp \circ \dots \circ \llbracket k_1 \rrbracket^\sharp x$.
+La semantica è monotona e distributiva, quindi $\mathcal{C}^\star [v]$ può essere calcolata come 
 soluzione del sistema di disequazioni.
 
 Forniamo quindi l'informazione di trasferimento locale ad ogni punto programma, ignorando il calcolo 
@@ -1541,7 +1541,7 @@ sull'intero cammino caratterizzando l'informazione locale su ogni arco.
 
 \begin{itemize}
     \item $\mathcal{C}[\texttt{entry}] \subseteq x$ 
-    \item $\mathcal{C}[v] \subseteq \llbracket \texttt{lab}\rrbracket^\# \mathcal{C}[u]$
+    \item $\mathcal{C}[v] \subseteq \llbracket \texttt{lab}\rrbracket^\sharp \mathcal{C}[u]$
 \end{itemize}
 Notiamo la presenza del contenimento dato che l'analisi è \textbf{definite} e il target 
 dell'arco è scritto in funzione della sorgente $\cdot \stackrel{\texttt{lab}}{\longrightarrow} \cdot$ è dato 
@@ -1762,14 +1762,14 @@ e il fatto che venga fatta l'intersezione sui \textbf{predecessori}.
 \subsection{Analisi di Reaching Definitions e l'approccio semantico}
 Descriviamo l'abstract edge effect, ovvero l'elemento caratteristico dei singoli archi del \texttt{CFG}.
 \begin{itemize}
-    \item $\llbracket\texttt{;} \rrbracket^\# \mathcal{R} = \mathcal{R}$
-    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\# \mathcal{R} = 
-    \llbracket \texttt{Zero}(e) \rrbracket^\# \mathcal{R}
+    \item $\llbracket\texttt{;} \rrbracket^\sharp \mathcal{R} = \mathcal{R}$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{R} = 
+    \llbracket \texttt{Zero}(e) \rrbracket^\sharp \mathcal{R}
     = \mathcal{R}$
-    \item $\llbracket \texttt{input(x)} \rrbracket^\# \mathcal{R} =
+    \item $\llbracket \texttt{input(x)} \rrbracket^\sharp \mathcal{R} =
         \mathcal{R} \setminus \texttt{def}(x) \cup \{\langle xu \rangle \mid 
         \langle u, x \gets e, v \rangle \textit{ arco eseguito}\}$
-    \item $\llbracket x \gets e \rrbracket^\# \mathcal{R} = 
+    \item $\llbracket x \gets e \rrbracket^\sharp \mathcal{R} = 
         \mathcal{R} \setminus \texttt{def}(x) \cup \{\langle xu \rangle \mid 
         \langle u, x \gets e, v \rangle \textit{ arco eseguito}\}$
 \end{itemize}
@@ -1779,10 +1779,10 @@ Dove:
 \]
 Come sempre la soluzione \textbf{MOP}, che chiamiamo $\mathcal{R}[v]$ è definita come:
 \[
-    \mathcal{R}^*[v] = \bigcup \{ \llbracket \pi \rrbracket^\# \varnothing
+    \mathcal{R}^\star[v] = \bigcup \{ \llbracket \pi \rrbracket^\sharp \varnothing
     \mid \pi : \texttt{entry} \to v \}
 \]
-La semantica è monotona e distributiva, quindi $\mathcal{R}^* [v]$ può essere calcolata come 
+La semantica è monotona e distributiva, quindi $\mathcal{R}^\star [v]$ può essere calcolata come 
 soluzione del sistema di disequazioni.
 
 Forniamo quindi l'informazione di trasferimento locale ad ogni punto programma, ignorando il calcolo 
@@ -1790,7 +1790,7 @@ sull'intero cammino caratterizzando l'informazione locale su ogni arco.
 
 \begin{itemize}
     \item $\mathcal{R}[\texttt{entry}] \supseteq x$ 
-    \item $\mathcal{R}[v] \supseteq \llbracket \texttt{lab}\rrbracket^\# \mathcal{R}[u]$
+    \item $\mathcal{R}[v] \supseteq \llbracket \texttt{lab}\rrbracket^\sharp \mathcal{R}[u]$
 \end{itemize}
 Notiamo la presenza del \textit{supset} dato che l'analisi è \textbf{possibile} e il target 
 dell'arco è scritto in funzione della sorgente $\cdot \stackrel{\texttt{lab}}{\longrightarrow} \cdot$ è dato 
@@ -1951,15 +1951,15 @@ La  semantica distributiva fa si che la soluzione del sistema di disequazioni ov
 
 \begin{itemize}
     \item $\mathcal{R}(1) \supseteq \varnothing$
-    \item $\mathcal{R}(2) \supseteq \llbracket \texttt{input(x)} \rrbracket^\# \varnothing = (x1)$
-    \item $\mathcal{L}(3) \supseteq \llbracket y \gets 1 \rrbracket^\# \mathcal{R}(2) = 
+    \item $\mathcal{R}(2) \supseteq \llbracket \texttt{input(x)} \rrbracket^\sharp \varnothing = (x1)$
+    \item $\mathcal{L}(3) \supseteq \llbracket y \gets 1 \rrbracket^\sharp \mathcal{R}(2) = 
     \mathcal{R}(2) \setminus \texttt{def}(y) \cup (y2) \cup (\mathcal{R}(5) \setminus 
     \texttt{def}(x) \cup (x5))$
     \item $\mathcal{R}(4) \supseteq \mathcal{R}(3)$
-    \item $\mathcal{R}(5) \supseteq \llbracket y \gets x \cdot y \rrbracket^\# \mathcal{R}(4) =
+    \item $\mathcal{R}(5) \supseteq \llbracket y \gets x \cdot y \rrbracket^\sharp \mathcal{R}(4) =
     \mathcal{R}(4) \setminus \texttt{def}(y) \cup (y4)$
     \item $\mathcal{R}(6) \supseteq \mathcal{R}(3)$
-    \item $\mathcal{R}(7) \supseteq \llbracket R \gets y \rrbracket^\# \mathcal{R}(6) =
+    \item $\mathcal{R}(7) \supseteq \llbracket R \gets y \rrbracket^\sharp \mathcal{R}(6) =
     \mathcal{R}(6) \setminus \texttt{def}(R) \cup (R6)$
 \end{itemize}
 

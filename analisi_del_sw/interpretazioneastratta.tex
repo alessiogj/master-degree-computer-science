@@ -967,10 +967,10 @@ La computazione astratta tratta di come si trasferisce un calcolo dal dominio co
 dominio astratto.
 L'obiettivo è quello di trasferire il calcolo, partiamo da una funzione definita su
 oggetti concreti: $f : c \to c$, che sono le nostre operazioni su elementi di $\mathcal{C}$, 
-che vogliamo trasferire in operazioni su elementi di $\mathcal{A}$: $f^\# : a \to a$.
+che vogliamo trasferire in operazioni su elementi di $\mathcal{A}$: $f^\sharp : a \to a$.
 
-Diciamo che $f^\#$ è corretta per $f$ se $\alpha \, \circ \,
-f(c) \leq_\mathcal{A} f^\# \, \circ \, \alpha(c)$.
+Diciamo che $f^\sharp$ è corretta per $f$ se $\alpha \, \circ \,
+f(c) \leq_\mathcal{A} f^\sharp \, \circ \, \alpha(c)$.
 
 \begin{figure}[H]
     \centering
@@ -1002,7 +1002,7 @@ f(c) \leq_\mathcal{A} f^\# \, \circ \, \alpha(c)$.
         \node at (4,0.2) {$\alpha$};
         \node at (4,1.2) {$\alpha$};
         \node at (0.5,-0.5) {$f$};
-        \node at (8,-0.7) {$f^\#$};
+        \node at (8,-0.7) {$f^\sharp$};
 
         % segmento tra result e pointA
         \draw[-, thick, blue] (result) to (pointA);
@@ -1042,7 +1042,7 @@ possiamo caratterizzare la correttezza confrontato i risultati sul mondo concret
         % Scrivo alpha sopra la freccia
         \node at (4,0.2) {$\gamma$};
         \node at (4,1.2) {$\gamma$};
-        \node at (0.5,-0.5) {$f^\#$};
+        \node at (0.5,-0.5) {$f^\sharp$};
         \node at (8,-0.7) {$f$};
 
         % segmento tra result e pointA
@@ -1051,22 +1051,22 @@ possiamo caratterizzare la correttezza confrontato i risultati sul mondo concret
     \end{tikzpicture}
 \end{figure}
 Il significato del risultato del calcolo astratto approssima il risultato concreto.
-Quindi $f \circ \gamma(a) \leq_\mathcal{C} \gamma \circ f^\#(a)$.
+Quindi $f \circ \gamma(a) \leq_\mathcal{C} \gamma \circ f^\sharp(a)$.
 
 \begin{tcolorbox}
-    Dato $\galois{\alpha}{\gamma} \mathcal{A}, f: c \to c$, allora $f^\# : a \to a$ 
+    Dato $\galois{\alpha}{\gamma} \mathcal{A}, f: c \to c$, allora $f^\sharp : a \to a$ 
     soddisfa la relazione  
-    \[\alpha \, \circ \, f(c) \leq_\mathcal{A} f^\# \, \circ \, \alpha(c)\]
+    \[\alpha \, \circ \, f(c) \leq_\mathcal{A} f^\sharp \, \circ \, \alpha(c)\]
     se e solo se soddisfa
-    \[f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\#(a)\]
+    \[f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\sharp(a)\]
 \end{tcolorbox}
 In particolare se partiamo dalla condizione che per ogni $x$ appartenente al dominio concreto,
-$\alpha \, \circ \, f(x) \leq_\mathcal{A} f^\# \, \circ \, \alpha(x) \iff 
-\alpha \, \circ \, f \, \circ \, \gamma(x) \leq_\mathcal{A} f^\#(x)$.
+$\alpha \, \circ \, f(x) \leq_\mathcal{A} f^\sharp \, \circ \, \alpha(x) \iff 
+\alpha \, \circ \, f \, \circ \, \gamma(x) \leq_\mathcal{A} f^\sharp(x)$.
 dove $\alpha \, \circ \, f \, \circ \, \gamma(x)$ è la funzione \textbf{best 
 correct approximation}.
 \[
-  f^\# \textit{ è sound } \iff \textit{ approssima } f^\# \equiv \alpha \, \circ \, f \, \circ \, \gamma 
+  f^\sharp \textit{ è sound } \iff \textit{ approssima } f^\sharp \equiv \alpha \, \circ \, f \, \circ \, \gamma 
   : \mathcal{A} \to \mathcal{A}
 \]
 Tale costruzione va bene per gli operatori, ma non è accettabile come trasferimento per l'intera 
@@ -1084,7 +1084,7 @@ astratto si riscrive in termini di chiusure esattamente in questo modo:
     \rho \circ f(x) \leq_\mathcal{C} \rho \circ f \circ \rho(x)
 \]
 
-Considerando $f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\#(a)$, allora
+Considerando $f \, \circ \, \gamma(a) \leq_\mathcal{C} \gamma \, \circ \, f^\sharp(a)$, allora
 $f \circ \gamma(a) \leq \gamma \circ \alpha \circ f \circ \gamma(a)$. Essendo $\gamma, \alpha$ 
 connessioni di Galois, allora ogni elemento astratto è l'astrazione di un elemento concreto, 
 $a = \alpha(c)$, quindi:$f \circ \gamma \circ \alpha(c) \leq \gamma
@@ -1134,13 +1134,13 @@ per il calcolo che vogliamo effettuare.
         \node at (4,0.2) {$\alpha$};
         \node at (4,1.2) {$\alpha$};
         \node at (0.5,-0.5) {$f$};
-        \node at (7.5,-0.5) {$f^\#$};
+        \node at (7.5,-0.5) {$f^\sharp$};
     \end{tikzpicture}
 \end{figure}
 \[
-    \alpha \circ f(x) = f^\# \circ \alpha(x) 
+    \alpha \circ f(x) = f^\sharp \circ \alpha(x) 
 \]
-Se sostituiamo $f^\#$ con la \texttt{BCA} otteniamo:
+Se sostituiamo $f^\sharp$ con la \texttt{BCA} otteniamo:
 \[
     \alpha \circ f(x) = \alpha \circ f \circ \gamma \circ \alpha(x)
 \]
@@ -1159,14 +1159,14 @@ approssimazione.
 Il significato del calcolo astratto coincide con il calcolo concreto; eseguendo le operazioni 
 precedenti:
 \[
-    f^\# = \alpha \circ f \circ \gamma \qquad f \circ \rho(x) = \rho \circ f \circ \rho(x)
+    f^\sharp = \alpha \circ f \circ \gamma \qquad f \circ \rho(x) = \rho \circ f \circ \rho(x)
 \]
 Approssimare il risultato del calcolo astratto non genera imprecisione.
 \subsubsection{Esempio di backward completeness}
 Supponiamo che $\mathcal{C} = \wp(\mathcal{Z})$, $\mathcal{A} = Segni$ ($\texttt{Pos}, \texttt{Neg},
 \bot, \top$) e che $f=+$.
 
-Allora $f \rho \circ f \circ \rho \to \texttt{Pos} +^\# \texttt{Neg} = ?$ ed è evidente che abbiamo perso informazione.
+Allora $f \rho \circ f \circ \rho \to \texttt{Pos} +^\sharp \texttt{Neg} = ?$ ed è evidente che abbiamo perso informazione.
 
 Se invece facciamo il calcolo completo allora $\rho \circ f \to \texttt{Segni}(5 + (-7)) = \texttt{Neg}$, quindi 
 è evidente che non siamo regolari. In questo caso il problema è nell'input. Aver calcolato la somma 
@@ -1179,7 +1179,7 @@ Questo significa che da una parte abbiamo la backward completeness e inoltre dal
 fatto che non possa cambiare il modo di osservare il risultato per ottenere precisione mi dice che la 
 proprietà è anche forward complete.
 
-Cambiando $f \circ \rho \to \texttt{Neg} +^\# \texttt{Pos} = ?$ comunque non otteniamo
+Cambiando $f \circ \rho \to \texttt{Neg} +^\sharp \texttt{Pos} = ?$ comunque non otteniamo
 precisione.
 
 Abbiamo perso talmente tanta informazione sull'astrazione dell'input che comunque non 
@@ -1254,7 +1254,7 @@ Supponiamo di sommare un intero ad una stringa:
 \]
 Consideriamo ora la funzione di astrazione $\rho$ che considera solo il tipo:
 \[
-  \rho \circ f \circ \rho = \rho \circ (\texttt{Int} +^\# \texttt{String}) = 
+  \rho \circ f \circ \rho = \rho \circ (\texttt{Int} +^\sharp \texttt{String}) = 
   \rho \circ (\{ \texttt{Int}, \texttt{Float} \}) = \top
 \]
 La stringa potrebbe avere un prefisso intero e quindi corrispondere ad un intero, o 
@@ -1265,14 +1265,14 @@ Se proviamo a calcolare attraverso la computazione concreta e poi l'astrazione:
 \[
     \rho \circ f = 
     \begin{cases}
-        \texttt{Int} +^\# \texttt{Int} = \texttt{Int}  & \textit{Se il prefisso della stringa è intero}\\
-        \texttt{Int} +^\# \texttt{Float} = \texttt{Float} & \textit{Se il prefisso della stringa è reale}\\
+        \texttt{Int} +^\sharp \texttt{Int} = \texttt{Int}  & \textit{Se il prefisso della stringa è intero}\\
+        \texttt{Int} +^\sharp \texttt{Float} = \texttt{Float} & \textit{Se il prefisso della stringa è reale}\\
     \end{cases}
 \]
 
 Se proviamo procediamo con l'astrazione dell'input e poi con l'applicazione di $f$ otteniamo:
 \[
-    f \circ \rho = f \circ (\texttt{Int} +^\# \texttt{String}) = \{ \texttt{Int}, \texttt{Float} \}
+    f \circ \rho = f \circ (\texttt{Int} +^\sharp \texttt{String}) = \{ \texttt{Int}, \texttt{Float} \}
 \]
 \begin{tcolorbox}
     Quindi $\rho \circ f \circ \rho \not = \rho \circ f $ non è nè backward completo, nè 
@@ -1305,8 +1305,8 @@ Se proviamo a calcolare attraverso la computazione concreta e poi l'astrazione:
 \[
     \rho \circ f = 
     \begin{cases}
-        \texttt{Int} +^\# \texttt{Int} = \texttt{Int}  & \textit{Se il prefisso della stringa è intero}\\
-        \texttt{Int} +^\# \texttt{Float} = \texttt{Float} & \textit{Se il prefisso della stringa è reale}\\
+        \texttt{Int} +^\sharp \texttt{Int} = \texttt{Int}  & \textit{Se il prefisso della stringa è intero}\\
+        \texttt{Int} +^\sharp \texttt{Float} = \texttt{Float} & \textit{Se il prefisso della stringa è reale}\\
     \end{cases}
 \]
 
@@ -1324,14 +1324,14 @@ il tipo generico \texttt{Num}:
 Se consideriamo $\rho$ costruita secondo il dominio astratto $\texttt{Type}''$:
 \[
     \rho \circ f \circ \rho = 
-    \rho \circ (\texttt{Int} +^\# \texttt{String}) =
+    \rho \circ (\texttt{Int} +^\sharp \texttt{String}) =
     \rho \circ (\{ \texttt{Int}, \texttt{Float} \})
     = \texttt{Num}
 \]
 
 Se proviamo procediamo con l'astrazione dell'input e poi con l'applicazione di $f$ otteniamo:
 \[
-    f \circ \rho = f \circ (\texttt{Int} +^\# \texttt{String}) =
+    f \circ \rho = f \circ (\texttt{Int} +^\sharp \texttt{String}) =
     \{ \texttt{Int}, \texttt{Float} \} = \texttt{Num}
 \]
 

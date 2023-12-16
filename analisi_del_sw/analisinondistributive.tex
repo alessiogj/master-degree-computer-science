@@ -103,7 +103,7 @@ data dalle funzioni:
 \[
     \alpha(x) = 
     \begin{cases}
-        \top & \text{se } x = \emptyset \\
+        \top & \text{se } x = \varnothing \\
         n & \text{se } S = \{n\} \quad n\in \mathbb{Z} \\
         \top & \text{altrimenti}
     \end{cases}
@@ -111,7 +111,7 @@ data dalle funzioni:
 \[
     \gamma(a) = 
     \begin{cases}
-        \emptyset & \text{se } a = \top \\
+        \varnothing & \text{se } a = \top \\
         \{n\} & \text{se } a = n \quad n\in \mathbb{Z} \\
         \mathbb{Z} & \text{altrimenti}
     \end{cases}
@@ -146,4 +146,405 @@ entrambe funzioni monotone; si può dimostrare che formano una \textit{inserzion
         \draw (e.south) -- (bot.north);
         \draw (f2.south) -- (bot.north);
     \end{tikzpicture}
+    \caption{Rappresentazione grafica del dominio delle costanti $\mathbb{Z}^\top$}
 \end{figure}
+Dati $x,y \in \mathbb{Z}^\top$ se e solo se $x \sqsubseteq y$ oppure $y=\top$ o $x=\bot$.
+È chiaro che si tratti di un \textbf{astrazione dei valori}, ma la semantica opera su stati, 
+quindi l'obiettivo è di estendere il dominio delle costanti a quello degli stati, su cui 
+calcoleremo la semantica astratta.
+
+Se lo stato è una funzione da variabili a valori, $\sigma : \texttt{Var} \to \mathbb{Z}$; 
+nel caso collecting, $S : \texttt{Var} \to \wp(\mathbb{Z})$. Lo stato astratto sarà quindi
+una funzione $\mathbb{D}$ all'astrazione di parti di $\mathbb{Z}$, ovvero 
+\[
+    \mathbb{D} : \texttt{Var} \to \mathbb{Z}^\top 
+\]
+Definiamo quindi il dominio degli stati astratti nelle costanti come 
+\[
+    \mathbb{D} = (\texttt{Var} \to \mathbb{Z}^\top) \cup \{\bot\}
+\] 
+Dove $\bot$ è un elemento che rappresenta i punti non raggiungibili, che sarà ovviamente minore 
+di ogni memoria del dominio.
+Definiamo $\mathbb{D}_\bot \stackrel{\tiny def}{=} \forall x . x \mapsto \bot$, ovvero la memoria 
+che associa ad ogni variabile il valore $\bot$, dove quindi nessuna variabile è stata inizializzata.
+
+Questo è quindi il dominio dove definiamo la semantica astratta, tale dominio è \textit{pointwise},
+ovvero il confronto tra due stati astratti è dato dal confronto tra i valori delle variabili.
+\[
+    \mathbb{D}_1 \sqsubseteq \mathbb{D}_2 \iff \forall x \in \texttt{Var} . 
+    \mathbb{D}_1(x) \sqsubseteq_{const} \mathbb{D}_2(x)
+\]
+Confrontiamo due funzioni, confrontando l'immagine delle due funzioni per ogni singola 
+variabile. Tale ordinamento permette di definire il \textit{least upper bound} come:
+\[
+    \texttt{Lub} : \bigsqcup_i \mathbb{D}_i(x) =
+    \begin{cases}
+        z & \text{se } \forall i . \mathbb{D}_i(x) = z \qquad z \in \mathbb{Z} \\
+        \top & \text{altrimenti}
+    \end{cases}
+\]
+Con questo ordinamento, $\mathbb{D}$ è un reticolo completo, ed è quindi il dominio
+astratto per le costanti.
+
+A questo punto possiamo iniziare a capire cosa vogliamo calcolare nella nostra analisi,
+esattamente come abbiamo fatto nell'analisi di \textit{data flow}, vogliamo fornire una 
+semantica astratta dei programmi nel dominio astratto $\mathbb{D}$, quindi una funzione
+\[
+\forall \mathcal{D} \in \mathbb{D} . \llbracket \cdot \rrbracket^\sharp \mathcal{D}
+\]
+Che dice se ogni variabile è costante o meno. L'obiettivo è avere questa informazione 
+per ogni punto di programma, quindi cerchiamo la soluzione \texttt{MOP}, ovvero la
+soluzione \textit{meet over all paths}, definendo quindi:
+\[
+    \texttt{MOP} : \mathcal{D}^\star [u] = \bigsqcup 
+    \{ \llbracket \pi \rrbracket^\sharp \mathcal{D}_\bot \mid \pi:\text{start} \to v \}
+\]
+Ovvero il \textit{least upper bound}  (\textit{poiché la collecting semantics è di tipo possible}) 
+delle semantiche di tutti i cammini a partire dall'informazione iniziale $\mathcal{D}_\bot$
+dei cammini 
+che vanno dal nodo di inizio al nodo $v$. È chiaro che se guardiamo tale analisi dal punto di vista delle 
+analisi di data flow, l'analisi è forward, ed è di tipo possibile perché colleziona valori.
+
+Dobbiamo quindi definire la semantica approssimata sugli stati astratti
+$\llbracket \cdot \rrbracket^\sharp$, considerando 
+il fatto che i nostri archi sono della forma $(u, \texttt{lab}, v)$, considerando che la 
+semantica è fornita dall'etichetta dell'arco, a partire dalla memoria $\mathcal{D}$ astratta 
+che raggiunge il nodo $u$, quindi $\llbracket \texttt{lab} \rrbracket^\sharp : \mathcal{D}$. 
+\subsection{Semantica delle espressioni}
+La prima cosa che conviene fare è andare a trasferire il calcolo delle operazioni concrete 
+nel dominio astratto, quindi definiamo la funzione di trasferimento astratta.
+Per farlo definiamo l'operazione generica $\square$ su interi e la sua versione astratta
+$\square^\sharp$ su $\mathbb{Z}^\top$.
+
+\[
+  a,b \in \mathbb{Z}^\top \quad . \quad a \square^\sharp b =
+  \begin{cases}
+    \top & \text{se } a = \top \lor b = \top \\
+    a\, \square\, b & \text{altrimenti}
+  \end{cases}
+\]
+Si tratta esattamente della \textbf{best correct approximation} dell'operazione $\square$, 
+perché prendere nel concreto l'operazione $\square$ equivale a farla per tutti gli elementi 
+dei due insiemi, equivalente quindi al singoletto, per poi tornare nel dominio astratto 
+e osservare il signoletto.
+
+Una volta definita l'operazione astratta possiamo definire la semantica delle espressioni, 
+$\llbracket e \rrbracket ^\sharp \mathcal{D}$ ovvero la semantica approssimata a partire da una memoria $\llbracket e \rrbracket^\sharp :
+\mathcal{D} \to \mathbb{Z}^\top$. Nella analisi di data flow non è stata definita poiché 
+non è mai interessato il valore restituito dalla valutazione di un'espressione, ma solo
+la struttura sintattica del programma. Nelle analisi di tipo distributive, dove il valore delle 
+variabili è parte dell'analisi, è necessario definire la semantica delle espressioni perché 
+la valutazione restituisce un valore appartenente al dominio astratto, quindi è necessario
+per l'analisi.
+
+Ragioniamo quindi induttivamente sulla struttura della semantica 
+astratta delle espressioni, definendo la semantica:
+\begin{itemize}
+  \item $c \in \mathbb{Z} . \llbracket c \rrbracket^\sharp \mathcal{D} = c$
+  \item $x \in \texttt{Var} . \llbracket x \rrbracket^\sharp \mathcal{D} =
+  \mathcal{D}(x) \in \mathbb{Z}^\top$
+  \item $\llbracket \square e \rrbracket^\sharp \mathcal{D} =
+  \square^\sharp \llbracket e \rrbracket^\sharp \mathcal{D}$
+  \item $\llbracket e_1 \square e_2 \rrbracket^\sharp \mathcal{D} = 
+  \llbracket e_1 \rrbracket^\sharp \mathcal{D} \square^\sharp \llbracket e_2 \rrbracket^\sharp \mathcal{D}$
+\end{itemize}
+\subsubsection{Esempio di valutazione di un'espressione astratta}
+Consideriamo la seguente espressione:
+\[
+  \mathcal{D} = [x \mapsto 2, y \mapsto \top] 
+\]
+\[ 
+    \llbracket x + 7 \rrbracket^\sharp \mathcal{D} =
+    \llbracket x \rrbracket^\sharp \mathcal{D} +^\sharp 
+    \llbracket 7 \rrbracket^\sharp \mathcal{D} =
+    \mathcal{D}(x) +^\sharp 7 = 2 +^\sharp 7 = 9
+\]
+Consideriamo ora la seguente espressione:
+\[
+  \llbracket x + y \rrbracket^\sharp \mathcal{D} =
+    \llbracket x \rrbracket^\sharp \mathcal{D} +^\sharp
+    \llbracket y \rrbracket^\sharp \mathcal{D} =
+    \mathcal{D}(x) +^\sharp \mathcal{D}(y) = 2 +^\sharp \top = \top
+\]
+\subsection{Semantica dei comandi}
+La semantica dei comandi ovviamente si baserà sulla semantica delle espressioni 
+nel caso delle guardie e dell'assegnamento. Ragioniamo quindi induttivamente sulla
+struttura dei comandi, definendo la semantica astratta dei comandi:
+\begin{itemize}
+    \item $\llbracket \texttt{;} \rrbracket^\sharp \mathcal{D} = \mathcal{D}$
+    \item Se il ramo non è percorribile allora utilizzeremo il valore $\bot$, 
+    se invece lo è lasceremo la memoria invariata.
+    Quindi non sarà percorribile quando nessun valore che rende vero il test è 
+    presente tra i possibili valori che abbiamo calcolato per $e$. Poiché per $e$  
+    è possibile calcolare o è un valore costante o è $\top$, allora non è percorribile
+    quando la valutazione di $e$ è esattamente $0$.
+    \[
+        \llbracket \texttt{NonZero(e)} \rrbracket^\sharp \mathcal{D} = 
+        \begin{cases}
+            \bot & \text{se } \llbracket e \rrbracket^\sharp \mathcal{D} = 0 \\
+            \mathcal{D} & \text{altrimenti } (\exists n \not = 0 . 
+            \llbracket e \rrbracket^\sharp \mathcal{D} = n \lor
+            \llbracket e \rrbracket^\sharp \mathcal{D} = \top)
+        \end{cases}  
+    \]
+    \item Abbiamo un caso analogo per il ramo \texttt{Zero}, sicuramente il rmo non sarà percorribile 
+    quando $0$ non è contenuto all'interno di $e$.
+    
+    \[
+      \llbracket \texttt{Zero(e)} \rrbracket^\sharp \mathcal{D} =
+        \begin{cases}
+            \bot & \text{se } \llbracket e \rrbracket^\sharp \mathcal{D} \not\sqsubseteq 0 \\
+            \mathcal{D} & \text{altrimenti } (\llbracket e \rrbracket^\sharp \mathcal{D}
+            = 0 \lor \llbracket e \rrbracket^\sharp \mathcal{D} = \top)
+        \end{cases}  
+    \]
+    \item In caso di assegnamento andiamo a calcolare il valore astratto associato all'espressione 
+    e aggiorniamo la memoria astratta con tale valore.
+    \[
+      \mathcal{D}[x \mapsto \llbracket e \rrbracket^\sharp \mathcal{D}]
+    \]
+    \item Con l'input sappiamo il valore che $x$ assume solamente a tempo di esecuzione, nonostante 
+    si sappia il fatto che sicuramente assumerà un unico valore.
+    \[
+      \llbracket \texttt{input x} \rrbracket^\sharp \mathcal{D} = \mathcal{D}[x \mapsto \top]  
+    \]
+\end{itemize}
+Essendo una semantica forward, dato un cammino $\pi = k_0 \dots k_n$, sappiamo che
+$\llbracket \pi \rrbracket^\sharp = \llbracket k_n \rrbracket^\sharp \circ \dots \circ
+\llbracket k_0 \rrbracket^\sharp \mathcal{D}_\bot$, la semantica approssimata del cammino, 
+sarà la composizione delle semantica approssimata dei singoli comandi a partire da una 
+memoria iniziale $\mathcal{D}_\bot$, dove la semantica di un arco è esattamente 
+la semantica approssimata della sua etichetta $\llbracket \texttt{lab}_n \rrbracket^\sharp$.
+
+Si può dimostrare che la semantica astratta $\llbracket \cdot \rrbracket^\sharp$ non 
+è distributiva, quindi calcolando la soluzione \texttt{MFP} questa non sarà uguale 
+alla soluzione \texttt{MOP}, ma la contiene strettamente.
+\[
+  \texttt{MFP} \sqsubseteq \texttt{MOP}  
+\]
+In ogni caso, la soluzione \texttt{MFP} è l'unica che riusciamo a costruire e l'analisi 
+costruisce tale soluzione. 
+Per farlo trova la soluzione del sistema di disequazioni, costruito esattamente come nel 
+caso della analisi di data flow.
+\begin{itemize}
+    \item Sul nodo di partenza la memoria astratta è vuota, quindi
+    \[
+        \mathcal{D}[\texttt{entry}] \sqsubseteq \mathcal{D}_\bot 
+    \]
+    \item Per i nodi successivi, essendo una semantica forward, $\mathcal{D}[v]$ contiene 
+    la semantica dell'etichetta a partire dalla memoria astratta a 
+    partire dal nodo sorgente.
+    \[
+        \mathcal{D}[v] \sqsubseteq \llbracket \texttt{lab} \rrbracket^\sharp \mathcal{D}[n]
+    \]
+\end{itemize}
+In ogni caso la semantica $\llbracket \cdot \rrbracket^\sharp$ è monotona e il 
+dominio è \texttt{ACC}, data l'altezza finita, e quindi la soluzione \texttt{MFP} 
+esiste ed è calcolabile.
+\subsubsection{Esempio di non distributività}
+Consideriamo le seguenti memorie astratte:
+\[
+    \mathcal{D}_1 = \{ x \mapsto 2, y \mapsto 3 \} \qquad
+    \mathcal{D}_2 = \{ x \mapsto 3, y \mapsto 2 \}
+\]
+e vediamo cosa succede nel calcolo:
+\[
+    \llbracket x \gets x + y \rrbracket^\sharp \mathcal{D}_1 
+    \,\bigsqcup\, 
+    \llbracket x \gets x + y \rrbracket^\sharp \mathcal{D}_2
+\]
+A sinistra abbiamo:
+Quindi 
+\[
+    \mathcal{D}_1 [x \mapsto 5] \qquad \mathcal{D}_1 = \{ x \mapsto 5, y \mapsto 3 \}
+\]
+A destra abbiamo:
+\[
+    \mathcal{D}_2 [x \mapsto 5] \qquad \mathcal{D}_2 = \{ x \mapsto 5, y \mapsto 2 \}
+\]
+Se facciamo il least upper bound otteniamo 
+\[
+    \mathcal{D}_1 \,\bigsqcup\, \mathcal{D}_2 = 
+    \{ x \mapsto 5, y \mapsto 3 \} \,\bigsqcup\, \{ x \mapsto 5, y \mapsto 2 \} = 
+    \{ x \mapsto 5, y \mapsto \top \}
+\]
+Calcolando la semantica combinando le due memorie astratte otteniamo:
+\[
+    \llbracket x \gets x + y \rrbracket^\sharp (\mathcal{D}_1 \,\bigsqcup\, \mathcal{D}_2) = 
+    \llbracket x \gets x + y \rrbracket^\sharp \{ x \mapsto \top, y \mapsto \top \} =
+    \{ x \mapsto \top, y \mapsto \top \}
+\]
+quindi:
+\begin{tcolorbox}[title = Non distributività della semantica]
+    Non possiamo calcolare precisamente la combinazione della semantica dei cammini
+    come semantica delle combinazioni locali delle memorie raggiunte.
+    \[
+        \llbracket x \gets x + y \rrbracket^\sharp \mathcal{D}_1
+        \,\bigsqcup\,
+        \llbracket x \gets x + y \rrbracket^\sharp \mathcal{D}_2
+        \,\not \sqsubseteq\,
+        \llbracket x \gets x + y \rrbracket^\sharp (\mathcal{D}_1 \,\bigsqcup\, \mathcal{D}_2)
+    \]
+\end{tcolorbox}
+\subsubsection{Esempio di analisi della propagazione delle costanti}
+
+\begin{minipage}{0.5\textwidth}
+    Riportiamo il programma programma precedentemente analizzato.
+
+    \begin{algorithm}[H]
+        $a:=1; b:=2; c:=3; d:=3; e:=0$\;
+        \While{$B$}
+        {
+            $b := 2 \cdot a; d:=d+1; e:=e-a$\;
+            $c :=e + d; a:= b - a$\;
+        }
+    \end{algorithm}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={22mm}, minimum width = 1cm, main/.style = {draw, circle}] 
+            \node[main] (1) {1};
+            \node[main] (2) [below =of 1] {2};
+            \node[main] (3) [below right =of 2] {3};
+            \node[main] (4) [below =of 3] {4};
+            \node[main] (5) [below left=of 2] {5};
+
+            \draw[->] (1) -- (2) node[midway, right] {$\texttt{lab}_1$};
+            \draw[->] (2) -- (5) node[midway, left] {$\texttt{Zero}(B)$};
+            \draw[->] (2) -- (3) node[midway, right] {$\texttt{NonZero}(B)$};
+            \draw[->] (3) -- (4) node[midway, right] {$\texttt{lab}_3$};
+            \draw[->] (4) -- (2) node[midway, left] {$\texttt{lab}_4$};
+        
+        \end{tikzpicture}
+    \end{figure}
+\end{minipage}
+Dobbiamo costruire il sistema di disequazioni:
+\begin{itemize}
+    \item $ \mathcal{D}(1) \sqsubseteq \mathcal{D}_\bot$
+    \item $ \mathcal{D}(2) \sqsubseteq [\texttt{a} \mapsto 1, \texttt{b} 
+    \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0] 
+    \sqcup \mathcal{D}(4)[a \mapsto \mathcal{D}(4)(a) -^{\sharp} \mathcal{D}(4)(b), 
+    c \mapsto \mathcal{D}(4)(e) +^{\sharp} \mathcal{D}(4)(d)]$
+    \item $ \mathcal{D}(3) \sqsubseteq \mathcal{D}(2)$
+    \item $ \mathcal{D}(4) \sqsubseteq \mathcal{D}(3)[b \mapsto 2 \cdot^{\sharp} 
+    \mathcal{D}(3)(a), d \mapsto \mathcal{D}(3)(d) +^{\sharp} 1, 
+    e \mapsto \mathcal{D}(3)(e) -^{\sharp} \mathcal{D}(3)(a)]$
+    \item $ \mathcal{D}(5) \sqsubseteq \mathcal{D}(2)$
+\end{itemize} 
+Nel least upper bound accorpiamo i vari archi che arrivano allo stesso punto, quindi 
+la minima soluzione del sistema di disequazioni diventa uguale alla soluzione del
+sistema di equazioni.
+\begin{itemize}
+    \item $ \mathcal{D}(1) = \mathcal{D}_\bot$
+    \item $ \mathcal{D}(2) = [\texttt{a} \mapsto 1, \texttt{b} 
+    \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0] 
+    \sqcup \mathcal{D}(4)[a \mapsto \mathcal{D}(4)(b) -^{\sharp} \mathcal{D}(4)(a), 
+    c \mapsto \mathcal{D}(4)(e) +^{\sharp} \mathcal{D}(4)(d)]$
+    \item $ \mathcal{D}(3) = \mathcal{D}(2)$
+    \item $ \mathcal{D}(4) = \mathcal{D}(3)[b \mapsto 2 \cdot^{\sharp} 
+    \mathcal{D}(3)(a), d \mapsto \mathcal{D}(3)(d) +^{\sharp} 1, 
+    e \mapsto \mathcal{D}(3)(e) -^{\sharp} \mathcal{D}(3)(a)]$
+    \item $ \mathcal{D}(5) = \mathcal{D}(2)$
+\end{itemize} 
+Procediamo con la soluzione del sistema di equazioni:
+\begin{table}[H]
+    \centering
+    \begin{subtable}{\linewidth}
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            & $0$ 
+            & $1$ 
+            & $2$ \\ \hline
+            $\mathcal{D}(1)$ 
+            & $\mathcal{D}_\bot$ 
+            & $\mathcal{D}_\bot$ 
+            & $\bot$ \\
+            \hline
+            $\mathcal{D}(2)$ 
+            & $\bot$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(3)$ 
+            & $\bot$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(4)$ 
+            & $\bot$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 4, \texttt{e} \mapsto -1$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(5)$ 
+            & $\bot$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+        \end{tabular}
+    \end{subtable}
+    
+    \vspace{1cm}
+    
+    \begin{subtable}{\linewidth}
+        \centering
+        \begin{tabular}{|c|c|}
+            \hline
+            & $3$ \\
+            \hline
+            $\mathcal{D}(1)$
+            & $\mathcal{D}_\bot$ \\
+            \hline
+            $\mathcal{D}(2)$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto \top, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(3)$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto \top, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(4)$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto \top, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+            $\mathcal{D}(5)$ 
+            & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto \top, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
+            \hline
+        \end{tabular}
+    \end{subtable}
+\end{table}
+Raggiungiamo il punto fisso alla terza iterazione.
+Di fatto in funzione dell'analisi osserviamo che l'informazione persa è quella 
+relativa alla variabile $c$ rispetto al calcolo concreto. Infatti nel calcolo 
+concreto il suo valore è costante, ma nel calcolo astratto dipende da variabili 
+che nel calcolo astratto sono $\top$.
+\subsection{Migliorie dell'analisi}
+Possiamo pensare di migliorare l'analisi sapendo che la presenza di guardie la cui 
+informazione calcolata è rappresentabile all'interno della nostra osservazione; per capirlo 
+osserviamo il seguente esempio:
+
+\begin{algorithm}[H]
+    \If{$x = 7$}{
+        $e_1$\;
+    }
+\end{algorithm}
+All'interno del ramo $e_1$ è possibile considerare
+l'informazione relativa al fatto che il valore di $x$ è $7$.
+Tale informazione è rappresentabile nel dominio delle costanti e utilizzarlo per il calcolo 
+successivo.
+
+Ovviamente il concetto riguarda le guardie la cui informazione è osservabile 
+all'interno del ramo di esecuzione.
+In questo caso rappresentiamo la semantica con tali migliorie nel seguente modo:
+
+ \[
+        \llbracket \texttt{NonZero(e)} \rrbracket^\sharp \mathcal{D} = 
+        \begin{cases}
+            \bot & \text{se } \llbracket e \rrbracket^\sharp \mathcal{D} = 0 \\
+            \mathcal{D}_1 & \text{altrimenti } (\exists n \not = 0 . 
+            \llbracket e \rrbracket^\sharp \mathcal{D} = n \lor
+            \llbracket e \rrbracket^\sharp \mathcal{D} = \top)
+        \end{cases}  
+\]
+Dove $\mathcal{D}_1 = \mathcal{D}[x \mapsto \mathcal{D}(x)
+\sqcap \llbracket e \rrbracket^\sharp \mathcal{D}] = \llbracket e \rrbracket^\sharp \mathcal{D}$
+Poiché si tratta di un'informazione di uguaglianza, quello che sappiamo è che nel raggio di 
+azione della guardia, il valore di $x$ è esattamente il valore della semantica.
