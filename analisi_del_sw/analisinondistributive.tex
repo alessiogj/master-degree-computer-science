@@ -548,3 +548,252 @@ Dove $\mathcal{D}_1 = \mathcal{D}[x \mapsto \mathcal{D}(x)
 \sqcap \llbracket e \rrbracket^\sharp \mathcal{D}] = \llbracket e \rrbracket^\sharp \mathcal{D}$
 Poiché si tratta di un'informazione di uguaglianza, quello che sappiamo è che nel raggio di 
 azione della guardia, il valore di $x$ è esattamente il valore della semantica.
+\section{Analisi degli intervalli}
+In generale quando ci interessa qualche proprietà più sofisticate perdiamo 
+le condizioni di finitezza del dominio e talvolta l'\texttt{ACC}. In particolare 
+nell'analisi degli intervalli, dove il dominio è 
+infinito e non abbiamo l'\texttt{ACC}, quindi abbiamo 
+catene ascendenti \textbf{infinite}.
+
+Nel dominio degli intervalli ogni elemento è rappresentato da un oggetto nella 
+forma $[l, u] = \{n \in \mathbb{Z} \mid l \leq n \leq u\}$, dove $l$ è il 
+limite inferiore e $u$ è il limite superiore.
+Tra questi valori abbiamo anche intervalli dove $l = -\infty$ e $u = +\infty$.
+\[
+  [l, +\infty] = \{n \in \mathbb{Z} \mid l \leq n\}  
+\]
+\[
+  [-\infty, u] = \{n \in \mathbb{Z} \mid n \leq u\}
+\]
+Prendendo in considerazione un qualsiasi elemento $[l, u]$ del dominio,
+siamo in grado di trovare una quantità infinita di elementi che sono maggiori
+di $[l, u]$. Il calcolo del punto fisso lavora collezionando 
+i valori che le variabili possono assumere durante l'esecuzione del programma e 
+lavorare in un dominio non \texttt{ACC} significa che tale catena può divergere 
+perché possiamo continuare ad aggiungere elementi senza trovare il punto fisso.
+
+Si tratta di un caso, nella sua semplicità, che contiene tutte le difficoltà 
+dell'analisi statica. Vediamone ora la costruzione nel dettaglio.
+\subsection{Costruzione dell'analisi}
+L'analisi degli intervalli non ha come obiettivo osservare l'insieme 
+concreto dei valori raggiungibili durante l'esecuzione, ma solamente il range 
+di valori che una variabile può acquisire in un certo punto del programma.
+I punti di programma che sono solitamente interessanti sono quelli all'interno di 
+un ciclo, essendo questi i punti in cui ci può essere un'evoluzione
+del valore. Gli intervalli approssimano riempiendo i buchi tra i valori, e 
+per questo sono insiemi convessi. Un chiaro esempio di convessità è 
+il seguente.
+
+Supponiamo che $x$ sia una variabile intera e
+che assume i seguenti valori durante l'esecuzione del programma:
+\[
+    x \mapsto \{1, 5, 20, 35\}
+\]
+Nella nostra analisi, è chiaro che nell'analisi assumerà 
+il seguente valore:
+\[
+  x \mapsto [1, 35]  
+\]
+Prendendo in considerazione elementi che in realtà non sono presenti nel
+dominio concreto, rendendo di fatto l'insieme convesso.
+
+La prima cosa da fare è definire il dominio degli elementi che vogliamo 
+osservare con precisione.
+\[
+  \mathbb{I}  = \{ [l, u] \mid l \in \mathbb{Z} \cup \{-\infty\}, 
+  u \in \mathbb{Z} \cup \{+\infty\}, l \leq u \}
+\]
+Nel dominio concreto abbiamo l'insieme di valori su $\mathbb{Z}$ che 
+le variabili possono assumere, ovvero $\wp(\mathbb{Z})$.
+Il secondo passo è assicurarci che il dominio $\mathbb{I}$
+sia effettivamente un 
+dominio astratto, ovvero che esista un'inserzione di Galois
+tra il dominio concreto e quello astratto.
+
+L'inserzione di Galois tra i due domini $\mathcal{C}$ e $\mathcal{A}$ è 
+data dalle funzioni: 
+\[
+    \alpha(x) = 
+    [\texttt{min}_\infty (x), \texttt{max}_\infty (x)] \in \mathbb{I}
+\]
+Dove le due funzioni $\texttt{min}_\infty$ e $\texttt{max}_\infty$ sono definite 
+nel seguente modo:
+\[
+    \texttt{min}_\infty (x) = 
+    \begin{cases}
+        n \in x & \text{se } \forall n \in x . m \leq n \\
+        -\infty & \text{altrimenti}
+    \end{cases}
+\]
+\[
+    \texttt{max}_\infty (x) = 
+    \begin{cases}
+        n \in x & \text{se } \forall n \in x . m \geq n \\
+        +\infty & \text{altrimenti}
+    \end{cases}
+\]
+Mentre la funzione $\gamma$ è definita nel seguente modo:
+\[
+    \gamma([l, u]) = \{n \in \mathbb{Z} \mid l \leq_\infty n \leq_\infty u\}
+\]
+Dove il pedice $\infty$ indica che:
+\[
+  \forall m . \quad -\infty \leq_\infty \qquad m \leq_\infty +\infty  
+\]
+Quello che si può dimostrare è che $\alpha$ e $\gamma$ costituiscono 
+un'inserzione di Galois tra i due domini.
+\[
+  \wp(\mathbb{Z}) \galoiS{\alpha}{\gamma} \mathbb{I}
+\]
+Dato un qualunque insieme, esiste la miglior approssimazione possibile, 
+quindi esiste sempre il più piccolo intervallo che contiene l'insieme 
+di partenza.
+\subsection{Operazioni del reticolo}
+\begin{itemize}
+    \item Ordinamento
+    \[ 
+        [l_1, u_1] \sqsubseteq [l_2, u_2] \iff l_1 \geq l_2 \land u_1 \leq u_2
+    \]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            %segmenti 
+            \draw[thick, orange] (2, 0.5) -- (5, 0.5);
+            \draw[thick, blue] (0, 0) -- (7, 0);
+            \draw[thick, orange] (2, 0.6) -- (2, 0.4);
+            \draw[thick, orange] (5, 0.6) -- (5, 0.4);
+            \draw[thick, blue] (0, 0.1) -- (0, -0.1);
+            \draw[thick, blue] (7, 0.1) -- (7, -0.1);
+            %etichette
+            \node at (2, 0.8) {$l_1$};
+            \node at (5, 0.8) {$u_1$};
+            \node at (0, 0.3) {$l_2$};
+            \node at (7, 0.3) {$u_2$};
+        \end{tikzpicture}
+    \end{figure}
+    \item Least upper bound: ovvero il più piccolo intervallo che contiene 
+    entrambi gli intervalli.
+    \[
+        [l_1, u_1] \sqcup [l_2, u_2] = [\texttt{min}(l_1, l_2), \texttt{max}(u_1, u_2)]  
+    \]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            %segmenti 
+            \draw[thick, orange] (0, 0.5) -- (3, 0.5);
+            \draw[thick, blue] (4, 0.5) -- (7, 0.5);
+            \draw[thick, orange] (0, 0.6) -- (0, 0.4);
+            \draw[thick, orange] (3, 0.6) -- (3, 0.4);
+            \draw[thick, blue] (4, 0.6) -- (4, 0.4);
+            \draw[thick, blue] (7, 0.6) -- (7, 0.4);
+            %etichette
+            \node at (0, 0.8) {$l_1$};
+            \node at (3, 0.8) {$u_1$};
+            \node at (4, 0.8) {$l_2$};
+            \node at (7, 0.8) {$u_2$};
+            %intervalli
+            \draw[thick, red] (0, 0) -- (7, 0);
+            \draw[thick, red] (0, 0.1) -- (0, -0.1);
+            \draw[thick, red] (7, 0.1) -- (7, -0.1);
+            %etichette
+            \node at (-1, 0) {$\texttt{min}(l_1, l_2)$};
+            \node at (8.2, 0) {$\texttt{max}(u_1, u_2)$};
+        \end{tikzpicture}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            %segmenti 
+            \draw[thick, orange] (0, 0.5) -- (5, 0.5);
+            \draw[thick, blue] (3, 0.2) -- (7, 0.2);
+            \draw[thick, orange] (0, 0.6) -- (0, 0.4);
+            \draw[thick, orange] (5, 0.6) -- (5, 0.4);
+            \draw[thick, blue] (3, 0.3) -- (3, 0.1);
+            \draw[thick, blue] (7, 0.3) -- (7, 0.1);
+            %etichette
+            \node at (0, 0.8) {$l_1$};
+            \node at (5, 0.8) {$u_1$};
+            \node at (3, 0.8) {$l_2$};
+            \node at (7, 0.8) {$u_2$};
+            %intervalli
+            \draw[thick, red] (0, -0.2) -- (7, -0.2);
+            \draw[thick, red] (0, -0.1) -- (0, -0.3);
+            \draw[thick, red] (7, -0.1) -- (7, -0.3);
+            %etichette
+            \node at (-1, -0.2) {$\texttt{min}(l_1, l_2)$};
+            \node at (8.2, -0.2) {$\texttt{max}(u_1, u_2)$};
+        \end{tikzpicture}
+    \end{figure}
+    \item Greatest lower bound: ovvero il più grande intervallo contenuto
+    in entrambi gli intervalli.
+    \[
+        [l_1, u_1] \sqcap [l_2, u_2] = [\texttt{max}(l_1, l_2), \texttt{min}(u_1, u_2)]
+    \]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            %segmenti 
+            \draw[thick, orange] (0, 0.5) -- (5, 0.5);
+            \draw[thick, blue] (3, 0.2) -- (7, 0.2);
+            \draw[thick, orange] (0, 0.6) -- (0, 0.4);
+            \draw[thick, orange] (5, 0.6) -- (5, 0.4);
+            \draw[thick, blue] (3, 0.3) -- (3, 0.1);
+            \draw[thick, blue] (7, 0.3) -- (7, 0.1);
+            %etichette
+            \node at (0, 0.8) {$l_1$};
+            \node at (5, 0.8) {$u_1$};
+            \node at (3, 0.8) {$l_2$};
+            \node at (7, 0.8) {$u_2$};
+            %intervalli
+            \draw[thick, red] (3, -0.2) -- (5, -0.2);
+            \draw[thick, red] (3, -0.1) -- (3, -0.3);
+            \draw[thick, red] (5, -0.1) -- (5, -0.3);
+            %etichette
+            \node at (2, -0.2) {$\texttt{max}(l_1, l_2)$};
+            \node at (6.2, -0.2) {$\texttt{min}(u_1, u_2)$};
+        \end{tikzpicture}
+    \end{figure}
+\end{itemize}
+La descrizione di tali operazioni completa la descrizione del dominio, 
+poiché siamo in presenza di un reticolo completo.
+
+\subsection{Semantica delle espressioni}
+Trattiamo ora del trasferimento del calcolo delle operazioni concrete nel 
+dominio astratto, quindi definiamo la funzione di trasferimento astratta.
+Tutte le operazioni possono essere trasferite, possiamo quindi fornire
+in modo operativo sugli intervalli la \textbf{best correct approximation}
+delle operazioni concrete. Definiamo alcune di queste operazioni:
+\begin{itemize}
+    \item $[l_1, u_1] +^\sharp [l_2, u_2] = [l_1 + l_2, u_1 + u_2]$ dove ricordiamo che 
+    $-\infty + n = -\infty$ e $+\infty + n = +\infty$.
+    \item $-^\sharp[l, u] = [-u, -l]$.
+    \item $[l_1, u_1] \cdot^\sharp [l_2, u_2] = 
+    [\texttt{min}(l_1 \cdot l_2, l_1 \cdot u_2, u_1 \cdot l_2, u_1 \cdot u_2), 
+    \texttt{max}(l_1 \cdot l_2, l_1 \cdot u_2, u_1 \cdot l_2, u_1 \cdot u_2)]$.  
+\end{itemize}
+Nelle operazioni di confronto, per dire che due intervalli sono uguali,
+dobbiamo essere sicuri che i loro valori nel dominio concreto lo 
+siano, perciò due intervalli sono uguali se e solo se gli intervalli 
+sono composti da un solo elemento e sono uguali, ovvero:
+\[
+  [l_1, u_1] =^\sharp [l_2, u_2] =
+  \begin{cases}
+    [1, 1] & \text{se } l_1 = u_1 = l_2 = u_2 \\
+    [0, 0] & \text{se } u_i < l_2 \lor u_2 < l_1 \quad \textit{intervalli 
+    disgiunti}\\
+    [0, 1] & \text{altrimenti}
+   \end{cases}
+\]
+Ciò significa che siamo assolutamente certi che due intervalli
+sono uguali se e solo se sono composti da un solo elemento e sono uguali.
+Sono sicuramente diversi se sono disgiunti, poiché nel corso dell'esecuzione 
+hanno assunto valori totalmente diversi, rendendo impossibile per 
+qualunque combinazione di valori che essi siano uguali. In tutti gli 
+altri casi non possiamo essere certi che siano uguali, anche se i due 
+intervalli sono uguali, poiché i valori nel dominio concreto potrebbero
+essere diversi.
+
+Definiamo quindi il dominio degli stati astratti negli intervalli come:
+\[
+  \mathbb{D} = (\texttt{Var} \to \mathbb{I}) \cup \{\bot\}
+\]
