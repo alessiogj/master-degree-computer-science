@@ -171,15 +171,15 @@ che associa ad ogni variabile il valore $\bot$, dove quindi nessuna variabile è
 Questo è quindi il dominio dove definiamo la semantica astratta, tale dominio è \textit{pointwise},
 ovvero il confronto tra due stati astratti è dato dal confronto tra i valori delle variabili.
 \[
-    \mathbb{D}_1 \sqsubseteq \mathbb{D}_2 \iff \forall x \in \texttt{Var} . 
-    \mathbb{D}_1(x) \sqsubseteq_{const} \mathbb{D}_2(x)
+    \mathcal{D}_1 \sqsubseteq \mathcal{D}_2 \iff \forall x \in \texttt{Var} . 
+    \mathcal{D}_1(x) \sqsubseteq_{const} \mathcal{D}_2(x)
 \]
 Confrontiamo due funzioni, confrontando l'immagine delle due funzioni per ogni singola 
 variabile. Tale ordinamento permette di definire il \textit{least upper bound} come:
 \[
-    \texttt{Lub} : \bigsqcup_i \mathbb{D}_i(x) =
+    \texttt{Lub} : \bigsqcup_i \mathcal{D}_i(x) =
     \begin{cases}
-        z & \text{se } \forall i . \mathbb{D}_i(x) = z \qquad z \in \mathbb{Z} \\
+        z & \text{se } \forall i . \mathcal{D}_i(x) = z \qquad z \in \mathbb{Z} \\
         \top & \text{altrimenti}
     \end{cases}
 \]
@@ -194,9 +194,9 @@ semantica astratta dei programmi nel dominio astratto $\mathbb{D}$, quindi una f
 \]
 Che dice se ogni variabile è costante o meno. L'obiettivo è avere questa informazione 
 per ogni punto di programma, quindi cerchiamo la soluzione \texttt{MOP}, ovvero la
-soluzione \textit{meet over all paths}, definendo quindi:
+soluzione \textit{merge over all paths}, definendo quindi:
 \[
-    \texttt{MOP} : \mathcal{D}^\star [u] = \bigsqcup 
+    \texttt{MOP} : \mathcal{D}^\star [v] = \bigsqcup 
     \{ \llbracket \pi \rrbracket^\sharp \mathcal{D}_\bot \mid \pi:\text{start} \to v \}
 \]
 Ovvero il \textit{least upper bound}  (\textit{poiché la collecting semantics è di tipo possible}) 
@@ -210,7 +210,7 @@ $\llbracket \cdot \rrbracket^\sharp$, considerando
 il fatto che i nostri archi sono della forma $(u, \texttt{lab}, v)$, considerando che la 
 semantica è fornita dall'etichetta dell'arco, a partire dalla memoria $\mathcal{D}$ astratta 
 che raggiunge il nodo $u$, quindi $\llbracket \texttt{lab} \rrbracket^\sharp : \mathcal{D}$. 
-\subsection{Semantica delle espressioni}
+\subsection{Semantica delle espressioni} \label{sec:semantica-espressioni}
 La prima cosa che conviene fare è andare a trasferire il calcolo delle operazioni concrete 
 nel dominio astratto, quindi definiamo la funzione di trasferimento astratta.
 Per farlo definiamo l'operazione generica $\square$ su interi e la sua versione astratta
@@ -320,7 +320,7 @@ Si può dimostrare che la semantica astratta $\llbracket \cdot \rrbracket^\sharp
 è distributiva, quindi calcolando la soluzione \texttt{MFP} questa non sarà uguale 
 alla soluzione \texttt{MOP}, ma la contiene strettamente.
 \[
-  \texttt{MFP} \sqsubseteq \texttt{MOP}  
+  \texttt{MFP} \sqsupseteq \texttt{MOP}  
 \]
 In ogni caso, la soluzione \texttt{MFP} è l'unica che riusciamo a costruire e l'analisi 
 costruisce tale soluzione. 
@@ -329,13 +329,13 @@ caso della analisi di data flow.
 \begin{itemize}
     \item Sul nodo di partenza la memoria astratta è vuota, quindi
     \[
-        \mathcal{D}[\texttt{entry}] \sqsubseteq \mathcal{D}_\bot 
+        \mathcal{D}[\texttt{entry}] \sqsupseteq \mathcal{D}_\bot 
     \]
     \item Per i nodi successivi, essendo una semantica forward, $\mathcal{D}[v]$ contiene 
     la semantica dell'etichetta a partire dalla memoria astratta a 
     partire dal nodo sorgente.
     \[
-        \mathcal{D}[v] \sqsubseteq \llbracket \texttt{lab} \rrbracket^\sharp \mathcal{D}[n]
+        \mathcal{D}[v] \sqsupseteq \llbracket \texttt{lab} \rrbracket^\sharp \mathcal{D}[u]
     \]
 \end{itemize}
 In ogni caso la semantica $\llbracket \cdot \rrbracket^\sharp$ è monotona e il 
@@ -421,16 +421,16 @@ quindi:
 \end{minipage}
 Dobbiamo costruire il sistema di disequazioni:
 \begin{itemize}
-    \item $ \mathcal{D}(1) \sqsubseteq \mathcal{D}_\bot$
-    \item $ \mathcal{D}(2) \sqsubseteq [\texttt{a} \mapsto 1, \texttt{b} 
+    \item $ \mathcal{D}(1) \sqsupseteq \mathcal{D}_\bot$
+    \item $ \mathcal{D}(2) \sqsupseteq [\texttt{a} \mapsto 1, \texttt{b} 
     \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0] 
     \sqcup \mathcal{D}(4)[a \mapsto \mathcal{D}(4)(a) -^{\sharp} \mathcal{D}(4)(b), 
     c \mapsto \mathcal{D}(4)(e) +^{\sharp} \mathcal{D}(4)(d)]$
-    \item $ \mathcal{D}(3) \sqsubseteq \mathcal{D}(2)$
-    \item $ \mathcal{D}(4) \sqsubseteq \mathcal{D}(3)[b \mapsto 2 \cdot^{\sharp} 
+    \item $ \mathcal{D}(3) \sqsupseteq \mathcal{D}(2)$
+    \item $ \mathcal{D}(4) \sqsupseteq \mathcal{D}(3)[b \mapsto 2 \cdot^{\sharp} 
     \mathcal{D}(3)(a), d \mapsto \mathcal{D}(3)(d) +^{\sharp} 1, 
     e \mapsto \mathcal{D}(3)(e) -^{\sharp} \mathcal{D}(3)(a)]$
-    \item $ \mathcal{D}(5) \sqsubseteq \mathcal{D}(2)$
+    \item $ \mathcal{D}(5) \sqsupseteq \mathcal{D}(2)$
 \end{itemize} 
 Nel least upper bound accorpiamo i vari archi che arrivano allo stesso punto, quindi 
 la minima soluzione del sistema di disequazioni diventa uguale alla soluzione del
@@ -460,25 +460,25 @@ Procediamo con la soluzione del sistema di equazioni:
             $\mathcal{D}(1)$ 
             & $\mathcal{D}_\bot$ 
             & $\mathcal{D}_\bot$ 
-            & $\bot$ \\
+            & $\mathcal{D}_\bot$ \\
             \hline
             $\mathcal{D}(2)$ 
-            & $\bot$ 
+            & $\varnothing$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
             \hline
             $\mathcal{D}(3)$ 
-            & $\bot$ 
+            & $\varnothing$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
             \hline
             $\mathcal{D}(4)$ 
-            & $\bot$ 
+            & $\varnothing$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 4, \texttt{e} \mapsto -1$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
             \hline
             $\mathcal{D}(5)$ 
-            & $\bot$ 
+            & $\varnothing$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto 3, \texttt{e} \mapsto 0$ 
             & $\texttt{a} \mapsto 1, \texttt{b} \mapsto 2, \texttt{c} \mapsto 3, \texttt{d} \mapsto \top, \texttt{e} \mapsto \top$ \\
             \hline
@@ -797,3 +797,307 @@ Definiamo quindi il dominio degli stati astratti negli intervalli come:
 \[
   \mathbb{D} = (\texttt{Var} \to \mathbb{I}) \cup \{\bot\}
 \]
+Dove $\bot$ è indica uno stato non percorribile, oppure un errore.
+
+Dato $\mathcal{D} \in \mathbb{D}$, definiamo la funzione di trasferimento
+astratta $\alpha$ come la funzione che per ogni $x$ appartenente alle 
+variabili, associa ad $x$, l'applicazione della funzione di trasferimento
+astratta $\alpha$ all'intervallo associato ad $x$ in $\mathcal{D}$.
+\[
+   \alpha(\mathcal{D}) \implies \forall x \in \texttt{Var} 
+   \quad x \mapsto \alpha(\mathcal{D})(x) 
+\]
+Estendendo quindi la funzione di trasferimento astratta $\alpha$ 
+dalla funzione che opera sugli intervalli, alla funzione che opera
+sugli stati che vogliono associare intervalli ai valori.
+
+L'ordinamento rimane sempre quello definito per la propagazione 
+delle costanti, quindi quando dobbiamo definire due stati astratti
+si confronteranno i valori per ogni variabile.
+Quindi:
+\[
+  \mathcal{D}_1 \sqsubseteq \mathcal{D}_2 \iff \forall x \in \texttt{Var} 
+  \quad \mathcal{D}_1(x) \sqsubseteq_{intervalli} \mathcal{D}_2(x)
+\]
+L'obiettivo è avere questa informazione 
+per ogni punto di programma, quindi cerchiamo la soluzione \texttt{MOP}, ovvero la
+soluzione \textit{merge over all paths}, definendo quindi:
+\[
+    \texttt{MOP} : \mathcal{I}^\star [v] = \bigsqcup 
+    \{ \llbracket \pi \rrbracket^\sharp \mathcal{D}_\bot \mid \pi:\text{start} \to v \}
+\]
+Ovvero il \textit{least upper bound}  (\textit{poiché la collecting semantics è di tipo possible}) 
+delle semantiche di tutti i cammini a partire dall'informazione iniziale $\mathcal{D}_\bot$
+dei cammini 
+che vanno dal nodo di inizio al nodo $v$. È chiaro che se guardiamo tale analisi dal punto di vista delle 
+analisi di data flow, l'analisi è forward, ed è di tipo possibile perché colleziona valori.
+
+\subsection{Semantica dei comandi}
+Descriviamo la semantica astratta dei comandi, sorvolando sulla semantica
+delle espressioni, poiché è analoga alla definizione della semantica
+astratta delle espressioni della propagazione delle costanti
+(\ref{sec:semantica-espressioni}).
+
+La semantica dei comandi ovviamente si baserà sulla semantica delle espressioni 
+nel caso delle guardie e dell'assegnamento. Ragioniamo quindi induttivamente sulla
+struttura dei comandi, definendo la semantica astratta dei comandi:
+\begin{itemize}
+    \item $\llbracket \texttt{;} \rrbracket^\sharp \mathcal{D} = \mathcal{D}$
+    \item $\llbracket x \gets e \rrbracket^\sharp \mathcal{D} =
+    \mathcal{D}[x \mapsto \llbracket e \rrbracket^\sharp \mathcal{D}]$
+    \item $\llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{D} =
+    \begin{cases}
+        \bot & \text{se } [0, 0] = \llbracket e \rrbracket^\sharp \\
+        \mathcal{D} & \text{altrimenti}
+    \end{cases}
+    $
+    \item $\llbracket \texttt{Zero}(e) \rrbracket^\sharp \mathcal{D} =
+    \begin{cases}
+        \bot & \text{se } [0, 0] \not \sqsubseteq \llbracket e \rrbracket^\sharp \\
+        \mathcal{D} & \text{se } [0, 0] \sqsubseteq \llbracket e \rrbracket^\sharp
+    \end{cases}
+    $
+    \item $\llbracket \texttt{input}(x) \rrbracket^\sharp \mathcal{D} =
+    \mathcal{D}[x \mapsto \top ]$
+\end{itemize}
+Si può dimostrare che la semantica astratta $\llbracket \cdot \rrbracket^\sharp$ non 
+è distributiva, quindi calcolando la soluzione \texttt{MFP} questa non sarà uguale 
+alla soluzione \texttt{MOP}, ma la contiene strettamente.
+\[
+  \texttt{MFP} \sqsupseteq \texttt{MOP}  
+\]
+In ogni caso, la soluzione \texttt{MFP} è l'unica che riusciamo a costruire e l'analisi 
+costruisce tale soluzione. 
+Per farlo trova la soluzione del sistema di disequazioni, costruito esattamente come nel 
+caso della analisi di data flow.
+\begin{itemize}
+    \item Sul nodo di partenza la memoria astratta è vuota, quindi
+    \[
+        \mathcal{I}[\texttt{entry}] \sqsupseteq \mathcal{D}_\bot 
+    \]
+    \item Per i nodi successivi, essendo una semantica forward, $\mathcal{D}[v]$ contiene 
+    la semantica dell'etichetta a partire dalla memoria astratta a 
+    partire dal nodo sorgente.
+    \[
+        \mathcal{I}[v] \sqsupseteq \llbracket \texttt{lab} \rrbracket^\sharp \mathcal{I}[u]
+    \]
+\end{itemize}
+In ogni caso la semantica $\llbracket \cdot \rrbracket^\sharp$ è monotona, 
+purtroppo non \texttt{ACC}, quindi contiene catene ascendenti infinite,
+ma non abbiamo la garanzia di terminazione.
+\begin{theorem}[Teorema di Knaster-Tarski]
+    Sia $\mathcal{L}$ un reticolo completo, e sia $f : \mathcal{L} \to \mathcal{L}$ 
+    una funzione monotona. Allora $f$ ha un punto fisso, ovvero un elemento $x \in \mathcal{L}$ 
+    tale che $f(x) = x$.
+\end{theorem}
+La monotonia, per il teorema di Knaster-Tarski, ci garantisce che
+esiste un punto fisso, ma non ci garantisce che sia raggiungibile
+in un numero finito di passi.
+\subsection{Migliorie all'analisi}
+Possiamo pensare di migliorare l'analisi sapendo che la presenza di guardie la cui 
+informazione calcolata è rappresentabile all'interno della nostra osservazione.
+\begin{itemize}
+    \item 
+    \[
+      \llbracket \texttt{NonZero}(e) \rrbracket^\sharp \mathcal{D} =
+    \begin{cases}
+        \bot & \text{se } [0, 0] = \llbracket e \rrbracket^\sharp \\
+        \mathcal{D}_1 & \text{altrimenti}
+    \end{cases}  
+    \]
+    Dove $\mathcal{D}_1$ è può essere:
+    \[
+        \mathcal{D}_1 = \begin{cases}
+            \mathcal{D}[x \mapsto \mathcal{D}(x) \sqcap \llbracket e_1 \rrbracket^\sharp] & 
+            \text{se } e \equiv (x = e_1) \\
+            \mathcal{D}[x \mapsto \mathcal{D}(x) \sqcap [-\infty, -u - 1]] &
+            \text{se } e \equiv (e_1 < x) \text{ e } \llbracket e_1 \rrbracket^\sharp = [l, u] \\
+            \mathcal{D}[x \mapsto \mathcal{D}(x) \sqcap [l + 1, +\infty]] &
+            \text{se } e \equiv (x > e_1) \text{ e } \llbracket e_1 \rrbracket^\sharp = [l, u] \\
+        \end{cases}
+    \] 
+    \item Il caso di \texttt{Zero} è analogo.
+\end{itemize}
+Ovviamente, la condizione vale se $e$ è del tipo $x \,\square \,e_1$, 
+dove il simbolo $\square$ può essere $\{ =, <, > \}$.
+\subsubsection{Esempio di analisi degli intervalli}
+
+Consideriamo il seguente programma:
+
+\begin{algorithm}[H]
+    \If{$x \geq 0$}{
+        $y \gets 0$ \;
+    }
+    \Else{
+        \While{$x < 0$}
+        {
+            $x \gets x + 1$ \;
+            $y \gets x$ \;
+        }
+    }
+\end{algorithm}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance={22mm}, minimum width = 1cm, main/.style = {draw, circle}] 
+            \node[main] (1) {1};
+            \node[main] (2) [below left=of 1] {2};
+            \node[main] (3) [below =of 2] {3};
+            \node[main] (4) [below right=of 1] {4};
+            \node[main] (5) [below right=of 4] {5};
+            \node[main] (6) [below =of 5] {6};
+            \node[main] (7) [below left=of 4] {7};
+            \node[main] (8) [below =of 7] {8};
+            
+            \draw[->] (1) -- (2) node[midway, left] {\small$\texttt{NonZero}(x \geq 0)$};
+            \draw[->] (2) -- (3) node[midway, left] {\small$y \gets 0$};
+            \draw[->] (1) -- (4) node[midway, right] {\small$\texttt{Zero}(x \geq 0)$};
+            \draw[->] (4) -- (5) node[midway, right] {\small$x < 0$};
+            \draw[->] (5) -- (6) node[midway, right] {\small$x \gets x + 1$};
+            \draw[->] (6) -- (4);
+            \draw[->] (4) -- (7) node[midway, left] {\small$\texttt{Zero}(x < 0)$};
+            \draw[->] (7) -- (8) node[midway, right] {\small$y \gets x$};
+            \draw[->] (3) -- (8) node[midway, left] {\small$;$};
+        \end{tikzpicture}
+    \end{figure}
+
+Dobbiamo costruire il sistema di disequazioni, che possiamo
+riportare già in forma di equazioni:
+\begin{itemize}
+    \item $\mathcal{I}(1) = \mathcal{I}_\bot$
+    \item $\mathcal{I}(2) = \mathcal{I}(1) \sqcap \mathcal{I}_\bot [x \mapsto [0, +\infty]] =
+    \mathcal{I}(1) \sqcap [x \mapsto [0, +\infty]]$
+    \item $\mathcal{I}(3) = \mathcal{I}(2) [y \mapsto [0, 0]]$
+    \item $\mathcal{I}(4) = \mathcal{I}(1) \sqcap [x \mapsto [-\infty, -1]] \sqcup 
+    \mathcal{I}(6)$
+    \item $\mathcal{I}(5) = \mathcal{I}(4) \sqcap [x \mapsto [-\infty, -1]]$
+    \item $\mathcal{I}(6) = \mathcal{I}(5) [x \mapsto \mathcal{I}(5)(x) +^\sharp [1, 1]]$
+    \item $\mathcal{I}(7) = \mathcal{I}(4) \sqcap [x \mapsto [0, +\infty]]$
+    \item $\mathcal{I}(8) = \mathcal{I}(7) [y \mapsto \mathcal{I}(7)(x)]
+    \sqcup \mathcal{I}(3)$
+\end{itemize}
+Possiamo quindi calcolare il punto fisso:
+\begin{table}[H]
+    \centering
+    \begin{subtable}{\linewidth}
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            & $0$ 
+            & $1$ 
+            & $2$ \\ \hline
+            $\mathcal{I}(1)$ 
+            & $\mathcal{I}_\bot$ 
+            & $\mathcal{I}_\bot$ 
+            & $\mathcal{I}_\bot$ \\
+            \hline
+            $\mathcal{I}(2)$ 
+            & $\varnothing$ 
+            & $[x \gets [0, +\infty], y \gets \top]$ 
+            & $[x \gets [0, +\infty], y \gets \top]$ \\
+            \hline
+            $\mathcal{I}(3)$ 
+            & $\varnothing$ 
+            & $[x \gets [0, +\infty], y \gets [0, 0]]$
+            & $[x \gets [0, +\infty], y \gets [0, 0]]$ \\
+            \hline
+            $\mathcal{I}(4)$ 
+            & $\varnothing$ 
+            & $[x \gets [-\infty, -1], y \gets \top]$
+            & $[x \gets [-\infty, 0], y \gets \top]$ \\
+            \hline
+            $\mathcal{I}(5)$ 
+            & $\varnothing$ 
+            & $[x \gets [-\infty, -1], y \gets \top]$
+            & $[x \gets [-\infty, -1], y \gets \top]$ \\
+            \hline
+            $\mathcal{I}(6)$ 
+            & $\varnothing$ 
+            & $[x \gets [-\infty, 0], y \gets \top]$
+            & $[x \gets [-\infty, 0], y \gets \top]$ \\
+            \hline
+            $\mathcal{I}(7)$ 
+            & $\varnothing$ 
+            & $\bot$
+            & $[x \gets [0, 0], y \gets \top]$ \\
+            \hline
+            $\mathcal{I}(8)$ 
+            & $\varnothing$ 
+            & $\bot$
+            & $[x \gets [0, +\infty], y \gets [0, 0]]$ \\
+            \hline
+        \end{tabular}
+    \end{subtable}
+\end{table}
+Dove raggiungiamo il punto fisso in $2$ iterazioni.
+\section{Widening}
+Il \textit{widening} è un'operazione che accelera le computazioni a punto fisso garantendo
+la convergenza. L'operatore di widening consente di eseguire ``salti" per raggiungere
+un punto fisso approssimato.
+
+Dato un dominio $\mathbb{P}$ su cui è definito un poset, il widening è una funzione:
+
+\[
+\nabla : \mathbb{P} \times \mathbb{P} \rightarrow \mathcal{P}
+\]
+
+dove:
+
+\[
+\forall x,y \in \mathbb{P} . \quad x \sqsubseteq (x \nabla y) \land y \sqsubseteq (x \nabla y)
+\]
+
+L'applicazione dell'operatore deve mantenere un certo ordine. Inoltre, quando definiamo
+ad hoc l'operatore di widening, le catene ascendenti devono essere convergenti.
+
+Supponiamo di avere una catena del tipo:
+
+\[
+x_0 \sqsubseteq x_1 \sqsubseteq x_2 \sqsubseteq \dots \sqsubseteq x_n \sqsubseteq \dots
+\]
+
+La costruzione di una nuova catena, chiamata $y$, è definita come:
+
+\[
+y_0 = x_0 \quad y_1 = x_1 \nabla y_0 \quad y_{2} = x_2 \nabla y_1 \quad \dots \quad y_n
+= x_n \nabla y_{n-1} \quad \dots
+\]
+
+L'elemento precedente della nuova catena deve essere combinato con il nuovo elemento della
+catena precedente, dove $y_i$ è una catena non strettamente crescente ma che converge a
+un punto fisso.
+
+La definizione del concetto di widening potrebbe risultare poco esplicativa in questo
+contesto; tuttavia, se si considerano le disequazioni nella forma
+
+\[
+  x_i \sqsubseteq f_i(x_1, \dots, x_n)
+\]
+
+e si applica la definizione di contenimento,
+
+\[
+  x_i \sqsubseteq f_i(x_1, \dots, x_n) \iff x_i = x_i \sqcup f_i(x_1, \dots, x_n)  
+\]
+
+sostituendo l'operatore di widening all'operatore di least upper bound, si ottiene
+
+\begin{equation}
+    x_i = x_i \nabla f_i(x_1, \dots, x_n)
+\end{equation}
+
+Questo sistema di disequazioni assicura la costruzione di una catena convergente al punto fisso,
+garantendo nel contempo la terminazione (\textit{sotto l'assunzione delle proprietà specificate}).
+
+L'idea di fondo è quella di fornire un operatore che sostituiamo al least upper bound. 
+Il least upper bound, per costruzione, essendo la più piccola soluzione, fa si che si 
+possa divergere poiché prende in considerazione tutti gli elementi della catena.
+Il widening, invece, è un operatore che si comporta come un least upper bound ma che
+non prende in considerazione tutti gli elementi della catena, ma una sottocatena 
+che converge al punto fisso.
+Perciò l'operazione di widening è un'operazione che viene utilizzata in combinazione 
+con l'operazione di \texttt{narrowing} per garantire la terminazione. Che a partire 
+dalla soluzione del widening, ovvero una soluzione estremamente approssimata, 
+cerca di capire se il calcolo aveva informazioni che in realtà possono essere
+sfruttate per affinare la soluzione. 
+\subsection{Widening per gli intervalli}
