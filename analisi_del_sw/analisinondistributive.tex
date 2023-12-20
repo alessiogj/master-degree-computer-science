@@ -327,9 +327,10 @@ costruisce tale soluzione.
 Per farlo trova la soluzione del sistema di disequazioni, costruito esattamente come nel 
 caso della analisi di data flow.
 \begin{itemize}
-    \item Sul nodo di partenza la memoria astratta è vuota, quindi
+    \item Sul nodo di partenza la memoria astratta dove 
+    non abbiamo informazioni sulle variabili, quindi:
     \[
-        \mathcal{D}[\texttt{entry}] \sqsupseteq \mathcal{D}_\bot 
+        \mathcal{D}[\texttt{entry}] \sqsupseteq \mathcal{D}_\top
     \]
     \item Per i nodi successivi, essendo una semantica forward, $\mathcal{D}[v]$ contiene 
     la semantica dell'etichetta a partire dalla memoria astratta a 
@@ -871,9 +872,10 @@ costruisce tale soluzione.
 Per farlo trova la soluzione del sistema di disequazioni, costruito esattamente come nel 
 caso della analisi di data flow.
 \begin{itemize}
-    \item Sul nodo di partenza la memoria astratta è vuota, quindi
+    \item Sul nodo di partenza la memoria astratta dove 
+    non abbiamo informazioni sulle variabili, quindi:
     \[
-        \mathcal{I}[\texttt{entry}] \sqsupseteq \mathcal{D}_\bot 
+        \mathcal{I}[\texttt{entry}] \sqsupseteq \mathcal{D}_\top 
     \]
     \item Per i nodi successivi, essendo una semantica forward, $\mathcal{D}[v]$ contiene 
     la semantica dell'etichetta a partire dalla memoria astratta a 
@@ -1101,3 +1103,197 @@ dalla soluzione del widening, ovvero una soluzione estremamente approssimata,
 cerca di capire se il calcolo aveva informazioni che in realtà possono essere
 sfruttate per affinare la soluzione. 
 \subsection{Widening per gli intervalli}
+Per gli intervalli, l'operatore di widening è definito come:
+\[
+  \bot \nabla \mathcal{D} = \mathcal{D} \nabla \bot = \mathcal{D}
+\]
+Il widening di una memoria astratta con il bottom è sempre la
+memoria astratta stessa. Siamo costretti a fornire i due casi 
+poiché il widening non è un'operazione commutativa.
+In un certo senso la posizione dice qual è l'oggetto calcolato precedentemente 
+e quello successivo. C'è quindi l'idea di trattare l'elemento a 
+destra come il nuovo valore e quello a sinistra come il
+valore precedente, dando quindi l'idea di direzione del calcolo 
+che il widening vuole sfruttare.
+
+Definiamo ora su due memorie qualunque $\mathcal{D}_1$ e $\mathcal{D}_2$
+l'operatore di widening come:
+\[
+  \mathcal{D}_1 \nabla \mathcal{D}_2(x) =
+  \mathcal{D}_1(x) \nabla \mathcal{D}_2(x)
+\]
+Di fatto viene definito puntualmente, di fatto il widening sugli stati astratti,
+come per le altre operazioni, non è altro che l'applicazione
+dell'operatore sul dominio dei valori astratti, permettendoci quindi 
+di definirlo sul dominio astratto degli intervalli.
+
+Dati due intervalli $[l_1, u_1]$ e $[u_2, u_2] \in \mathbb{I}$ , il widening è definito come:
+\[
+  [l_1, u_1] \nabla [l_2, u_2] = [l , u]
+\]
+Definito come:
+\[
+  l = \begin{cases}
+    l_1 & \text{se } l_1 \leq l_2 \\
+    -\infty & \text{altrimenti}
+  \end{cases}
+\]
+L'oggetto a destra è quindi il nuovo oggetto calcolato, 
+quindi se $l_2$ è più piccolo o uguale di $l_1$, 
+ricordandoci che dobbiamo mantenere conservatività, 
+allora il nuovo valore calcolato è $l_1$. Se prendessimo 
+$l_2$ come nuovo valore calcolato, potremmo gli 
+elementi calcolati precedentemente. 
+Nel caso in cui $l_2$ sia maggiore di $l_1$,
+allora il nuovo valore calcolato è $-\infty$. Questo perché 
+il calcolo ha portato all'aumento degli elementi che dobbiamo includere,
+per far il ``salto'', il widening, butta via l'informazione 
+assumendo che il valore calcolato vada verso $-\infty$.
+
+Per quanto riguarda l'upper bound, invece, abbiamo:
+\[
+  u = \begin{cases}
+    u_1 & \text{se } u_1 \geq u_2 \\
+    +\infty & \text{altrimenti}
+  \end{cases}
+\]
+Se $u_1$ è maggiore o uguale di $u_2$, allora il nuovo valore calcolato
+è $u_1$, altrimenti è $+\infty$. Anche in questo caso, se $u_2$ è maggiore di $u_1$,
+allora il calcolo ha portato all'aumento degli elementi che dobbiamo includere,
+per far il ``salto'', il widening, butta via l'informazione
+assumendo che il valore calcolato vada verso $+\infty$.
+\section{Analisi dei segni}
+Usiamo il dominio dei segni per sintetizzare 
+il processo di costruzione di un'analisi nell'ambito
+non distributivo.
+\subsection{Costruzione dell'analisi}
+Nella fase di costruzione dell'analisi procediamo 
+per individuare gli elementi da osservare.
+
+Supponiamo di voler osservare i segni andando a distinguere 
+tra zero, i positivi e i negativi.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \node (top) at (0, 2) {$\top$};
+        \node (poszero) at (-2, 0) {$\mathbb{Z}_0^+$};
+        \node (nonzero) at (0, 0) {$\neq 0$};
+        \node (negzero) at (2, 0) {$\mathbb{Z}_0^-$};
+        \node (pos) at (-2, -2) {$\mathbb{Z}^+$};
+        \node (zero) at (0, -2) {$0$};
+        \node (neg) at (2, -2) {$\mathbb{Z}^-$};
+        \node (bot) at (0, -4) {$\bot$};
+
+        \draw (poszero.north) -- (top.south);
+        \draw (nonzero.north) -- (top.south);
+        \draw (negzero.north) -- (top.south);
+        \draw (pos.north) -- (poszero.south);
+        \draw (pos.north) -- (nonzero.south);
+        \draw (neg.north) -- (negzero.south);
+        \draw (neg.north) -- (nonzero.south);
+        \draw (zero.north) -- (negzero.south);
+        \draw (zero.north) -- (poszero.south);
+        \draw (bot.north) -- (pos.south);
+        \draw (bot.north) -- (zero.south);
+        \draw (bot.north) -- (neg.south);
+    \end{tikzpicture}
+\end{figure}
+A questo punto dobbiamo descrivere le operazioni astratte sugli 
+oggetti che abbiamo deciso di osservare, fornendo quindi la semantica 
+delle espressioni.
+In generale:
+\[
+  \llbracket e_1 \,\square e_2\, \rrbracket^\sharp \mathcal{D}
+  = \llbracket e_1 \rrbracket^\sharp \mathcal{D} 
+  \square 
+  \llbracket e_2 \,\rrbracket^\sharp\, \mathcal{D} 
+\]
+Dove l'operatore $\square$ è un'operazione concreta. 
+Scendiamo induttivamente all'interno della struttura dell'espressione, 
+valutando la semantica di $e_1$ e $e_2$ e applicando l'operazione
+astratta $\square^\sharp$ ridefinite sugli elementi astratti.
+
+Consideriamo la moltiplicazione nel dominio dei segni:
+\begin{figure}[H]
+    \centering
+    \renewcommand{\arraystretch}{2}
+    \begin{tabular}{m{2em}|m{2em}m{2em}m{2em}m{2em}m{2em}m{2em}}
+        
+        $*$ & $\top$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-$ & $\mathbb{Z}^+ $ & $0$ \\
+        \hline
+        $\top$ & $\top$ & $\top$ & $\top$ & $\top$ & $\top$ & $0$ \\
+
+        $\mathbb{Z}^-_0$ & $\top$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-_0$ & $0$ \\
+
+        $\mathbb{Z}^+_0$ & $\top$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+_0$ & $0$ \\
+
+        $\mathbb{Z}^-$ & $\top$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+$ & $\mathbb{Z}^-$ & $0$ \\
+
+        $\mathbb{Z}^+$ & $\top$ & $\mathbb{Z}^-_0$ & $\mathbb{Z}^+_0$ & $\mathbb{Z}^-$ & $\mathbb{Z}^+$ & $0$ \\
+
+        $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+      \end{tabular}
+      \caption{Operazioni astratte relative alla moltiplicazione.}
+    \end{figure}
+Ovviamente tale procedura può essere estesa a tutte le operazioni.
+
+A questo punto dobbiamo descrivere la semantica dei comandi, che per 
+semplicità forniamo sull'\textit{abstract edge effect}, quindi sulle etichette 
+del \textit{control flow graph}.
+Nel caso dei segni, supponiamo che $\mathcal{D}$ sia lo stato astratto,
+quindi:
+\begin{itemize}
+    \item $\llbracket ; \rrbracket^\sharp \mathcal{D} = \mathcal{D}$
+    \item $\llbracket x \gets e \rrbracket^\sharp \mathcal{D} = 
+    \mathcal{D}[x \mapsto \llbracket e \rrbracket^\sharp \mathcal{D}]$
+    \item $\llbracket \texttt{input}(x) \rrbracket^\sharp \mathcal{D} =
+    \mathcal{D}[x \mapsto \top]$
+    \item Il ramo non è percorribile se il valore astratto di $0$ è 
+    esattamente la valutazione astratta di $e$, altrimenti 
+    prendiamo $\mathcal{D}$ intersecato ai valori dell'espressione 
+    $e$.
+    \[\llbracket \texttt{NonZero}(x) \rrbracket^\sharp \mathcal{D} =
+    \begin{cases}
+        \bot & \text{se } \alpha(0) = \llbracket e \rrbracket^\sharp \mathcal{D} \\
+        \mathcal{D} \sqcap \llbracket e \rrbracket^\sharp \mathcal{D} & \text{altrimenti}
+    \end{cases}
+    \]
+    \item Il ramo non è percorribile se il valore astratto di $0$ non 
+    è contenuto all'interno della valutazione astratta di $e$, altrimenti 
+    prendiamo $\mathcal{D}$ intersecato ai valori della negazione 
+    dell'espressione $e$. 
+    \[
+      \llbracket \texttt{Zero}(x) \rrbracket^\sharp \mathcal{D} =
+        \begin{cases}
+            \bot & \text{se } \alpha(0) \not \sqsubseteq \llbracket e \rrbracket^\sharp \mathcal{D} \\
+            \mathcal{D} \sqcap \llbracket \neg e \rrbracket^\sharp \mathcal{D} & \text{altrimenti}
+        \end{cases}  
+    \]
+\end{itemize}
+Dove all'analisi abbiamo fornito la logica di miglioramento.
+
+Definiamo ora il calcolo dell'analisi, definendo il sistema di 
+disequazioni. Nelle analisi non distributive e basate su semantiche 
+collecting, interpretiamo il programma, quindi si tratta di analisi 
+forward e possibile.
+\[
+  \mathcal{S}[\texttt{entry}] \sqsupseteq \mathcal{D}_\top  
+\]
+Che equivale a dire che non abbiamo informazioni sulle variabili 
+allo stato iniziale, quindi l'informazione è $\top$ su tutte 
+le variabili.
+\[
+  \mathcal{S}[v] \sqsupseteq 
+  \llbracket \texttt{lab} \rrbracket^\sharp \mathcal{S}[u]
+  \qquad \forall \mathcal{R} = (u, \texttt{lab}, v)
+\]
+Il fatto che sia \textit{possible} è dato dall'ordinamento che 
+è di tipo \textit{contenimento}. Il valore che calcoliamo deve 
+sovrastimare il valore calcolato, di fatto prendiamo il 
+\textit{least upper bound} tra il valore precedente e 
+il valore calcolato.
+
+Quello che facciamo di fatto è sostituire l'operatore di contenimento 
+con l'operatore di uguaglianza, perché tutti i punti che ricevono più 
+archi li forniamo direttamente come il least upper bound degli archi
+che arrivano, diventando equivalente al sistema di equazioni.
