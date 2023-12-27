@@ -1,0 +1,212 @@
+\chapter{Concorrenza}
+\section{Introduzione}
+
+Il fulcro della nostra ricerca finora è stata la semantica
+delle computazioni sequenziali. Tuttavia, è importante riconoscere
+che numerosi sistemi complessi operano in modalità non sequenziale.
+Questa osservazione è particolarmente pertinente nell'era
+dell'hardware intrinsecamente parallelo, che include:
+\begin{itemize}
+    \item Sistemi con architetture multi-processore.
+    \item Il multi-threading, sia in contesti di processori
+    singoli che multipli.
+    \item Sistemi distribuiti e macchine collegate in rete.
+    \item Sistemi ciber-fisici integrati.
+    \item Dispositivi nell'ambito dell'Internet of Things (\textit{IoT}).
+\end{itemize}
+La concorrenza, in generale, può notevolmente migliorare le
+prestazioni di un programma, permettendo l'esecuzione parallela
+di task indipendenti su hardware multicore. Inoltre, favorisce
+lo sviluppo di interfacce utente dinamiche e reattive.
+
+La complessità dei sistemi concorrenti si manifesta anche
+nell'espansione dello spazio degli stati. Con \( n \) thread,
+ognuno dei quali può assumere uno di due stati, il sistema può
+teoricamente raggiungere \( 2^n \) stati distinti. Oltre alla
+vastità dello spazio degli stati, emergono ulteriori sfide, come:
+\begin{itemize}
+    \item La necessità di gestire l'accesso alle risorse condivise
+    tramite meccanismi di mutua esclusione per prevenire situazioni
+    di \textit{deadlock} o \textit{starvation}.
+    \item La natura intrinsecamente non deterministica delle
+    computazioni, che si accentua in assenza di meccanismi di
+    sincronizzazione, poiché i diversi thread possono operare
+    a velocità variabili.
+    \item Problemi specifici della programmazione concorrente,
+    tra cui le race condition, ovvero l'accesso contemporaneo
+    a dati condivisi da parte di thread multipli, che può portare
+    a comportamenti imprevedibili o errati.
+\end{itemize}
+In aggiunta a questi aspetti, i sistemi non sequenziali e
+distribuiti devono affrontare sfide quali:
+\begin{itemize}
+    \item Fallimenti parziali (\textit{di alcuni processi, dispositivi
+    in una rete o dispositivi di storage persistente}); la necessità
+    di meccanismi di transazione.
+    \item Comunicazione tra ambienti diversi con risorse locali
+    differenti (\textit{ad esempio, diversi store locali o librerie}); la
+    necessità di meccanismi di coerenza.
+    \item Comunicazione tra domini amministrativi con fiducia parziale
+    (\textit{o, in effetti, assenza di fiducia}); la protezione contro
+    attacchi informatici.
+    \item La gestione della complessità contingente.
+\end{itemize}
+\section{Composizione parallela}
+Consideriamo il seguente linguaggio concorrente:
+\begin{grammar}
+    <$\texttt{Booleans} \qquad b \in \mathbb{B}$> = \texttt{true} | \texttt{false}
+
+    <$\texttt{Integers} \qquad n \in \mathbb{N}$> = \{\dots, -1, 0, 1, \dots\}
+
+    <$\texttt{Locations} \qquad l \in \mathbb{L}$> = \{l, l_0, l_1, \dots\}
+
+    <$\texttt{Operations} \qquad \texttt{op}$> ::= $+$ | $\geq$
+
+    <$\texttt{Expressions} \qquad e \in \texttt{Exp}$> ::= $n$ | $b$ | $e \, \texttt{op} \, e$ | 
+    $\texttt{if} \, e \, \texttt{then} \, e \, \texttt{else} \, e$ \alt 
+    $l:=e$ | $!l$ | \texttt{skip} | $e;e$ \alt 
+    $\texttt{while }e \texttt{ do } e$ | \textcolor{red}{$e \, \parallel \, e$}
+
+    <$\texttt{Types} \qquad T$> ::= \texttt{int} | \texttt{bool} | \texttt{unit} | \texttt{\textcolor{red}{proc}}
+
+    <$\qquad \qquad T_{loc}$> ::= \texttt{intref}
+\end{grammar}
+Il costrutto \textcolor{red}{$e \, \parallel \, e$} è chiamato composizione parallela.
+\subsection{Le nostre scelte di design}
+Nel contesto della programmazione concorrente, è importante anche considerare
+le seguenti caratteristiche dei thread:
+\begin{itemize}
+    \item I thread non restituiscono un valore.
+    \item I thread sono anonimi, cioè non hanno un'identità.
+    \item La terminazione di un thread non può essere direttamente osservata all'interno di un programma.
+    \item I processi, in generale, sono costituiti da un pool di thread concorrenti.
+    \item I thread non possono essere terminati esternamente.
+\end{itemize}
+Vediamo ora i cambiamenti apportati alla semantica operazionale.
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : \texttt{unit}$}
+    \AxiomC{$\Gamma \vdash e_2 : \texttt{unit}$}
+    \LeftLabel{\small{(T-sq1)}}
+    \BinaryInfC{$\Gamma \vdash e_1 ; e_2 : \texttt{unit}$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : \texttt{unit}$}
+    \AxiomC{$\Gamma \vdash e_2 : \texttt{proc}$}
+    \LeftLabel{\small{(T-sq2)}}
+    \BinaryInfC{$\Gamma \vdash e_1 ; e_2 : \texttt{proc}$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\Gamma \vdash e_1 : T_1$}
+    \AxiomC{$\Gamma \vdash e_2 : T_2$}
+    \LeftLabel{\small{(T-par)}}
+    \RightLabel{\small{$T_1,T_2 \in \{\texttt{unit, proc}\}$}}
+    \BinaryInfC{$\Gamma \vdash e_1 \, \parallel \, e_2 : \texttt{proc}$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e_1, s \rangle \rightarrow \langle e_1', s' \rangle$}
+    \LeftLabel{\small{(par-L)}}
+    \UnaryInfC{$\langle e_1 \, \parallel\, e_2, s \rangle \rightarrow
+    \langle e_1' \, \parallel \, e_2, s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$\langle e_2, s \rangle \rightarrow \langle e_2', s' \rangle$}
+    \LeftLabel{\small{(par-R)}}
+    \UnaryInfC{$\langle e_1 \, \parallel \, e_2, s \rangle \rightarrow
+    \langle e_1 \, \parallel \, e_2', s' \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{\small{(end-L)}}
+    \UnaryInfC{$\langle \texttt{skip}\, \parallel \, e_2, s \rangle \rightarrow
+    \langle e_2, s \rangle$}
+\end{prooftree}
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{\small{(end-R)}}
+    \UnaryInfC{$\langle e_1 \, \parallel \, \texttt{skip}, s \rangle \rightarrow
+    \langle e_1, s \rangle$}
+\end{prooftree}
+Dove $\Gamma \vdash e : \texttt{unit}$ è essenzialmente multithread, mentre 
+$\Gamma \vdash e : \texttt{proc}$ è essenzialmente single-thread.
+
+Come in ogni linguaggio concorrente:
+\begin{itemize}
+    \item I thread eseguono in modo asincrono: la semantica permette qualsiasi interleaving (intreccio) delle riduzioni dei thread.
+    \item Tutti i thread possono leggere e scrivere nella memoria condivisa.
+\end{itemize}
+Di conseguenza, la proprietà di determinatezza (\textit{Determinacy}) non vale.
+Ad esempio:
+\[
+\langle l := 1 \parallel l := 2, \{ l \mapsto 0 \} \rangle
+\rightarrow \langle \text{skip} \parallel l := 2, \{ l \mapsto 1 \}
+\rangle \rightarrow \langle \text{skip} \parallel \text{skip}, \{ l \mapsto 2 \}
+\rangle \rightarrow \langle \text{skip}, \{ l \mapsto 2 \} \rangle
+\]
+Ma anche:
+\[
+\langle l := 1 \parallel l := 2, \{ l \mapsto 0 \} \rangle \rightarrow
+\langle l := 1 \parallel \text{skip}, \{ l \mapsto 2 \} \rangle \rightarrow \langle
+\text{skip} \parallel \text{skip}, \{ l \mapsto 1 \} \rangle \rightarrow \langle
+\text{skip}, \{ l \mapsto 1 \} \rangle
+\]
+
+Nell'ambito della programmazione concorrente, è fondamentale sottolineare
+che sia le operazioni di \textit{assegnamento} che di \textit{dereferenziazione}
+sono considerate operazioni atomiche. Questo significa che, in
+una data configurazione, lo store risultante può associare la locazione
+\( l \) unicamente ai valori \( 1 \) o \( 2 \), escludendo così la possibilità
+di combinazioni anomale di questi valori.
+
+Tuttavia, quando si considera l'espressione \( (l := e) \parallel e' \),
+emerge una complessità aggiuntiva. In questo contesto, i passi semantici
+necessari per valutare \( e \) ed \( e' \) possono essere sovrapposti o
+intrecciati. Di conseguenza, questo intreccio può generare sfide significative,
+come illustrato nell'esecuzione del programma \( (l := 1 + !l) \parallel
+(l := 7 + !l) \). In questo scenario, si possono verificare delle condizioni
+\textit{race conditions}, portando a un output potenzialmente inaspettato
+e non allineato con le intenzioni di ciascun thread.
+
+Per esemplificare ulteriormente, consideriamo le seguenti tre configurazioni
+finali possibili per l'espressione \( \langle (l := 1 + !l) \parallel (l := 7 + !l),
+\{ l \mapsto 0 \} \rangle \):
+\begin{enumerate}
+    \item \( \langle \text{skip}, \{ l \mapsto 1 \} \rangle \)
+    \item \( \langle \text{skip}, \{ l \mapsto 7 \} \rangle \)
+    \item \( \langle \text{skip}, \{ l \mapsto 8 \} \rangle \)
+\end{enumerate}
+È importante notare che le configurazioni $(1)$ e $(2)$ sono il risultato di
+interferenze durante l'esecuzione delle assegnazioni. Al contrario, solo la
+configurazione $(3)$ rappresenta il risultato di una sequenza di operazioni
+coerente e correttamente pianificata.
+
+La programmazione concorrente introduce una complessità notevole a causa della
+vasta gamma di possibili risultati. Infatti, l'esecuzione di programmi concorrenti
+può portare a una vera e propria esplosione combinatoria degli stati possibili.
+Questo fenomeno rende l'analisi e la rappresentazione di questi stati, per esempio
+attraverso diagrammi dello spazio degli stati, praticabile solo per
+esempi molto semplici. 
+
+È evidente, quindi, la necessità di sviluppare metodologie più efficaci per
+analizzare i programmi concorrenti.
+
+Un aspetto cruciale da considerare è che, quasi certamente, come programmatore
+non si desidera che tutti i possibili esiti siano effettivamente realizzabili.
+Questo pone l'accento sulla necessità di sviluppare idiomi o costrutti di
+programmazione più raffinati, che consentano di limitare e controllare meglio
+le possibili evoluzioni dei programmi concorrenti. La scelta di tali strumenti
+e tecniche diventa quindi un punto fondamentale per garantire che il comportamento
+dei programmi concorrenti sia non solo efficace ma anche prevedibile e allineato
+alle intenzioni originali del programmatore.
+
+Per gestire efficacemente la concorrenza nei programmi, è essenziale disporre
+di meccanismi per sincronizzare i thread, in modo da garantire la mutua esclusione
+per l'accesso ai dati condivisi. 
+
+Sebbene sia possibile affidarsi al supporto integrato fornito dallo scheduler,
+come i mutex o le variabili di condizione, o addirittura a operazioni a basso
+livello come \textit{test-and-set} (\textit{tas}) o \textit{compare-and-set}
+(\textit{cas}), ciò non toglie l'importanza di comprendere e sviluppare algoritmi di
+sincronizzazione intrinseci al linguaggio. Questo non solo aiuta a comprendere
+meglio i principi fondamentali della concorrenza, ma offre anche una maggiore
+flessibilità e controllo nella gestione delle interazioni tra thread.
+\section{Aggiunta delle primitive di mutex nel linguaggio}
