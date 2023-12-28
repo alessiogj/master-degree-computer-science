@@ -210,3 +210,150 @@ sincronizzazione intrinseci al linguaggio. Questo non solo aiuta a comprendere
 meglio i principi fondamentali della concorrenza, ma offre anche una maggiore
 flessibilità e controllo nella gestione delle interazioni tra thread.
 \section{Aggiunta delle primitive di mutex nel linguaggio}
+Aggiungiamo al linguaggio delle primitive per la gestione della concorrenza.
+\begin{align*}
+    \texttt{Mutex names} \quad & m \in \mathbb{M} = \{ m_1, m_2, \dots \} \\
+    \texttt{Configurations} \quad &\langle e,s, \textcolor{red}{\mu} \rangle,
+    \text{ dove } \mu : \mathbb{M} \rightarrow \mathbb{B} 
+    \text{ è in uno stato di mutex } \\
+    \texttt{Expressions} \quad & e ::= \dots \mid \textcolor{red}{e \parallel e}
+    \mid \textcolor{red}{\texttt{lock } m} 
+    \mid \textcolor{red}{\texttt{unlock } m}\\
+\end{align*}
+Dove le regole sono le seguenti:
+
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$-$}
+        \RightLabel{\small{(T-lock})}
+        \UnaryInfC{$\Gamma \vdash \texttt{lock }m : \texttt{unit}$}
+    \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+        \AxiomC{$-$}
+        \RightLabel{\small{(T-unlock)}}
+        \UnaryInfC{$\Gamma \vdash \texttt{unlock }m : \texttt{unit}$}
+    \end{prooftree}
+\end{minipage}
+
+Mentre la semantica operazionale è la seguente:
+
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{\small{(lock)}}
+    \RightLabel{\small{\texttt{if }$\neg \mu(m)$}}
+    \UnaryInfC{$\langle \texttt{lock }m,s,\mu \rangle \rightarrow
+    \langle \texttt{skip }, s, \mu[m \mapsto \texttt{true}] \rangle$}
+\end{prooftree}
+
+\begin{prooftree}
+    \AxiomC{$-$}
+    \LeftLabel{\small{(unlock)}}
+    \UnaryInfC{$\langle \texttt{unlock }m,s,\mu \rangle \rightarrow
+    \langle \texttt{skip }, s, \mu[m \mapsto \texttt{false}] \rangle$}
+\end{prooftree}
+
+Per evitare \textit{race conditions} possiamo riscrivere la precedente programma 
+come segue:
+\[
+    \texttt{Prg} \defeq (\textcolor{red}{\texttt{lock m;}})
+    \texttt{ l := !l + 1; }
+    (\textcolor{red}{\texttt{unlock m}})
+    \parallel
+    (\textcolor{red}{\texttt{lock m;}})
+    \texttt{ l := 7 + !l; }
+    (\textcolor{red}{\texttt{unlock m}})
+\]
+Sia $\langle \texttt{Prg}, s_0, \mu_0\rangle$ una configurazione tale che 
+$s_0 = \{l \mapsto 0\}$ e $\mu_0$ ritorni \texttt{false} per ogni
+$m \in \mathbb{M}$, allora, per ogni possibile traccia di esecuzione della 
+configurazione $\langle \texttt{Prg}, s_0, \mu_0\rangle$ si ha che:
+\[
+  \langle \texttt{Prg}, s_0, \mu_0\rangle \rightarrow^* \langle \texttt{skip},
+  \{l \mapsto 8\}, \mu_0 \rangle  
+\]
+e nessun altra configurazione possibile.
+
+Il risultato è che i due thread si eseguono
+uno dopo l'altro in mutua esclusione. Vediamo infatti che 
+due assegnamenti commutano, quindi
+non è importante l'ordine in cui vengono eseguiti, ma che si finisca 
+nello stesso stato finale.
+\subsection{Deadlock}
+Un problema che può sorgere con l'utilizzo dei mutex è il \textit{deadlock}.
+Il costrutto \texttt{lock m} può bloccare l'esecuzione di un thread se il mutex 
+$m$ è già in uso da un altro thread. Perciò, con l'ausilio di almeno due 
+mutex $m_1$ e $m_2$, è possibile creare un programma che non termina mai:
+\[
+    \begin{array}{lll}
+        e= & & \texttt{lock }m_1; \texttt{ lock }m_2; l_1 := !l_2;
+        \texttt{ unlock }m_2; \texttt{ unlock }m_1 \\
+        & \parallel & \texttt{lock }m_2; \texttt{ lock }m_1; l_2 := !l_1;
+        \texttt{ unlock }m_1; \texttt{ unlock }m_2     
+    \end{array}
+\]
+Ovviamente la proprietà di \textit{determinismo} viene meno, nonostante ciò 
+la conservazione del tipo rimane valida. La tipizzazione e 
+l'inferenza di tipo scarsamente cambiate, è possibile utilizzare sistemi 
+di tipi molto sofisticati per imporre vincoli sulle discipline 
+di \textit{locking}.
+
+D'altra parte, la proprietà di progressione non è più garantita, a meno
+che non si adotti un sistema di tipi specificamente progettato per imporre
+vincoli sulle discipline di locking. Questa necessità, però, influenza
+significativamente la nostra comprensione dell'equivalenza semantica,
+portando a una revisione
+della notazione e dell'interpretazione in tale ambito.
+\section{Equivalenza semantica nel contesto della concorrenza}
+Dato che i nostri sistemi di tipi non escludono più la possibilità
+di processi in deadlock, è necessario rivedere le nostre equivalenze semantiche.
+Prendiamo
+in considerazione le equivalenze di tipo viste per i calcoli sequenziali.
+\begin{tcolorbox}[title = Equivalenza delle tracce $\simeq_\Gamma$]
+    $e_1 \simeq_\Gamma e_2$ se e solo se per ogni stato $\mu$ e per ogni 
+    store $s$, dove $\texttt{dom}(\Gamma) \subseteq \texttt{dom}(s)$,
+    abbiamo che $\Gamma \vdash e_1 : T_1$ e $\Gamma \vdash e_2 : T_2$, 
+    $T_1, T_2 \in \{ \texttt{unit, proc}\}, e$:
+    \begin{itemize}
+        \item $\langle e_1, s, \mu \rangle \rightarrow^* 
+        \langle e_1', s', \mu' \rangle \implies 
+        \exists e_2' . \langle e_2, s, \mu \rangle \rightarrow^*
+        \langle e_2', s', \mu' \rangle$ 
+        \item $\langle e_2, s, \mu \rangle \rightarrow^*
+        \langle e_2', s', \mu' \rangle \implies
+        \exists e_1' . \langle e_1, s, \mu \rangle \rightarrow^*
+        \langle e_1', s', \mu' \rangle$
+    \end{itemize}
+\end{tcolorbox}
+Notiamo che ora consideriamo anche \textbf{tracce parziali}, e non solo
+le configurazioni finali.
+\subsubsection{Esempi}
+Consideriamo i seguenti programmi:
+\[
+    P_1 = ((\texttt{lock m}; l:=3) \parallel (\texttt{lock m}; l:=4))
+\]
+\[
+    Q_1 = \texttt{lock m}; (l:=3 \parallel l:=4)
+\]
+Se consideriamo l'equivalenza, allora $P_1 \simeq_\Gamma Q_1$, 
+sia $P_1$ che $Q_1$ hanno lo stesso effetto, infatti $l$ viene modificato 
+in modo non deterministico a $3$ o $4$ e il \texttt{lock} garantisce che non ci 
+siano race conditions.
+
+Considerando il contesto $C[\cdot]$, allora $C[P_1] \not \simeq_\Gamma C[Q_1]$,
+infatti:
+\[
+    C[\cdot] \parallel (x_1 := !l; x_2 := !l; \texttt{if }!x_2 = !x_1 + 1 \texttt{ then } 
+    r:=1 \texttt{ else } r:=0)
+\]
+Allora $\langle C[Q_1], s, \mu \rangle \rightarrow^*
+\langle \texttt{skip}, s', \mu' \rangle$, con 
+$s(l) = s (r) = 0$, $\mu(m) = \texttt{false}$, $s'(l) = 4, s'(r) = 1$ e
+$\mu'(m) = \texttt{true}$, ma in questo caso non ci sono tracce 
+$\langle C[P_1], s, \mu \rangle \rightarrow^* \langle \dots, s'', \mu'' \rangle$,
+con $s'=s''$ e $\mu' = \mu''$. Questo perché $P_1$ tocca la locazione solo una 
+volta.
+
+Tuttavia, $C[\cdot]$ non è ``equo'', perché non acquisisce il mutex dopo 
+l'accesso alla locazione $l$.
