@@ -468,7 +468,7 @@ In questo caso, la parola chiave è "monarchia". La matrice viene costruita riem
     verrebbe trattato come ``ba lx lo on".
     \item Due lettere nel testo in chiaro che si trovano nella stessa riga della matrice
     vengono ciascuna sostituite dalla lettera a destra, con il primo elemento della riga
-    che segue ciclicamente l'ultimo. Ad esempio, ``ar" viene crittografato come ¡¡RM".
+    che segue ciclicamente l'ultimo. Ad esempio, ``ar" viene crittografato come ``RM".
     \item Due lettere nel testo in chiaro che si trovano nella stessa colonna vengono ciascuna
     sostituite dalla lettera sottostante, con l'elemento superiore della colonna che segue
     ciclicamente l'ultimo. Ad esempio, ``mu" viene crittografato come ``CM".
@@ -820,50 +820,6 @@ attacchi a cui resiste.
 La classifica è in base alla potenza che gli do nell'attaccarmi.
 L'obiettivo è costruire un sistema che sia sicuro contro 
 gli attacchi Adaptive Chosen Ciphertext Attack.
-\section{Data Encryption Standard (\textit{DES})} \label{section:des}
-Il DES è un cifrario a blocchi che è stato uno dei primi algoritmi
-crittografici adottati su larga scala ed è stato ampiamente utilizzato
-fino a quando è stato sostituito dall'\textbf{Advanced Encryption Standard} (\textit{AES}).
-
-\textbf{Lunghezza della Chiave}: Il DES utilizza una chiave di $56$ bit.
-Questo significa che ci sono $2^{56}$ possibili chiavi differenti che possono
-essere utilizzate per cifrare e decifrare dati.
-
-\textbf{Lunghezza del Blocco}: Il DES opera su blocchi di dati di $64$ bit.
-Questo significa che ogni blocco di testo in chiaro da cifrare o testo cifrato
-da decifrare deve essere di $64$ bit.
-\subsection{Algoritmo di Cifratura}
-Il processo di cifratura DES coinvolge una serie di passaggi iterativi noti
-come ``rounds". Di seguito vengono spiegati i passaggi chiave dell'algoritmo
-di cifratura DES:
-
-\begin{itemize}
-    \item \textbf{Permutazione Iniziale (IP)}: Il blocco di testo in chiaro di
-    $64$ bit viene permutato secondo una tabella specifica.
-    \item \textbf{Divisione in Blocchi Sinistro e Destro}: Il blocco permutato
-    viene diviso in due parti uguali, ciascuna di 32 bit, note come ``sinistro"
-    e ``destro".
-    \item \textbf{Round di Fiestel}: Il DES utilizza una struttura chiamata
-    ``round di Fiestel", in cui i blocchi subiscono diverse trasformazioni,
-    inclusa l'applicazione di una funzione di espansione, una funzione di
-    sostituzione (\textit{S-box}), una permutazione e l'operazione \verb|XOR| con
-    una sottochiave derivata dalla chiave principale.
-    \item \textbf{Iterazioni (16 Rounds)}: L'intero processo di round di
-    Fiestel viene iterato $16$ volte, con l'uso di diverse sottochiavi derivate
-    dalla chiave principale.
-    \item \textbf{Permutazione Finale (FP)}: Alla fine delle $16$ iterazioni, i
-    blocchi sinistro e destro vengono combinati e permutati nuovamente secondo
-    una tabella specifica, ottenendo così il testo cifrato.
-\end{itemize}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/DES-alg.png}
-    \caption{DES}
-\end{figure}
-\subsection{Decifratura DES}
-Il processo di decifratura DES è essenzialmente l'operazione inversa della
-cifratura. Le sottochiavi vengono utilizzate in ordine inverso rispetto alla
-cifratura per decifrare il testo cifrato e ottenere il testo in chiaro originale.
 \section{Cifrari a flusso e a blocchi}
 Un \textbf{cifrario a flusso} crittografa un flusso di dati digitali un bit
 o un byte alla volta. Esempi di cifrari a flusso classici sono il
@@ -1079,86 +1035,100 @@ ai cifrari a flusso è che \verb|OFB| crittografa il testo in chiaro un blocco
 intero alla volta, dove tipicamente un blocco è di $64$ o $128$ bit. Molti
 cifrari a flusso crittografano un byte alla volta.
 
-\section{Feistel}
-L'algoritmo di Feistel è una tecnica di cifratura a blocchi che
-opera dividendo il testo in chiaro in due metà e applicando una serie
-di round che modificano iterativamente il testo in chiaro. È progettato
-per essere efficiente e facilmente invertibile per la decifratura. Il suo
-funzionamento può essere descritto nei seguenti passaggi:
-
-\begin{enumerate}
-  \item \textbf{Inizializzazione}: Il testo in chiaro di lunghezza \(2n\)
-  viene diviso in due metà di lunghezza \(n\) ciascuna, solitamente denotate
-  come \(L\) e \(R\) (per sinistra e destra). Questi blocchi vengono
-  inizialmente caricati come input nell'algoritmo.
-  \item \textbf{Rounds di Cifratura}: L'operazione di cifratura si compone
-  di più round, ognuno dei quali esegue le seguenti operazioni:
+\section{Rete di Feistel}
+Moltissimi algoritmo di cifratura a blocchi utilizzano tale struttura.
+La struttura di Feistel è una struttura di rete iterativa che è stata
+progettata per essere utilizzata in cifrari a blocchi.
+Tale struttura ha delle caratteristiche distintive:
+\begin{itemize}
+    \item L'input viene diviso in due metà.
+    \item Esegue molteplici \textit{round} di cifratura, dove in ogni round 
+    le due metà vengono elaborate in modo come segue:
     \begin{itemize}
-      \item La metà destra \(R\) del testo in chiaro passa attraverso una
-      funzione di trasformazione che dipende da una sottochiave specifica
-      del round. La funzione è progettata per introdurre una complessità
-      tale da rendere il processo di crittoanalisi complesso e costoso.
-      \item L'output della funzione di trasformazione viene poi combinato
-      con la metà sinistra \(L\) del testo in chiaro utilizzando
-      l'operazione XOR (eXclusive OR). L'output di questa operazione
-      diventa la nuova metà destra \(R\) per il round successivo.
-      \item Nel frattempo, la vecchia metà destra \(R\) diventa la nuova
-      metà sinistra \(L\) per il prossimo round.
+        \item La metà sinistra diventa la metà destra del round precedente.
+        \[
+          L_i = R_{i-1}  
+        \]
+        \item La metà destra diventa l'applicazione della funzione di \texttt{XOR}
+        tra la metà sinistra del round precedente e l'output della funzione $f$ che prende 
+        in input la metà destra del round precedente e la chiave del round precedente.
+        \[
+            R_i = L_{i-1} \oplus f(R_{i-1}, K_{i-1})
+        \]
     \end{itemize}
-  \item \textbf{Conclusione}: Dopo un numero prefissato di round, il processo
-  si conclude scambiando le due metà. Quindi, l'output finale dell'ultimo
-  round diventa il testo cifrato.
-\end{enumerate}
-
-L'algoritmo di Feistel è considerato sicuro a causa della sua struttura
-iterativa e dell'uso di funzioni di trasformazione complesse all'interno
-di ogni round. La sua reversibilità semplifica anche il processo di
-decifratura, rendendolo altrettanto efficiente. Questa struttura offre
-un equilibrio tra sicurezza e efficienza, che lo rende adatto per un'ampia
-gamma di applicazioni di crittografia. È stato ampiamente utilizzato come
-base per diversi algoritmi di cifratura di successo, come il Data Encryption
-Standard (\verb|DES|).
+    \item La struttura è simmetrica, il che significa che la decifratura 
+    avviene semplicemente invertendo l'ordine delle chiavi usate per la cifratura.
+    \begin{itemize}
+        \item \[ R_{i-1} = L_i \]
+        \item \[L_{i-1} = R_i \oplus f(L_i, K_i)\]
+    \end{itemize}
+\end{itemize}
+Il vantaggio è che le funzioni $f$ usate sono \textbf{one-way}.
+\begin{tcolorbox}[title=One-way function]
+    Una funzione $f: \{0,1\}^* \rightarrow \{0,1\}^*$ è \textbf{one-way} se esiste un algoritmo 
+    che in tempo polinomiale mappa $x$ in $f(x)$ per ogni $x \in \{0,1\}^*$ e per ogni algoritmo 
+    probabilistico polinomiale $\mathcal{A}$, ogni polinomio $p(\cdot)$
+    e ogni intero $n$ sufficientemente grande, si ha che la probabilità che $\mathcal{A}$
+    trovi un $x$ tale che $f(\mathcal{A}(f(x))) = f(x)$ è minore di $1/p(n)$.
+\end{tcolorbox}
+Anche se un algoritmo ha accesso a un metodo efficiente per generare valori che, una volta
+processati dalla funzione $f$, producono un output, è estremamente improbabile che tale algoritmo 
+possa invertire la funzione e trovare l'input originale dato l'output, almeno senza una 
+quantità impraticabile di tempo e risorse.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/feister.png}
-    \caption{Funzionamento di Feistel}
-    \label{fig:feistel}
+    \includegraphics[width=0.8\textwidth]{img/feistel.png}
+    \caption{Rete di Feistel}
 \end{figure}
-L'efficacia dell'algoritmo di Feistel con una funzione \(F\)
-arbitraria deriva dalla sua capacità di confondere e diffondere
-il testo in chiaro attraverso l'uso di operazioni matematiche e logiche
-complesse. Anche se \(F\) può essere scelta in modo flessibile per svolgere
-una vasta gamma di operazioni crittografiche, ci sono alcune proprietà
-fondamentali che permettono a questo tipo di cifrario di essere robusto e
-sicuro:
+\section{Data Encryption Standard - \texttt{DES}}
+\texttt{DES} è un cifrario a blocchi a chiave simmetrica che utilizza una struttura di Feistel.
 
+La chiave è di $56$ bit, ma in realtà sono $64$ bit, di cui $8$ sono di parità, ed 
+opera su blocchi di $64$ bit. 
+L'algoritmo esegue una permutazione iniziale dei bit del blocco di testo in chiaro,
+nota come \textit{Initial Permutation (IP)}, che riordina i bit secondo uno schema
+fisso predefinito. Questo è seguito da 16 round di cifratura che consistono in espansione,
+mescolamento con una chiave di round derivata dalla chiave principale, sostituzione tramite S-Box
+e una permutazione finale. La funzione di round prende input dalla metà destra del blocco di dati
+e la chiave di round, producendo un output che è poi combinato con la metà sinistra attraverso
+un'operazione XOR.
+
+Dopo l'ultimo round, le due metà del blocco vengono scambiate, e questo è seguito da una
+\textit{Final Permutation (FP)}, che è l'inverso della permutazione iniziale. Il risultato
+è il blocco di testo cifrato. La decifratura con \texttt{DES} segue lo stesso processo ma
+in ordine inverso, utilizzando le chiavi di round in ordine inverso.
+
+Nonostante la sua ampiamente testata sicurezza, la principale vulnerabilità di \texttt{DES}
+risiede nella lunghezza della chiave. Tecniche come l'attacco a forza bruta, che era
+teoricamente possibile ma non praticabile al tempo della sua creazione, sono divenute
+fattibili con l'avanzamento della potenza di calcolo. Per questo motivo, \texttt{DES}
+è stato sostituito da \texttt{AES} come standard approvato dal NIST (\textit{National
+Institute of Standards and Technology}) per la cifratura di informazioni sensibili.
+\subsection{Funzione di round}
+La funzione di round prende in input $32$ bit e una chiave di round di $48$ bit e produce
+un output di $32$ bit. La funzione di round è composta da quattro passaggi:
 \begin{enumerate}
-  \item \textbf{Confusione}: La funzione \(F\) introduce confusione nel
-  testo in chiaro, in modo che la relazione tra il testo cifrato e la
-  chiave sia complessa e non lineare. Questo rende difficile per un
-  crittoanalista estrarre informazioni significative sulla chiave o sul
-  testo in chiaro anche se conoscono la relazione tra il testo cifrato
-  e la chiave.
-  \item \textbf{Diffusione}: Le operazioni all'interno dell'algoritmo di
-  Feistel assicurano che anche piccoli cambiamenti nel testo in chiaro
-  si propaghino in modo significativo attraverso i vari round, garantendo
-  che piccole modifiche nel testo in chiaro producano cambiamenti
-  significativi nel testo cifrato.
-  \item \textbf{Reversibilità}: L'architettura di Feistel consente di
-  effettuare facilmente l'operazione inversa (\textit{decifratura}) con
-  gli stessi
-  componenti dell'algoritmo di cifratura. Questa proprietà di reversibilità
-  semplifica notevolmente il processo di decifratura senza compromettere
-  la sicurezza del sistema.
-  \item \textbf{Complessità computazionale}: La scelta di una \(F\) complessa
-  e sufficientemente caotica rende la crittoanalisi computazionalmente
-  costosa e difficile, richiedendo risorse computazionali significative
-  per eseguire con successo un attacco di crittoanalisi.
+    \item \textbf{Espansione}: i $32$ bit di input vengono espansi a $48$ bit tramite una
+    permutazione fissa.
+    \item \textbf{Mescolamento}: i $48$ bit vengono combinati con la chiave di round tramite
+    un'operazione di \texttt{XOR}.
+    \item \textbf{Sostituzione}: Dopo il mescolamento con la chiave di round, i $48$ bit vengono
+    passano attraverso $8$ \texttt{S-BOX}, ciascuno dei quali sostituisce $6$ bit con $4$ bit. 
+    Sono lineari e complesse per aggiungere sicurezza alla cifratura.
+    \item \textbf{Permutazione}: i $32$ bit vengono permutati tramite una permutazione fissa.
 \end{enumerate}
+L'alternanza di sostituzioni mediante \texttt{S-BOX}, permutazioni mediante permutazioni fisse
+e espansioni forniscono la \textbf{confusione} e la \textbf{diffusione}, concetti introdotti
+da \texttt{Shannon} e che sono alla base di molti cifrari moderni.
 
-Tuttavia, è importante notare che l'efficacia del cifrario di Feistel
-dipende fortemente anche dalla scelta di una \(F\) robusta e ben progettata.
-Una funzione debole o prevedibile potrebbe compromettere la sicurezza
-complessiva del sistema, pertanto la scelta di una buona funzione di
-trasformazione è fondamentale per garantire la sicurezza del cifrario di
-Feistel.
+\begin{tcolorbox}[title=Confusione]
+    Si tratta della relazione tra il testo in chiaro e la chiave. Deve essere difficile
+    dedurre la chiave a partire dal testo cifrato. Ogni bit del testo cifrato deve
+    dipendere da molti bit della chiave.
+\end{tcolorbox}
+
+\begin{tcolorbox}[title=Diffusione]
+    Si tratta della capacità di un algoritmo di distribuire le correlazioni statistiche
+    del testo lungo tutto l'alfabeto utilizzato dall'algoritmo di cifratura, rendendo quanto 
+    più difficile un attacco statistico.
+\end{tcolorbox}

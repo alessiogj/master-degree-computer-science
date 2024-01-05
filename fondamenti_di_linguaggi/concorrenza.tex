@@ -328,7 +328,7 @@ in considerazione le equivalenze di tipo viste per i calcoli sequenziali.
 \end{tcolorbox}
 Notiamo che ora consideriamo anche \textbf{tracce parziali}, e non solo
 le configurazioni finali.
-\subsubsection{Esempi}
+\subsubsection{Esempio}
 Consideriamo i seguenti programmi:
 \[
     P_1 = ((\texttt{lock m}; l:=3) \parallel (\texttt{lock m}; l:=4))
@@ -357,3 +357,12 @@ volta.
 
 Tuttavia, $C[\cdot]$ non è ``equo'', perché non acquisisce il mutex dopo 
 l'accesso alla locazione $l$.
+
+Il problema che sorge è che l'equivalenza semantica $\simeq_\Gamma$ 
+per il contesto sequenziale non viene preservata nel contesto concorrente, perché 
+l'equivalenza delle tracce di dimentica degli stati intermedi.
+Nel contesto parallelo si ha maggior potere di distinzione perché si hanno più 
+possibilità di creare inferenza.
+Ecco perché è molto più difficile scrivere programmi concorrenti corretti,
+quando si aggiungono thread paralleli, un programma sequenziale corretto può
+andare storto!
