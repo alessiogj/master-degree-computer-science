@@ -310,19 +310,19 @@ Se consideriamo un generatore $g$ di $\mathbb{Z}_p^*$ e generiamo l'intero grupp
 è chiaro che tutti gli elementi che sono potenze pari di $g$ sono quadrati.
 Di conseguenza tutti gli elementi che sono potenze dispari di $g$ non sono quadrati.
 
-L'elemento $g^{2i}$ ha due radici quadrate, $g^{2i}$ e $g^{2i + \frac{p-1}{2}}$.
+L'elemento $g^{2i}$ ha due radici quadrate, $g^{i}$ e $g^{i + \frac{p-1}{2}}$.
 \[
   g^{2i} =
 \begin{cases}
-  g^{2i} \\
-  g^{2i + \frac{p-1}{2}} 
+  g^{i} \\
+  g^{i + \frac{p-1}{2}} 
 \end{cases}
 \]
 Infatti
 \[
-  \left( g^{i + \frac{p-1}{2}}\right) = g^{2i}\cdot g^{p-1} = g^{2i} \cdot 1 = g^{2i}
+  \left( g^{i + \frac{p-1}{2}}\right)^2 = g^{2i}\cdot g^{p-1} = g^{2i} \cdot 1 = g^{2i}
 \]
-So che le radici quadrate sono anche 
+Sapendo che $g^{\frac{p-1}{2}} = -1$ perché $p$ è un numero primo, posso riscrivere la formula come: 
 \[
 g^{2i} = 
 \begin{cases}
