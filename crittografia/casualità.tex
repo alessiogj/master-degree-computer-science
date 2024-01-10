@@ -692,7 +692,7 @@ e gli altri elementi sono ottenuti elevando $g$ all'elemento precedente.
 A questo punto definisco i bit pseudocasuali come:
 \[
   b_i = \begin{cases}
-    0 & \text{se } a_i < \frac{p}{2} \\
+    0 & \text{se } a_i < \frac{p-1}{2} \\
     1 & \text{se } altrimenti
     \end{cases}
 \]
@@ -883,14 +883,14 @@ restituire i bit in ordine di enumerazione crescente permette di andare avanti c
 \end{proof}
 \section{Blum Blum Shub}
 Si tratta di un algoritmo di generazione di numeri pseudocasuali 
-basato sulla difficoltà del calcolo di radici quadratiche in $\mathbb{Z}_n^*$.
+basato sulla difficoltà del calcolo di radici quadrate in $\mathbb{Z}_n^*$.
 
 La funzione di elevamento al quadrato è una funzione \textit{one-way trapdoor} in $\mathbb{Z}_{p\cdot q}^*$,
 poiché la conoscenza di $p$ e $q$, ovvero la fattorizzazione di $n$,
 permette di calcolare la radice quadrata in tempo polinomiale.
 Sappiamo inoltre che ogni funzione \textit{one-way} ammette un \textit{hardcore predicate}, infatti:
 \[
-  \texttt{LSB}(x) = (\sqrt{x})
+  \texttt{LSB}(x) = \texttt{HCP}(\sqrt{x^2})
 \]
 Il problema è che $x$ ha più di una radice quadrata, che radice bisogna selezionare?
 \begin{theorem}[Primi di Blum]
@@ -899,25 +899,28 @@ Il problema è che $x$ ha più di una radice quadrata, che radice bisogna selezi
 \end{theorem}
 
 Sia $n = p \cdot q$ con $p$ e $q$ primi di Blum scelti casualmente, sia 
-$x \in_R \mathcal{Z}^*$, allora
+$x \in_R \mathbb{Z}^*$, allora
 \begin{align*}
   \begin{array}{lllll}
     a_1 & a_2 & a_3 & \dots & a_l \\
-    x^2 & (x^2)^2 & ((x^2)^2)^2 & \dots & x^(2^l)
+    x^2 & (x^2)^2 & ((x^2)^2)^2 & \dots & x^{(2^l)}
   \end{array}
 \end{align*}
 ovvero
 \[
   \begin{cases}
-    x_i = x^2\\
-    x_{i+1} = a_i^2
+    x_1 = x^2\\
+    x_{i+1} = x_i^2
   \end{cases}  
 \]
-Definiamo quindi $b_i = \texttt{LSB}(a_i)$, quindi:
+\begin{theorem}
+  Un hardcore predicate di un numero $x$ è il bit meno sigificativo della sua radice quadrata.
+\end{theorem}
+Definiamo quindi $b_i = \texttt{LSB}(a_{i-1})$, quindi:
 \begin{align*}
   \begin{array}{lllll}
     a_1 & a_2 & a_3 & \dots & a_l \\
-    x^2 & (x^2)^2 & ((x^2)^2)^2 & \dots & x^(2^l)\\
+    x^2 & (x^2)^2 & ((x^2)^2)^2 & \dots & x^{(2^l)}\\
     b_1 & b_2 & b_3 & \dots & b_l
   \end{array}
 \end{align*}
