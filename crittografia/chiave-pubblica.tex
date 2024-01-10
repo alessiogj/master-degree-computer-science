@@ -309,8 +309,8 @@ riferimento sarà il problema del residuo quadratico, ovvero il problema di
 calcolare la radice quadrata di un numero modulo $n$.
 \subsubsection{Algoritmo di codifica}
 L'algoritmo di codifica prende un bit $b$, sia $x \in_R \mathbb{Z}_n^*$, se 
-$b$ è $0$ allora $c = x^2 \mod n$, altrimenti $c = xy^2 \mod n$. 
-$x^2$ è un quadrato casuale di $\mathbb{Z}_n^*$, mentre $xy^2$ è un 
+$b$ è $0$ allora $c = x^2 \mod n$, altrimenti $c = yx^2 \mod n$. 
+$x^2$ è un quadrato casuale di $\mathbb{Z}_n^*$, mentre $yx^2$ è un 
 non quadrato con simbolo di Jacobi $1$. Se prendo un quadrato con simbolo di 
 Jacobi $1$ e lo moltiplico per un non quadrato con simbolo di Jacobi $1$ ottengo
 un non quadrato con simbolo di Jacobi $1$. Se il quadrato è casuale, allora 
@@ -325,7 +325,7 @@ un non quadrato a caso con simbolo di Jacobi $1$.
 \[
   f(x) = \begin{cases}
     x^2 \mod n & \text{se } b = 0\\
-    xy^2 \mod n & \text{se } b = 1
+    yx^2 \mod n & \text{se } b = 1
   \end{cases}
 \]
 \subsubsection{Algoritmo di decodifica}

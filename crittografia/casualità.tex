@@ -273,7 +273,7 @@ che la probabilità che l'informazione sia stata trasferita sia di almeno $\frac
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
 \<\<\text{Sceglie }p,q \in_R primi \\
 \<\<\text{Calcola } n=p\cdot q \\
-\<\<\text{Calcola } e, d \text{ chiave } p \text{ e } p  \text{ per } \texttt{RSA} \\
+\<\<\text{Calcola } e, d \text{ chiave } pubblica \text{ e } privata  \text{ per } \texttt{RSA} \\
 \<\<\text{Codifica il segreto con \texttt{RSA} ottenendo} \\
 \<\<\text{un messaggio } c \\
 \<\sendmessageleft*{n,e,c} \\
@@ -371,7 +371,7 @@ Sia $y = g^x$ e sia il predicato in considerazione $x < \frac{p - 1}{2}$. Se
   per il calcolo del logaritmo discreto in $\ZZ_p^*$.
 \end{theorem}
 \begin{theorem}
-  Se esiste che riesce  a calcolare il predicato binario con vantaggio 
+  Se esiste un algoritmo che riesce a calcolare il predicato binario con vantaggio 
   polinomiale rispetto al caso casuale, allora esiste un algoritmo
   probabilistico polinomiale per il calcolo del logaritmo discreto.
 \end{theorem}
