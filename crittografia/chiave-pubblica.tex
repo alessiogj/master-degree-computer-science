@@ -106,6 +106,22 @@ Vorremmo che la one-way function sia anche \textbf{trapdoor}, ovvero che esista 
 efficiente che permetta di invertire la funzione. Tale algoritmo è detto \textbf{trapdoor algorithm}.
 La trapdoor è una informazione aggiuntiva che permette di invertire la funzione.
 
+\begin{tcolorbox}[title = Funzione di Eulero $\varphi$]
+  In matematica, la funzione \(\varphi\) di Eulero, o semplicemente funzione di Eulero
+  o toziente, è una funzione definita, per ogni intero positivo \(n\), come il numero
+  degli interi compresi tra $1$ e \(n\) che sono coprimi con \(n\). Ad esempio,
+  \(\varphi(8) = 4\) poiché i numeri coprimi di $8$ sono quattro: $1, 3, 5, 7$.
+  
+  La funzione \(\varphi(n)\) è una funzione molto importante nella teoria dei numeri,
+  principalmente perché è la cardinalità del gruppo moltiplicativo degli interi di
+  modulo \(n\), più precisamente è l'ordine del gruppo moltiplicativo dell'anello
+  \(\mathbb{Z}/n\mathbb{Z}\) (vedere aritmetica modulare). Questo fatto, unito con
+  il teorema di Lagrange, dimostra il teorema di Eulero: se \(a\) è un numero coprimo
+  con \(n\), allora:
+
+  \[ a^{\varphi(n)} \equiv 1 \mod n \]
+
+\end{tcolorbox}
 Siano $p, q$ due numeri primi molto grandi, $n = pq$. Sia $e$ un numero casuale tale che 
 \texttt{mcd}(e, $\varphi(n)$) = 1, dove $\varphi(n) = (p-1)(q-1)$, ovvero il numero di Eulero. Scegliamo 
 une elemento $d$ co-primo con $\varphi(n)$ tale che $de \equiv 1 \mod \varphi(n)$.
