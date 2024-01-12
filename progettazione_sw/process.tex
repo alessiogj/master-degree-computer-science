@@ -1,0 +1,349 @@
+\chapter{Processi software}
+\section{Introduzione}
+Il processo di sviluppo del software è un processo di
+ingegneristico, perciò è necessario che sia disciplinato.
+Lo sviluppo software non richiede solamente lo sviluppo dal punto di 
+vista del codice, ma deve inoltre essere
+inserito in un ciclo strutturato e controllato, che permetta di
+produrre un prodotto software di qualità.
+
+Anche il processo di sviluppo software va progettato, e deve essere
+soggetto a verifica e validazione. Dietro al processo di sviluppo
+software c'è quindi un processo di ingegneria del software, che
+mira a mantenerne la qualità nel tempo.
+
+Se ci dotiamo di un processo di sviluppo software, possiamo
+ottenere dei vantaggi che rendono il processo software:
+\begin{itemize}
+\item \textbf{Ordinato}: si sa cosa fare e quando farlo;
+\item \textbf{Controllato}: il processo è controllato e misurabile, fornendoci 
+quindi consapevolezza in merito al processo;
+\item \textbf{Ripetibile}: se vengono riscontrati dei problemi nel processo,
+sappiamo dove intervenire per risolverli, anche grazie alla consapevolezza 
+acquisita dai progetti passati;
+\end{itemize}
+Il primo obiettivo è quello di migliorare la produttività degli sviluppatori, mettendo 
+gli sviluppatori nella condizione di essere il più produttivi possibili. 
+Il secondo obiettivo è quello di essere in grado di migliorare la qualità del prodotto
+software, in modo da ridurre i costi di manutenzione e di correzione degli errori 
+(\textit{banalmente dei requisiti scritti molto male possono portare delle ambiguità 
+nel prodotto}).
+\begin{tcolorbox}
+    Solitamente un processo di qualità è un processo che porta ad un prodotto di qualità.
+\end{tcolorbox}
+Quindi il costo pagato per avere un processo di qualità è ammortizzato dal fatto che
+il prodotto finale sarà di qualità. Inoltre, il costo del software è principalmente
+legato alla manutenzione, quindi è importante che il processo di sviluppo sia di qualità,
+altrimenti si rischia di accumulare un debito tecnico che può essere molto costoso.
+
+\begin{tcolorbox}[title = Processo di sviluppo software]
+    Il processo di sviluppo software è un insieme di attività che 
+    devono essere concluse per lo sviluppo di un sistema software.
+\end{tcolorbox}
+I processi di sviluppo software possono essere di diversi tipi,
+ma molti avranno dei tratti in comune. 
+Le attività comuni che compongono il processo di sviluppo software sono:
+\begin{itemize}
+    \item \textbf{Specifica}: ovvero la definizione di ciò che il sistema software
+    dovrà avere;
+    \item \textbf{Design e implementazione}: ovvero la progettazione e l'implementazione
+    di ciò che è stato definito nella fase di specifica;
+    \item \textbf{Validazione}: ovvero la verifica che il prodotto software sia conforme
+    o allineato con le aspettative del cliente;
+    \item \textbf{Evoluzione}: ovvero la manutenzione del software, che può essere
+    in seguito a cambiamenti dei requisiti, aggiunta di funzionalità, a correzioni
+    di errori o cambiamenti di normative.
+\end{itemize}
+\subsection{Descrizione del processo di sviluppo software}
+Il processo software, solitamente, si definisce in termini di \textbf{attività}
+che vengono condotte, ovvero specifiche, design di interfacce grafiche, ma il processo include 
+inoltre:
+\begin{itemize}
+    \item \textbf{Prodotti}: che sono i risultati di ogni attività;
+    \item \textbf{Ruoli}: ovvero le responsabilità che vengono assegnate alle persone
+    che lavorano al progetto;
+    \item \textbf{Pre/post-condizioni}: ovvero le condizioni che devono essere soddisfatte
+    prima e dopo l'esecuzione di un'attività;
+\end{itemize}
+
+Tipicamente i processi software si dividono in due grandi categorie:
+\begin{itemize}
+    \item \textbf{Plan-driven}: ovvero i processi che si basano su una pianificazione
+    anticipata delle attività e dei prodotti, e che quindi sono più adatti per progetti
+    di grandi dimensioni;
+    \item \textbf{Agile}: ovvero i processi che si basano su una pianificazione
+    meno dettagliata, dove le attività e i processi sono più adattabili, anche in 
+    linea con le esigenze del cliente (\textit{composto da una pianificazione più 
+    generica nel lungo periodo e più dettagliata nel breve periodo}).
+\end{itemize}
+Nei processi plan-driven, la pianificazione è molto dettagliata perché si ha 
+la consapevolezza del prodotto che si vuole sviluppare, mentre nei processi agili
+la pianificazione è più generica perché si ha una visione meno chiara del prodotto
+finale, vista la dinamicità del prodotto.
+\begin{tcolorbox}
+    Nella realtà, molti processi software sono ibridi, ovvero sono una combinazione
+    degli elementi dei processi plan-driven e agili.
+
+    Bisogna quindi ricordare che non ci sono processi software sbagliati.
+\end{tcolorbox}
+\section{Code and fix}
+Tipicamente, quando si sviluppa un software, si tende a seguire un approccio
+\textbf{code and fix}, ovvero si scrive del codice e poi si correggono gli errori
+che si sono commessi. Questo approccio è molto semplice, ma è anche molto rischioso,
+perché non si ha una visione chiara del prodotto che si vuole sviluppare, e quindi
+si rischia di non soddisfare le aspettative del cliente.
+
+Il codice viene implementato per tentativi, non è presente una fase di 
+analisi dettagliata. Tipicamente questo approccio è efficace per progetti
+di piccole dimensioni, dove tipicamente il cliente è lo sviluppatore stesso. In progetti 
+di grandi dimensioni o in progetti in cui è presente un la necessità di lavorare 
+in team, questo approccio non è efficace.
+Di fatto questo \textbf{non è un processo di sviluppo software}, perché non è presente 
+una pianificazione, e non è quindi possibile scalare il processo.
+\section{Waterfall}
+Il processo è nato in analogia con il processo di sviluppo dell'ingegneria
+meccanica, dove è necessario avere una visione chiara del prodotto che si vuole
+sviluppare, e dove è necessario avere una pianificazione dettagliata delle attività
+e dei prodotti.
+
+Si tratta di un processo plan-driven, che è stato il primo processo di sviluppo
+software ad essere definito. Il processo è diviso in fasi, dove ogni fase
+produce dei prodotti che vengono utilizzati nella fase successiva, per questo motivo non 
+è consentito passare alla fase successiva se non è stata completata la fase precedente.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth,
+        node distance = 3mm and 3mm,
+          start chain = A going below right,
+    every node/.style = {draw, text width=24mm, minimum height=12mm, align=center,
+                         inner sep=1mm, fill=white, drop shadow={fill=black},  on chain=A},
+                            ]
+    \node {Requisiti}; % A-1
+    \node {Design};
+    \node {Codifica e test di unità};
+    \node {Integrazione del sistema};
+    \node {Operazioni e manutenzione};
+    %
+    \foreach \i [count=\j] in {2,...,5}
+    {
+      \draw[->, thick] (A-\i) -| (A-\j);
+      \draw[->, thick] (A-\j) -| (A-\i);
+    }
+    \end{tikzpicture}
+    \caption{Processo waterfall}
+\end{figure}
+\subsection{Definizione e analisi dei requisiti} 
+Il processo inizia con la definizione e analisi dei requisiti. In questa fase,
+vengono determinati i requisiti del sistema software da sviluppare e gli obiettivi
+da raggiungere, anche in termini di funzionalità del sistema. Questi obiettivi sono
+stabiliti in collaborazione con gli stakeholders attraverso interviste e discussioni.
+Successivamente, si redige un documento dei requisiti, che elenca i requisiti specifici
+del software in sviluppo. Questo documento ha valore contrattuale: viene condiviso con
+il cliente e utilizzato per stabilire il contratto tra cliente e fornitore. La
+verifica di questo documento è essenziale
+per assicurare la coerenza dei dati e prevenire ambiguità o inconsistenze.
+\subsection{Progettazione del sistema}
+Una volta che i requisiti sono stati definiti, si passa alla progettazione del sistema.
+In questa fase, i requisiti vengono allocati a componenti hardware e software, e viene
+definita l'architettura del sistema. Questa fase è importante perché permette di
+identificare i componenti del sistema e le loro interazioni, e permette di definire
+una struttura di base del sistema. Ogni componente viene poi progettato 
+nel dettaglio in modo da realizzare una funzionalità specifica del sistema. 
+
+Anche in questo caso, per alcuni sistemi critici, questa fase è soggetta a verifica formale e 
+una volta approvata diventa permanente.
+\subsection{implementazione e test di unità}
+Una volta che la progettazione del sistema è stata completata, si passa all'implementazione
+del sistema. In questa fase, i componenti del sistema vengono implementati in un linguaggio
+di programmazione, realizzando quindi il codice che realizza concretamente il design 
+che è stato elaborato nella fase precedente.
+
+In questa fase, è necessario anche testare i componenti del sistema, per assicurarsi che
+il codice implementato soddisfi i requisiti e che non ci siano errori. Questi test
+sono chiamati \textbf{test di unità}, e sono test che vengono eseguiti su ogni singolo
+componente del sistema. 
+\subsection{Integrazione del sistema}
+Una volta che tutti i componenti del sistema sono stati implementati e testati, si passa
+alla fase di integrazione del sistema. In questa fase, i componenti del sistema vengono
+integrati per formare il sistema completo. Quando il sistema è stato integrato, è 
+possibile mandare in esecuzione scenari che testano il sistema nel suo complesso, e che
+verificano che il sistema soddisfi i requisiti. Questi test sono chiamati \textbf{test di
+sistema}.
+
+Quando il sistema è stato integrato, è possibile consegnare il sistema al cliente.
+\subsection{Operazioni e manutenzione}
+Quando il sistema è stato consegnato al cliente, il sistema viene utilizzato dal cliente.
+In questa fase, il sistema viene utilizzato per il suo scopo, e vengono identificati
+nuovi requisiti e nuove funzionalità che il sistema deve soddisfare. Questi nuovi requisiti
+vengono analizzati e aggiunti al sistema, e il sistema viene modificato per soddisfare
+i nuovi requisiti che possono essere requisiti legati alla natura del mercato o 
+legati alla normativa. Questa fase è chiamata \textbf{manutenzione del sistema}.
+In questa fase potrebbero essere necessarie anche modifiche al sistema per correggere
+errori che sono stati scoperti durante l'utilizzo del sistema.
+\subsection{Fasi del processo waterfall}
+La caratteristica di questo processo di sviluppo software è che l'output di una 
+fase è considerata \textit{congelata} prima di passare alla fase successiva. 
+Questa linea di principio è molto efficace per lo sviluppo di progetti hardware perché 
+in quei casi è necessario avere una visione chiara del prodotto che si vuole sviluppare,
+poiché il costo relativo al cambiamento di un prodotto hardware è molto alto.
+Nel caso di progetti in cui è necessario avere un feedback continuo con il cliente,
+questo processo non è adatto, poiché il cliente non può vedere il prodotto fino alla
+fine del processo.
+
+Inoltre prevede che i requisiti vengano congelati prima di iniziare la fase di progettazione,
+di fatto bloccando la possibilità di modificare i requisiti durante lo sviluppo del sistema.
+Il cambio di requisiti è possibile, ma implicherebbe un ritardo nello sviluppo del sistema,
+poiché bisognerebbe tornare alla fase di analisi dei requisiti e ripetere tutte le fasi
+successive.
+
+Nei sistemi molto grandi (\textit{anche gestiti da più compagnie}), sistemi critici,
+o sistemi che richiedono software-hardware integrati, questo processo
+è molto efficace, poiché permette di avere una visione chiara del sistema che si vuole
+sviluppare, e permette di avere un controllo preciso sulle fasi di sviluppo del sistema.
+\subsection{Vantaggi e svantaggi}
+I vantaggi del processo di sviluppo includono una forte enfasi sull'analisi dei
+requisiti e sulla progettazione del sistema. Questo approccio ritarda l'implementazione
+finché non viene effettuata un'analisi accurata delle esigenze degli utenti, rendendolo
+particolarmente adatto quando i requisiti sono chiari e stabili. Inoltre, introduce una
+pianificazione e uno sviluppo disciplinato, ideali per grandi progetti di ingegneria dei
+sistemi sviluppati in diversi siti. In tali contesti, la natura guidata dalla
+pianificazione del modello a cascata facilita il coordinamento del lavoro.
+
+Tuttavia, esistono degli svantaggi significativi. Il processo richiede che ogni fase
+sia completata prima di procedere alla successiva, il che può creare inefficienze.
+Inoltre, è difficile accomodare i cambiamenti una volta che il processo è in corso,
+specialmente se emergono nuovi requisiti da parte del cliente. Questo lo rende adatto
+solo in circostanze dove i requisiti sono ben compresi e si prevede che i cambiamenti
+saranno limitati durante il processo di progettazione. Infine, pochi sistemi aziendali
+hanno requisiti stabili, il che limita l'applicabilità di questo processo in ambienti
+dinamici e in rapido cambiamento.
+
+\section{Incrementale}
+Il processo incrementale è un processo plan-driven o agile, che si basa su una pianificazione
+anticipata delle attività e dei prodotti, ma che prevede che il prodotto software
+venga sviluppato in maniera incrementale, ovvero in più fasi, dove ogni fase
+produce un incremento del prodotto software. Ogni incremento è un prodotto software
+che può essere rilasciato al cliente, e che può essere utilizzato dal cliente. 
+
+Nel modello di sviluppo incrementale, l'implementazione iniziale del software viene esposta
+agli utenti fin dalle prime fasi. Questo approccio consente di evolvere il software
+attraverso diverse versioni, finché non si ottiene il sistema richiesto.
+Questo modello è generalmente preferito rispetto al modello a cascata,
+specialmente quando i requisiti si prevede possano evolvere nel corso dello sviluppo.
+A differenza del modello a cascata, le attività di specifica, sviluppo e validazione
+sono intrecciate e non separate. Ciò consente un feedback rapido e continuo tra le
+attività, promuovendo un affinamento progressivo del prodotto attraverso iterazioni
+successive.
+\subsection{Vantaggi e svantaggi}
+
+Il modello di sviluppo incrementale offre il vantaggio di ridurre i costi
+nel rispondere ai cambiamenti dei requisiti del cliente. A differenza del
+modello a cascata, richiede meno analisi e documentazione da rifare, facilitando
+l'ottenimento del feedback del cliente sul lavoro di sviluppo compiuto fino a quel
+momento. I clienti possono commentare le dimostrazioni e monitorare i progressi,
+consentendo la consegna e l'implementazione rapida delle parti più utili del software.
+In questo modo, i clienti sono in grado di utilizzare il software, seppur parziale,
+più precocemente rispetto a un processo a cascata.
+
+Tuttavia, il processo presenta anche delle sfide. La visibilità del processo può
+non essere evidente, e i manager necessitano di consegne regolari per misurare i
+progressi. Se i sistemi vengono sviluppati rapidamente, non è economicamente conveniente
+produrre documentazione che rifletta ogni versione del sistema. La struttura del sistema
+tende a degradarsi man mano che vengono aggiunti nuovi incrementi. A meno che non si
+investa tempo e denaro in attività di \textit{refactoring} per migliorare il software,
+i cambiamenti regolari tendono a corrompere la sua struttura. Di conseguenza,
+incorporare ulteriori cambiamenti al software diventa sempre più difficile e costoso.
+
+\section{Integrazione e configurazione}
+Nel processo di sviluppo software di integrazione e configurazione, il sistema 
+è assemblato da componenti sviluppati separatamente. Tale processo può essere
+sia plan-driven che agile.
+
+Lo sviluppo di software basato sul riutilizzo è un approccio in cui i sistemi
+sono integrati a partire da componenti o sistemi già esistenti. Questo metodo
+sfrutta in particolare i componenti Commercial-off-the-shelf (\texttt{COTS}),
+che sono sistemi disponibili commercialmente e possono essere riutilizzati così
+come sono o configurati per adattarsi alle esigenze e ai requisiti specifici degli
+utenti. Gli elementi riutilizzati possono essere configurati per adattare il loro
+comportamento e le loro funzionalità, rendendo il riutilizzo l'approccio standard
+per la costruzione di molti tipi di sistemi aziendali.
+\subsection{Commonly used components - \texttt{COTS}}
+I sistemi autonomi (\texttt{COTS}), generalmente dotati di numerose funzionalità, vengono
+adattati o configurati per l'uso in un ambiente specifico. Si trovano anche collezioni
+di oggetti sviluppati come pacchetti da integrare con un framework di componenti,
+come ad esempio \texttt{Java Spring}. In aggiunta, vi sono i servizi web sviluppati secondo
+gli standard di servizio e che sono disponibili per l'invocazione remota. Questa
+pluralità di opzioni disponibili per il riutilizzo nel software fornisce una
+flessibilità senza precedenti nella progettazione e nello sviluppo di nuovi sistemi,
+consentendo alle aziende di risparmiare tempo e risorse.
+\subsection{Specifica dei requisiti}
+Nella fase iniziale di concezione di un sistema, vengono proposti i requisiti
+iniziali. Questi non necessitano di essere elaborati in dettaglio ma dovrebbero
+includere brevi descrizioni delle necessità essenziali e delle caratteristiche
+desiderabili del sistema. È fondamentale che questi requisiti riflettano una
+comprensione di base delle aspettative del cliente e della funzionalità chiave
+che il sistema dovrà avere, senza tuttavia immergersi in specifiche tecniche
+complesse. Questo approccio permette di stabilire una direzione generale per
+il progetto, lasciando spazio per l'affinamento progressivo dei requisiti man
+mano che si procede con lo sviluppo.
+\subsection{Selezione di Componenti e Sistemi per il Riutilizzo}
+Nel processo di sviluppo software orientato al riutilizzo, è cruciale effettuare
+una ricerca accurata di componenti e sistemi che forniscano la funzionalità
+richiesta. Una volta identificati potenziali candidati, questi componenti e
+sistemi vengono valutati attentamente per determinare se soddisfano i requisiti
+essenziali e se sono generalmente adatti al riutilizzo nel sistema in questione.
+Questa valutazione implica un'analisi approfondita delle caratteristiche tecniche,
+della compatibilità con l'architettura esistente e della facilità di integrazione.
+La selezione accurata è fondamentale per garantire che il riutilizzo dei componenti
+non solo acceleri lo sviluppo ma contribuisca anche a una solida fondazione per il
+sistema finale.
+\subsection{Affinamento dei Requisiti e Componenti Riutilizzabili}
+Nel corso dello sviluppo software, i requisiti sono affinati utilizzando le
+informazioni sui componenti riutilizzabili scoperti. Questo processo di affinamento
+può comportare la modifica dei requisiti per riflettere i componenti disponibili,
+portando a una ridefinizione della specifica del sistema. È un'esercizio di
+bilanciamento tra le esigenze iniziali e le soluzioni pratiche offerte dai
+componenti esistenti. Laddove le modifiche ai requisiti si rivelino impossibili
+o impraticabili, l'attività di analisi dei componenti può essere ripetuta nella
+ricerca di alternative più adatte. Questa iterazione è vitale per assicurare che
+il sistema finale non solo soddisfi le necessità degli utenti ma sia anche
+costruito in modo efficiente e sostenibile.
+\subsection{Adozione di Sistemi Applicativi Preconfezionati}
+Nell'eventualità che sia disponibile un sistema applicativo preconfezionato
+che soddisfi i requisiti del progetto, è possibile procedere alla sua configurazione
+per l'uso al fine di creare il nuovo sistema. Questa operazione di configurazione si
+rivela spesso un'alternativa efficace allo sviluppo da zero, permettendo un notevole
+risparmio di tempo e risorse. La scelta di un'applicazione commerciale pronta all'uso
+può quindi trasformarsi in un vantaggio competitivo, specialmente quando si allinea
+con le necessità aziendali e si integra armoniosamente nell'infrastruttura \texttt{IT}
+esistente.
+\subsection{Sviluppo del Sistema in Assenza di Soluzioni Preconfezionate}
+Nel caso in cui non sia disponibile un sistema preconfezionato che soddisfi i
+requisiti specifici del progetto, è necessario intraprendere un approccio alternativo.
+In questa situazione, i componenti riutilizzabili individuali possono essere modificati
+per adattarli meglio alle esigenze del sistema. Inoltre, può essere necessario lo
+sviluppo di nuovi componenti per colmare le lacune funzionali o tecnologiche. Questi
+componenti, sia modificati che nuovi, sono poi integrati per creare il sistema finale.
+Questo processo richiede un'attenta pianificazione e coordinamento per assicurare che
+tutte le parti del sistema lavorino insieme in modo armonioso, risultando in una
+soluzione completa e funzionale.
+\subsection{Vantaggi e svantaggi}
+Lo sviluppo di software basato sul riutilizzo di componenti offre diversi vantaggi
+significativi. Tra questi, il più evidente è il \textbf{basso costo}, poiché meno
+software viene sviluppato da zero. Questo approccio riduce anche il \textbf{rischio}
+associato allo sviluppo di nuove soluzioni, rendendolo particolarmente attraente per
+progetti con budget e tempi limitati. Inoltre, permette una \textbf{consegna rapida}
+di un sistema funzionante, essendo gran parte del lavoro focalizzato sull'integrazione
+di componenti esistenti piuttosto che sulla creazione di nuovi.
+
+Tuttavia, ci sono anche degli svantaggi. Uno dei principali è la potenziale
+\textbf{bassa qualità} dei componenti riutilizzati, che potrebbe non essere all'altezza
+degli standard richiesti. Inoltre, spesso si verifica un \textbf{compromesso sui requisiti},
+con il rischio di ottenere un sistema finale che non soddisfa completamente gli utenti.
+Un altro punto critico è la \textbf{perdita di controllo sull'evoluzione} dei componenti
+riutilizzati. Questo può portare a problemi nel lungo termine, specialmente se i
+componenti non sono più supportati o aggiornati dai loro fornitori originali.
+
+\chapter{Attività di sviluppo software}
+

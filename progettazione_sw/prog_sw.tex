@@ -36,7 +36,8 @@
 \fancyhead[L]{\nouppercase\leftmark}
 \fancyhead[R]{\thepage}
 \usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,decorations.pathreplacing,shapes.multipart,calc,snakes}
-\usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart}
+\usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart, shadows}
+\usetikzlibrary{shapes, arrows, positioning}
 \tcbuselibrary{skins}
 \counterwithin{figure}{section}
 %Nuovi comandi
@@ -114,8 +115,20 @@
 \author{\textit{Alessio Gjergji}}
 \date{}
 \begin{document}
-\maketitle
+\begin{titlingpage}
+  \centering
+  \vspace*{\stretch{1}}
+  \huge
+  \textbf{\thetitle}\\[0.5cm]
+  \normalsize
+  Corso tenuto dal Professor Mariano Ceccato\\[0.5cm]
+  Università degli Studi di Verona\\[1cm]
+  \large
+  \theauthor\\[0.5cm]
+  \vspace{\stretch{2}}
+\end{titlingpage}
 \tableofcontents
+\input{process}
 \input{agile}
 \input{ingegneriadeirequisiti}
 \input{refactoring}
