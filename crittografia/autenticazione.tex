@@ -356,7 +356,9 @@ Usiamo l'indice della funzione $i$ di $k$ bit, come seme e di base usiamo un
 generatore pseudocasuale $\mathcal{G}$, per generare $2k$ bit,
 $\mathcal{G}(s)[0,\dots,k-1]$ ovvero $s_0$ e lo stesso per $\mathcal{G}(s)[k,\dots,2k-1]$
 ovvero $s_1$. e ripetiamo ricorsivamente il procedimento generando $s_{00}, s_{01}, s_{10}$
-e $s_{11}$, che sono rispettivamente $s_0[0,\dots,k-1], s_0[k,\dots,2k-1], s_1[0,\dots,k-1]$.
+e $s_{11}$, che sono rispettivamente $\mathcal{G}(s_0)[0,\dots,k-1],
+\mathcal{G}(s_0)[k,\dots,2k-1], \mathcal{G}(s_1)[0,\dots,k-1]$ e
+$\mathcal{G}(s_1)[k,\dots,2k-1]$.
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}[level distance=1.5cm,
@@ -488,7 +490,7 @@ L'idea è quella di dividere il messaggio in blocchi di lunghezza $k$, quindi $m
 cercare di creare l'autenticazione applicando la funzione $f$ a ogni blocco, quindi $f(m_1), \dots, f(m_l)$ e 
 definire il messaggio $m$ come:
 \[
-  m = m_1 \oplus f(m_1) \oplus f(m_2) \oplus \dots \oplus f(m_l)
+  m = f(m_1) \oplus f(m_2) \oplus \dots \oplus f(m_l)
 \]
 Il problema è che il forger in questo caso può combinare i blocchi in modo diverso, quindi può creare un
 messaggio $m'$ che è diverso da $m$, ma che ha la stessa autenticazione.
@@ -581,14 +583,14 @@ chiave pubblica e privata, e la chiave pubblica non può essere utilizzata per r
 
 In \texttt{RSA} classico, il messaggio da criptare si eleva alla potenza $e$ e si prende il modulo $n$, e 
 per decriptare si eleva alla potenza $d$ e si prende il modulo $n$. Per il teorema di Eulero, $n$ elevato 
-alla cardinalità del gruppo fornisce l'unità, quindi $m^{\phi(n)} \equiv 1 \mod n$, quindi $m^{k\phi(n) + 1}
+alla cardinalità del gruppo fornisce l'unità, quindi $m^{\varphi(n)} \equiv 1 \mod n$, quindi $m^{k\phi(n) + 1}
 \equiv m \mod n$.
 
 Per firmare un messaggio $m$ si calcola $m^d \mod n$, e per verificare la firma si calcola $(m^d)^e \mod n$,
 che è uguale a $m$. Solamente chi possiede la chiave privata può firmare, mentre la verifica può essere
 effettuata da chiunque.
 \[
-  (m^d)^e \equiv m^{de} \equiv m^{k\phi(n) + 1} \equiv m \mod n
+  (m^d)^e \equiv m^{de} \equiv m^{k\varphi(n) + 1} \equiv m \mod n
 \]
 \subsection{Definizione di sistema di firma digitale}
 Un sistema di firma digitale è una tripla di algoritmi $(\mathsf{Gen}, \mathsf{Sign}, \mathsf{Ver})$ probabilistici 
@@ -629,8 +631,9 @@ messaggi, dati $(m_1, m_1^d)$ e $(m_2, m_2^d)$, creando un nuovo messaggio $(m_1
 inserendo sufficiente ridondanza ai messaggi in modo tale che molto difficilmente $m_1m_2$ sia un messaggio significativo 
 questi attacchi non producono nulla.
 
-\subsection{Firma di messaggi lunghi}
-L'idea alla base è quella dell'utilizzo di \textbf{funzioni hash} crittograficamente sicure, quindi 
+\section{Funzioni Hash}
+L'idea alla base relativa alla firma di messaggi lunghi è quella dell'utilizzo
+di \textbf{funzioni hash} crittograficamente sicure, quindi 
 il messaggio $\sigma$ viene calcolato come $\sigma = H(m)^d$. Il motivo per cui viene firmato l'hash 
 di un messaggio è per poter firmare messaggi lunghi, evitando quindi di utilizzare firme lunghe tanto 
 quanto il messaggio originale. Utilizzando questa metodologia cosa succede se dati due messaggi 
