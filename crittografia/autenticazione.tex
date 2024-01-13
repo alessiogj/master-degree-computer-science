@@ -650,7 +650,7 @@ $m_1$ e $m_2$ tali che $H(m_1) = H(m_2)$.
   polinomiale, la probabilità che $\mathcal{A}$ produca una coppia $(m_1, m_2)$ tale che $H(m_1) = H(m_2)$ 
   è trascurabile, più piccola di qualsiasi polinomio.
 \end{tcolorbox}
-degli esempi di funzioni hash collision resistant possono essere \texttt{MD5}, \texttt{SHA-1}, \texttt{SHA-2}.
+Degli esempi di funzioni hash collision resistant possono essere \texttt{MD5}, \texttt{SHA-1}, \texttt{SHA-2}.
 \texttt{SHA-2} al momento è considerata lo stato dell'arte, ma è possibile che in futuro vengano 
 trovati attacchi che permettono di trovare collisioni in \texttt{SHA-2}.
 
@@ -672,7 +672,7 @@ e trovare un qualsiasi input che produce l'hash $x$.
   Se $H$ è una funzione collision resistant, allora $H$ è anche una funzione one way.
 \end{proposizione}
 \begin{proof}
-  Supponiamo che $H$ non sia one way, mostriamo quindi che $H$ non è collision resistant. 
+  Supponiamo che $H$ non sia one way, mostriamo quindi che $H$ non sia collision resistant. 
 
   Sia $m$ un messaggio casuale e calcoliamo $x = H(m)$, quindi $x$ è un valore casuale che 
   viene dato in input alla macchina che inverte la funzione hash e che produrrà un messaggio
@@ -713,7 +713,7 @@ $\sigma'$ è la firma del messaggio $m$.
   \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\text{Sceglie }x \in_R \mathbb{Z}_n^*\<\< \\
+\text{Sceglie }b \in_R \mathbb{Z}_n^*\<\< \\
 \<\sendmessageright*{m \cdot b^e} \\
 \<\sendmessageleft*{\sigma = (m \cdot b^e)^d} \\
 \text{Produce $\sigma'$ dove }\sigma' = \sigma \cdot b^{-1} = m^d\<\<\\
@@ -753,9 +753,9 @@ Non essere in grado di capire il valore del bit $b$ significa che l'agente $B$ c
 se applica una qualsiasi algoritmo $\mathcal{A}$ al bit $b$ indovina il valore del bit con
 probabilità non maggiore di $\frac{1}{2} + \epsilon$, dove $\epsilon$ è una quantità trascurabile.
 
-L'apertura della ``busta'' avviene quando $A$ comunica $b$ l'informazione trapdoor in modo che
+L'apertura della \textit{busta} avviene quando $A$ comunica $b$ l'informazione trapdoor in modo che
 $B$ possa verificare che il bit $b$ sia effettivamente quello che $A$ ha inviato. Ovviamente 
-$A$ non deve riuscire a creare due coppie $m'$ e $m''$ che producano due ``buste'' diverse. 
+$A$ non deve riuscire a creare due coppie $m'$ e $m''$ che producano due \textit{buste} diverse. 
 \subsection{Primo protocollo}
 In questo protocollo la collaborazione di $B$ è fondamentale, infatti $A$ non può fare nulla
 se $B$ non collabora. L'algoritmo utilizza un algoritmo di crittografia simmetrica.
@@ -768,10 +768,10 @@ se $B$ non collabora. L'algoritmo utilizza un algoritmo di crittografia simmetri
   \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\<\< \text{Sceglie }R \in_R \{0,1\}^n\\
-\<\sendmessageleft*{R} \\
+\<\< \text{Sceglie }r \in_R \{0,1\}^n\\
+\<\sendmessageleft*{r} \\
 \text{Sceglie }k \in_R \{0,1\}^n\<\< \\
-\<\sendmessageright*{E_k(R\cdot b)} \\
+\<\sendmessageright*{E_k(r\cdot b)} \\
 \<\sendmessageright*{k} \\
 }
 Sulla base delle analisi fatte fino ad ora, non è possibile ricavare la 
@@ -780,7 +780,7 @@ del plaintext.
 $B$ verifica l'autenticità del messaggio ricevuto non appena riceve la chiave $k$, 
 ovvero l'informazione trapdoor. 
 $A$ non può imbrogliare perché dovrebbe trovare due chiavi $k_0$ e $k_1$ tali per cui
-$E_{k_0}(R \cdot 0) = E_{k_1}(R \cdot 1)$, ma su un algoritmo di crittografia simmetrica
+$E_{k_0}(r \cdot 0) = E_{k_1}(r \cdot 1)$, ma su un algoritmo di crittografia simmetrica
 come \texttt{AES} non è possibile trovare due chiavi che producano lo stesso ciphertext.
 
 In tale algoritmo però ci sono due problemi:
@@ -800,18 +800,18 @@ Sia $H$ una funzione hash one way.
   \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\text{Sceglie }R_1, R_2 \in_R \{0,1\}^n\<\< \\
-\<\sendmessageright*{H(R_1  R_2  b), R_1} \\
-\<\sendmessageright*{R_2, b} \\
+\text{Sceglie }r_1, r_2 \in_R \{0,1\}^n\<\< \\
+\<\sendmessageright*{H(r_1  r_2  b), r_1} \\
+\<\sendmessageright*{r_2, b} \\
 }
 Quando $A$ invia il messaggio codificato con la funzione hash nota e parte dell'informazione 
 che è stata codificata, $B$ può verificare che il messaggio sia corretto, solamente se
 $A$ invia l'informazione restante, che non sarà in grado di manipolare, perché dovrebbe 
-creare una situazione tale che $H(R_1 R_2 0) = H(R_1 R_2' 1)$, ma questo è
+creare una situazione tale che $H(r_1 r_2 0) = H(r_1 r_2' 1)$, ma questo è
 equivalente a trovare un confitto nella funzione hash, che è un problema difficile.
 $B$ non può ricavare l'informazione $b$ perché non può invertire la funzione hash.
-Se non ci fosse $R_2$ allora $B$ potrebbe facilmente ricavare $b$ provando le combinazioni 
-$H(R_1 0)$ e $H(R_1 1)$, ma con $R_2$ non è possibile fare questo tipo di attacco.
+Se non ci fosse $r_2$ allora $B$ potrebbe facilmente ricavare $b$ provando le combinazioni 
+$H(r_1 0)$ e $H(r_1 1)$, ma con $r_2$ non è possibile fare questo tipo di attacco.
 
 \subsection{Terzo protocollo}
 Questo protocollo è dimostrabilmente sicuro, ma in termini di complessità è molto più
@@ -825,11 +825,11 @@ costoso degli altri due.
   \node[dave, monitor, mirrored, minimum size=2cm, label=below:{Bob}] (bob) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\<\< \text{Sceglie }R \in_R \{0,1\}^l\\
-\<\<\text{ dove }R=r_1r_2\dots r_l \\
-\<\sendmessageleft*{R} \\
+\<\< \text{Sceglie }r \in_R \{0,1\}^l\\
+\<\<\text{ dove }r=r_1r_2\dots r_l \\
+\<\sendmessageleft*{r} \\
 \text{Genera un seme }s \in_R \{0,1\}^n\<\< \\
-\text{Genera una pseudostringa di bit}x \in_R \{0,1\}^l \<\<\\
+\text{Genera una pseudostringa di bit }x \in_R \{0,1\}^l \<\<\\
 \text{Dove }x=x_1x_2\dots x_l\<\< \\
 y_i = x_i\text{ se } r_i = 0\text{ e }y_i = x_i \oplus b\text{ se }r_i = 1 \<\<\\
 \text{Produce }y_0y_1\dots y_l\<\<\\

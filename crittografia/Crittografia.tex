@@ -84,13 +84,6 @@ decorations.pathreplacing,shapes.multipart,calc,snakes,graphs,graphs.standard}
 \newtheorem{theorem}{Teorema}[section]
 \newtheorem{proposizione}{Proposizione}[section]
 \tcbuselibrary{listings,skins}
-\newtcblisting{mylisting}[2][]{
-    arc=0pt, outer arc=0pt,
-    listing only, 
-    title=#2,
-    #1,
-    listing options= {escapechar=|}
-}
 
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%

@@ -362,7 +362,8 @@ input in cyphertext $c$ e la chiave pubblica $P_k$ restituisce $b$ con probabili
 diversa da $\frac{1}{2}$, poiché siamo in un contesto binario.
 
 Un attaccante quindi dovrebbe essere in grado di ottenere un vantaggio rispetto 
-a qualcuno che non conosce nulla, ovvero che indovini con probabilità $\frac{1}{2}$.
+a qualcuno che non conosce nulla, dove chi non conosce 
+nulla indovina con probabilità $\frac{1}{2}$.
 Il vantaggio consiste nell'allontanarsi da $\frac{1}{2}$, sia in positivo che in negativo, 
 poiché se si allontana in negativo basta invertire il risultato per ottenere
 un vantaggio positivo.
@@ -372,7 +373,7 @@ maggiore di $\frac{1}{2}$, ma il numero di esperimenti deve essere un numero
 polinomiale, in modo tale da poter osservare tali esperimenti in tempo polinomiale.
 \begin{tcolorbox}[title = Sicurezza]
   \begin{equation}
-    \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \quad \mid \probP[\texttt{Successo}] - \frac{1}{2} \mid  > k^{-c}
+    \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \quad \bigg| \probP[\texttt{Successo}] - \frac{1}{2}  \bigg|  > k^{-c}
   \end{equation}
 \end{tcolorbox}
 Supponiamo che la probabilità di successo sia maggiore di $\frac{1}{2} + \epsilon$ e vorrei che la probabilità di successo sia quindi 
@@ -394,7 +395,7 @@ Servirebbe quindi stimare, dato un $\epsilon$ fissato, il numero di esperimenti 
     \mathcal{P} \geq 1 - e^{-2n\left(p - \frac{1}{2}\right)^2}
   \]
   Tale formula dice che la probabilità che più della metà degli eventi dia $1$ è 
-  esponenzialmente vicina a $1$, dove l'eponenzialmente è in funzione di $n$.
+  esponenzialmente vicina a $1$, dove l'esponenziazione è in funzione di $n$.
   \[
     \probP[\texttt{errore}] = e^{-2 \epsilon n}
   \]
