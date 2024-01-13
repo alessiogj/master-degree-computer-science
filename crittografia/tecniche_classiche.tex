@@ -553,7 +553,7 @@ trasmissione. Durante la crittografia, viene utilizzato un registro a scorriment
 di \(b\) bit inizializzato con un vettore di inizializzazione (\verb|IV|). I
 primi \(s\) bit più significativi dell'output della funzione di crittografia
 vengono combinati con il primo segmento di testo in chiaro \(P_1\) tramite
-l'operazione XOR per produrre l'unità di testo cifrato \(C_1\), che viene quindi
+l'operazione \texttt{XOR} per produrre l'unità di testo cifrato \(C_1\), che viene quindi
 trasmessa. Il contenuto del registro a scorrimento viene spostato a sinistra di
 \(s\) bit e \(C_1\) viene inserito nei \(s\) bit meno significativi del registro
 a scorrimento. Questo processo continua fino a quando tutti i segmenti di testo
@@ -563,14 +563,14 @@ Per la decifratura, viene utilizzato lo stesso schema, ad eccezione che l'unità
 di testo cifrato ricevuta viene combinata tramite \verb|XOR| con l'output della funzione
 di crittografia per produrre l'unità di testo in chiaro. È importante notare che
 viene utilizzata la funzione di crittografia e non quella di decifratura. Questo
-è facilmente spiegabile. Sia \(MSBs(X)\) definita come i \(s\) bit più significativi
+è facilmente spiegabile. Sia \(\texttt{MSBs}(X)\) definita come i \(s\) bit più significativi
 di \(X\). Quindi
 
-\[ C_1 = P_1 \oplus MSBs[E(K, IV)] \]
+\[ C_1 = P_1 \oplus \texttt{MSBs}[E(K, IV)] \]
 
 Di conseguenza, riarrangiando i termini:
 
-\[ P_1 = C_1 \oplus MSBs[E(K, IV)] \]
+\[ P_1 = C_1 \oplus \texttt{MSBs}[E(K, IV)] \]
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/cipherFeedback.png}
@@ -608,7 +608,7 @@ Riarrangiando i termini, possiamo dimostrare che la decifratura funziona:
 I blocchi di output della cifratura, \(O_i\), dipendono solo dalla chiave
 e dal vettore di inizializzazione (\verb|IV|) e non dipendono dal testo
 in chiaro. Pertanto, per una data chiave e \verb|IV|, lo stream di bit di
-output utilizzato per l'operazione XOR con lo stream di bit in chiaro è fisso.
+output utilizzato per l'operazione \texttt{XOR} con lo stream di bit in chiaro è fisso.
 Se due messaggi diversi avessero un blocco identico di testo in chiaro
 nella stessa posizione, un attaccante sarebbe in grado di determinare
 quella parte dello stream \(O_i\).
