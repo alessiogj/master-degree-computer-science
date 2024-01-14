@@ -86,7 +86,8 @@ finale, vista la dinamicità del prodotto.
 
     Bisogna quindi ricordare che non ci sono processi software sbagliati.
 \end{tcolorbox}
-\section{Code and fix}
+\section{Modelli del processo di sviluppo software}
+\subsection{Code and fix}
 Tipicamente, quando si sviluppa un software, si tende a seguire un approccio
 \textbf{code and fix}, ovvero si scrive del codice e poi si correggono gli errori
 che si sono commessi. Questo approccio è molto semplice, ma è anche molto rischioso,
@@ -100,7 +101,7 @@ di grandi dimensioni o in progetti in cui è presente un la necessità di lavora
 in team, questo approccio non è efficace.
 Di fatto questo \textbf{non è un processo di sviluppo software}, perché non è presente 
 una pianificazione, e non è quindi possibile scalare il processo.
-\section{Waterfall}
+\subsection{Waterfall}
 Il processo è nato in analogia con il processo di sviluppo dell'ingegneria
 meccanica, dove è necessario avere una visione chiara del prodotto che si vuole
 sviluppare, e dove è necessario avere una pianificazione dettagliata delle attività
@@ -133,7 +134,7 @@ produce dei prodotti che vengono utilizzati nella fase successiva, per questo mo
     \end{tikzpicture}
     \caption{Processo waterfall}
 \end{figure}
-\subsection{Definizione e analisi dei requisiti} 
+\subsubsection{Definizione e analisi dei requisiti} 
 Il processo inizia con la definizione e analisi dei requisiti. In questa fase,
 vengono determinati i requisiti del sistema software da sviluppare e gli obiettivi
 da raggiungere, anche in termini di funzionalità del sistema. Questi obiettivi sono
@@ -143,7 +144,7 @@ del software in sviluppo. Questo documento ha valore contrattuale: viene condivi
 il cliente e utilizzato per stabilire il contratto tra cliente e fornitore. La
 verifica di questo documento è essenziale
 per assicurare la coerenza dei dati e prevenire ambiguità o inconsistenze.
-\subsection{Progettazione del sistema}
+\subsubsection{Progettazione del sistema}
 Una volta che i requisiti sono stati definiti, si passa alla progettazione del sistema.
 In questa fase, i requisiti vengono allocati a componenti hardware e software, e viene
 definita l'architettura del sistema. Questa fase è importante perché permette di
@@ -153,7 +154,7 @@ nel dettaglio in modo da realizzare una funzionalità specifica del sistema.
 
 Anche in questo caso, per alcuni sistemi critici, questa fase è soggetta a verifica formale e 
 una volta approvata diventa permanente.
-\subsection{implementazione e test di unità}
+\subsubsection{implementazione e test di unità}
 Una volta che la progettazione del sistema è stata completata, si passa all'implementazione
 del sistema. In questa fase, i componenti del sistema vengono implementati in un linguaggio
 di programmazione, realizzando quindi il codice che realizza concretamente il design 
@@ -163,7 +164,7 @@ In questa fase, è necessario anche testare i componenti del sistema, per assicu
 il codice implementato soddisfi i requisiti e che non ci siano errori. Questi test
 sono chiamati \textbf{test di unità}, e sono test che vengono eseguiti su ogni singolo
 componente del sistema. 
-\subsection{Integrazione del sistema}
+\subsubsection{Integrazione del sistema}
 Una volta che tutti i componenti del sistema sono stati implementati e testati, si passa
 alla fase di integrazione del sistema. In questa fase, i componenti del sistema vengono
 integrati per formare il sistema completo. Quando il sistema è stato integrato, è 
@@ -172,7 +173,7 @@ verificano che il sistema soddisfi i requisiti. Questi test sono chiamati \textb
 sistema}.
 
 Quando il sistema è stato integrato, è possibile consegnare il sistema al cliente.
-\subsection{Operazioni e manutenzione}
+\subsubsection{Operazioni e manutenzione}
 Quando il sistema è stato consegnato al cliente, il sistema viene utilizzato dal cliente.
 In questa fase, il sistema viene utilizzato per il suo scopo, e vengono identificati
 nuovi requisiti e nuove funzionalità che il sistema deve soddisfare. Questi nuovi requisiti
@@ -181,7 +182,7 @@ i nuovi requisiti che possono essere requisiti legati alla natura del mercato o
 legati alla normativa. Questa fase è chiamata \textbf{manutenzione del sistema}.
 In questa fase potrebbero essere necessarie anche modifiche al sistema per correggere
 errori che sono stati scoperti durante l'utilizzo del sistema.
-\subsection{Fasi del processo waterfall}
+\subsubsection{Fasi del processo waterfall}
 La caratteristica di questo processo di sviluppo software è che l'output di una 
 fase è considerata \textit{congelata} prima di passare alla fase successiva. 
 Questa linea di principio è molto efficace per lo sviluppo di progetti hardware perché 
@@ -201,7 +202,7 @@ Nei sistemi molto grandi (\textit{anche gestiti da più compagnie}), sistemi cri
 o sistemi che richiedono software-hardware integrati, questo processo
 è molto efficace, poiché permette di avere una visione chiara del sistema che si vuole
 sviluppare, e permette di avere un controllo preciso sulle fasi di sviluppo del sistema.
-\subsection{Vantaggi e svantaggi}
+\subsubsection{Vantaggi e svantaggi}
 I vantaggi del processo di sviluppo includono una forte enfasi sull'analisi dei
 requisiti e sulla progettazione del sistema. Questo approccio ritarda l'implementazione
 finché non viene effettuata un'analisi accurata delle esigenze degli utenti, rendendolo
@@ -219,7 +220,7 @@ saranno limitati durante il processo di progettazione. Infine, pochi sistemi azi
 hanno requisiti stabili, il che limita l'applicabilità di questo processo in ambienti
 dinamici e in rapido cambiamento.
 
-\section{Incrementale}
+\subsection{Sviluppo incrementale}
 Il processo incrementale è un processo plan-driven o agile, che si basa su una pianificazione
 anticipata delle attività e dei prodotti, ma che prevede che il prodotto software
 venga sviluppato in maniera incrementale, ovvero in più fasi, dove ogni fase
@@ -235,7 +236,7 @@ A differenza del modello a cascata, le attività di specifica, sviluppo e valida
 sono intrecciate e non separate. Ciò consente un feedback rapido e continuo tra le
 attività, promuovendo un affinamento progressivo del prodotto attraverso iterazioni
 successive.
-\subsection{Vantaggi e svantaggi}
+\subsubsection{Vantaggi e svantaggi}
 
 Il modello di sviluppo incrementale offre il vantaggio di ridurre i costi
 nel rispondere ai cambiamenti dei requisiti del cliente. A differenza del
@@ -255,7 +256,7 @@ investa tempo e denaro in attività di \textit{refactoring} per migliorare il so
 i cambiamenti regolari tendono a corrompere la sua struttura. Di conseguenza,
 incorporare ulteriori cambiamenti al software diventa sempre più difficile e costoso.
 
-\section{Integrazione e configurazione}
+\subsection{Integrazione e configurazione}
 Nel processo di sviluppo software di integrazione e configurazione, il sistema 
 è assemblato da componenti sviluppati separatamente. Tale processo può essere
 sia plan-driven che agile.
@@ -268,7 +269,7 @@ come sono o configurati per adattarsi alle esigenze e ai requisiti specifici deg
 utenti. Gli elementi riutilizzati possono essere configurati per adattare il loro
 comportamento e le loro funzionalità, rendendo il riutilizzo l'approccio standard
 per la costruzione di molti tipi di sistemi aziendali.
-\subsection{Commonly used components - \texttt{COTS}}
+\subsubsection{Commonly used components - \texttt{COTS}}
 I sistemi autonomi (\texttt{COTS}), generalmente dotati di numerose funzionalità, vengono
 adattati o configurati per l'uso in un ambiente specifico. Si trovano anche collezioni
 di oggetti sviluppati come pacchetti da integrare con un framework di componenti,
@@ -277,7 +278,7 @@ gli standard di servizio e che sono disponibili per l'invocazione remota. Questa
 pluralità di opzioni disponibili per il riutilizzo nel software fornisce una
 flessibilità senza precedenti nella progettazione e nello sviluppo di nuovi sistemi,
 consentendo alle aziende di risparmiare tempo e risorse.
-\subsection{Specifica dei requisiti}
+\subsubsection{Specifica dei requisiti}
 Nella fase iniziale di concezione di un sistema, vengono proposti i requisiti
 iniziali. Questi non necessitano di essere elaborati in dettaglio ma dovrebbero
 includere brevi descrizioni delle necessità essenziali e delle caratteristiche
@@ -287,7 +288,7 @@ che il sistema dovrà avere, senza tuttavia immergersi in specifiche tecniche
 complesse. Questo approccio permette di stabilire una direzione generale per
 il progetto, lasciando spazio per l'affinamento progressivo dei requisiti man
 mano che si procede con lo sviluppo.
-\subsection{Selezione di Componenti e Sistemi per il Riutilizzo}
+\subsubsection{Selezione di Componenti e Sistemi per il Riutilizzo}
 Nel processo di sviluppo software orientato al riutilizzo, è cruciale effettuare
 una ricerca accurata di componenti e sistemi che forniscano la funzionalità
 richiesta. Una volta identificati potenziali candidati, questi componenti e
@@ -298,7 +299,7 @@ della compatibilità con l'architettura esistente e della facilità di integrazi
 La selezione accurata è fondamentale per garantire che il riutilizzo dei componenti
 non solo acceleri lo sviluppo ma contribuisca anche a una solida fondazione per il
 sistema finale.
-\subsection{Affinamento dei Requisiti e Componenti Riutilizzabili}
+\subsubsection{Affinamento dei Requisiti e Componenti Riutilizzabili}
 Nel corso dello sviluppo software, i requisiti sono affinati utilizzando le
 informazioni sui componenti riutilizzabili scoperti. Questo processo di affinamento
 può comportare la modifica dei requisiti per riflettere i componenti disponibili,
@@ -309,7 +310,7 @@ o impraticabili, l'attività di analisi dei componenti può essere ripetuta nell
 ricerca di alternative più adatte. Questa iterazione è vitale per assicurare che
 il sistema finale non solo soddisfi le necessità degli utenti ma sia anche
 costruito in modo efficiente e sostenibile.
-\subsection{Adozione di Sistemi Applicativi Preconfezionati}
+\subsubsection{Adozione di Sistemi Applicativi Preconfezionati}
 Nell'eventualità che sia disponibile un sistema applicativo preconfezionato
 che soddisfi i requisiti del progetto, è possibile procedere alla sua configurazione
 per l'uso al fine di creare il nuovo sistema. Questa operazione di configurazione si
@@ -318,7 +319,7 @@ risparmio di tempo e risorse. La scelta di un'applicazione commerciale pronta al
 può quindi trasformarsi in un vantaggio competitivo, specialmente quando si allinea
 con le necessità aziendali e si integra armoniosamente nell'infrastruttura \texttt{IT}
 esistente.
-\subsection{Sviluppo del Sistema in Assenza di Soluzioni Preconfezionate}
+\subsubsection{Sviluppo del Sistema in Assenza di Soluzioni Preconfezionate}
 Nel caso in cui non sia disponibile un sistema preconfezionato che soddisfi i
 requisiti specifici del progetto, è necessario intraprendere un approccio alternativo.
 In questa situazione, i componenti riutilizzabili individuali possono essere modificati
@@ -328,7 +329,7 @@ componenti, sia modificati che nuovi, sono poi integrati per creare il sistema f
 Questo processo richiede un'attenta pianificazione e coordinamento per assicurare che
 tutte le parti del sistema lavorino insieme in modo armonioso, risultando in una
 soluzione completa e funzionale.
-\subsection{Vantaggi e svantaggi}
+\subsubsection{Vantaggi e svantaggi}
 Lo sviluppo di software basato sul riutilizzo di componenti offre diversi vantaggi
 significativi. Tra questi, il più evidente è il \textbf{basso costo}, poiché meno
 software viene sviluppato da zero. Questo approccio riduce anche il \textbf{rischio}
@@ -345,5 +346,201 @@ Un altro punto critico è la \textbf{perdita di controllo sull'evoluzione} dei c
 riutilizzati. Questo può portare a problemi nel lungo termine, specialmente se i
 componenti non sono più supportati o aggiornati dai loro fornitori originali.
 
-\chapter{Attività di sviluppo software}
+\section{Attività di sviluppo software}
+Le attività comuni che il processo di sviluppo software deve affrontare sono:
+\begin{itemize}
+  \item \textbf{Specifica}: definizione dei requisiti del sistema;
+  \item \textbf{Design e Implementazione}: definizione dell'organizzazione del sistema e
+  la sua realizzazione;
+  \item \textbf{Validazione}: verifica che il sistema sia conforme alle specifiche;
+  \item \textbf{Evoluzione}: modifica del sistema in risposta al cambiamento 
+  dei bisogni degli utenti.
+\end{itemize}
+\subsection{Specifica}
+La specifica delle funzionalità, nota anche come \textbf{ingegneria dei requisiti},
+è il processo che mira a capire e a definire quali servizi sono richiesti e identificati 
+per lo sviluppo del sistema. 
+Questo processo è uno dei processi più critici del ciclo di vita del software, poiché
+un errore in questa fase comporterà sicuramente dei problemi nel sistema finale, potendone 
+causare il fallimento. 
 
+Talvolta, è opportuno condurre un'attività preliminare di \textbf{studio di fattibilità}
+per verificare se il sistema proposto è fattibile dal punto di vista tecnico, economico
+e organizzativo. Di fatto si tratta di una versione in miniatura del progetto che 
+permette di valutare se avviare o meno il progetto completo.
+
+Tipicamente questa fare produce un \textbf{documento dei requisiti} che definisce
+formalmente i requisiti del sistema. Questo documento deve essere comprensibile sia
+per i clienti che per gli sviluppatori.
+\subsubsection{Produrre un documento dei requisiti}
+\begin{enumerate}
+    \item \textbf{Elicitazione dei requisiti}: per elicitazione, di fatto, si vuole intendere 
+    l'attività di trasferimento delle funzionalità richieste dal cliente 
+    verso gli ingegneri dei requisiti e/o del software. Consiste quindi in una descrizione 
+    del sistema che può essere fatta in vari modi (\textit{interviste, questionari, osservazione 
+    di sistemi software precedenti, studio di documentazione, ecc...}). Tale fase potrebbe 
+    richiedere anche la realizzazione di prototipi per aiutare il cliente a capire meglio
+    le sue esigenze.
+    \item \textbf{Specifica dei requisiti}: i requisiti, una volta raccolti, devono essere
+    specificati, ovvero devono essere descritti in modo preciso e non ambiguo. La rappresentazione
+    dei requisiti può essere fatta in vari modi (\textit{scrittura di documenti,
+    modelli grafici, modelli matematici, ecc...}), l'importante è che possa permettere
+    il dialogo tra i clienti e gli sviluppatori.
+    
+    I requisiti possono essere classificati in due categorie:
+    \begin{itemize}
+        \item \textbf{User Requirements}: descrivono le funzionalità del sistema dal punto
+        di vista degli utenti, che sono interessanti per il cliente, poiché descrivono
+        ciò che il cliente vuole dal sistema;
+        \item \textbf{System Requirements}: descrivono le funzionalità del sistema dal punto
+        di vista degli sviluppatori, che sono interessanti per gli sviluppatori, poiché 
+        descrivono ciò che il sistema deve fare.
+    \end{itemize}
+    \item \textbf{Validazione dei requisiti}: Una volta che i requisiti sono stati
+    specificati, è necessario verificarli per assicurarsi che siano corretti, completi
+    e realistici, 
+    catturando quindi tutte le funzionalità richieste dal cliente e che non ci siano
+    ambiguità. L'attività prevede che vi sia anche un controllo di errori e omissioni.
+    In caso di errori il documento dei requisiti deve essere corretto e aggiornato.
+\end{enumerate}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/requisitifasi.png}
+  \caption{Processo di produzione di un documento dei requisiti}
+\end{figure}
+Ognuna di queste fasi può opzionalmente avere un \textit{deliverable}, ovvero un
+documento che viene prodotto e utilizzo come input per la fase successiva.
+A seconda dell'approccio di sviluppo ci saranno step più o meno formali.
+\subsection{Design e implementazione}
+Questa fase consiste nel definire l'architettura del sistema e di fatto implementarlo
+mediante la scrittura del codice sorgente che rappresenta l'implementazione del sistema.
+
+Per \textbf{design} si intende la definizione delle \textit{strutture dati} che dovranno essere 
+implementare, i \textit{modelli} e le strutture utilizzate dal sistema, le \textit{interfacce} 
+che verranno utilizzate per comunicare con il sistema, gli \textit{algoritmi} che verranno utilizzati
+per implementare le funzionalità del sistema e le \textit{procedure di comunicazione} tra le varie
+componenti del sistema.
+
+L'\textbf{implementazione} consiste nella scrittura del codice eseguibile che implementa
+le funzionalità del sistema.
+
+Tipicamente il design del sistema è organizzato in quattro attività:
+\begin{enumerate}
+    \item \textbf{Design architetturale}: ad alto livello si individuano le macro 
+    aree in cui il sistema verrà articolato. Definendo quindi i principali componenti
+    del sistema e le loro interazioni. 
+    \item \textbf{Design del database}: si definiscono le strutture dati utilizzate 
+    ad alto livello e come 
+    verranno rappresentate nel database.
+    \item \textbf{Design dell'interfacce}: si definiscono le interfacce che verranno
+    utilizzate per comunicare con il sistema, poiché è importante definire come verranno
+    scambiate le informazioni tra il sistema e l'ambiente esterno. Nel concreto, è importante 
+    definire l'interfaccia perché permette gli sviluppatori di essere guidati nella scrittura
+    del codice.
+    \item \textbf{Selezione e design dei componenti}: una volta definite le interfacce
+    e le loro funzionalità è possibile 
+    procedere per la ricerca di componenti disponibili sul mercato che soddisfano 
+    le caratteristiche di cui si ha bisogno.
+    Nel caso in cui non si trovino componenti adatti, è necessario progettare i componenti
+    che verranno utilizzati. 
+    I componenti non riutilizzabili vengono progettati e implementati.
+\end{enumerate}
+La progettazione ha una struttura gerarchica, ovvero si parte da un livello più alto
+e si scende di livello fino ad arrivare al livello più basso. Questo è importante 
+soprattutto per progetti software di grandi dimensioni, poiché permette di suddividere
+il lavoro in modo più semplice e di gestire meglio le risorse.
+\subsection{Verifica e validazione}
+Una volta che il sistema è stato implementato e anche durante lo sviluppo 
+del software, è necessario verificare che il sistema
+sia allineato ai requisiti fissati. 
+Per farlo è possibile utilizzare due approcci:
+\begin{itemize}
+    \item \textbf{Verifica}: consiste nell'ispezionare il codice sorgente, ragionando 
+    sul codice scritto, per capire se il codice è corretto e se soddisfa i requisiti.
+    \item \textbf{Testing}: consiste nell'eseguire il codice sorgente, per capire se
+    il comportamento osservato è corretto e se soddisfa i requisiti (\textit{anche 
+    mediante dati simulati}).
+\end{itemize}
+
+Anche il testing si divide in sottofasi:
+\begin{enumerate}
+    \item \textbf{Testing del componente}: si testa il componente singolarmente,
+    per capire se il componente se la responsabilità del componente è corretta.
+    \item \textbf{Testing del sistema}: si testa il sistema nel suo complesso,
+    per capire se il sistema funziona correttamente. Si verifica che l'integrazione 
+    tra i vari componenti sia corretta.
+    \item \textbf{Accettazione del testing \textit{customer testing}}: si testa il sistema
+    in un ambiente simile a quello in cui verrà utilizzato, anche con 
+    dati realistici, per capire se il sistema
+    soddisfa i requisiti fissati.
+\end{enumerate}
+\subsection{Evoluzione del software}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{img/evolution.png}
+    \caption{Processo di evoluzione del software}
+\end{figure}
+Quando si ritiene necessario apportare una modifica, può essere seguito uno schema
+di evoluzione del software, che prevede le seguenti fasi:
+\begin{enumerate}
+    \item \textbf{Definizione dei requisiti di sistema}: si definisce il cambiamento che si vuole
+    apportare al sistema, ovvero si definisce il requisito che si vuole aggiungere o
+    modificare.
+    \item \textbf{Analisi dell'impatto}: si analizza l'impatto che il cambiamento avrà
+    sul sistema, ovvero si analizza quali componenti del sistema verranno modificati
+    e quali no. Per impatto si intende anche il costo che il cambiamento avrà sul sistema,
+    e come tale dovrà essere negoziato con il cliente.
+    \item \textbf{Progettazione del cambiamento}: si ritorna dal cliente per unificare 
+    se il cambiamento è accettabile e se il costo è accettabile. 
+    \item \textbf{Implementazione del cambiamento}: si implementa il cambiamento.
+\end{enumerate}
+
+\section{Gestione dei cambiamenti}
+Nel contesto del processo di sviluppo del software, è essenziale gestire efficacemente
+i cambiamenti per garantire una transizione fluida e un prodotto finale di alta qualità.
+Tre aspetti chiave della gestione dei cambiamenti sono:
+
+\begin{enumerate}
+    \item \textbf{Cambiamenti che causano rilavoro e introduzione di nuove funzionalità:}
+    Durante lo sviluppo, possono emergere richieste di modifiche o l'aggiunta di nuove
+    funzionalità. È importante essere pronti ad affrontare queste modifiche,
+    ma bisogna anche considerare l'impatto sul lavoro già svolto.
+    
+    \item \textbf{Anticipazione dei cambiamenti:} Un approccio preventivo consiste
+    nell'anticipare possibili modifiche prima che diventino necessari
+    rilavori significativi. Ad esempio, condividere un prototipo con gli utenti finali
+    per discutere e finalizzare i loro requisiti prima di impegnare notevoli risorse
+    nell'implementazione definitiva.
+    
+    \item \textbf{Tolleranza ai cambiamenti:} Il processo di sviluppo dovrebbe essere
+    progettato in modo da consentire l'incorporazione di cambiamenti a un costo
+    relativamente basso. Questo significa che le modifiche non dovrebbero comportare
+    una revisione completa del lavoro svolto fino a quel momento.
+\end{enumerate}
+\subsection{Prototipazione}
+È anche importante menzionare il ruolo del prototipo nell'ambito dello
+sviluppo del software:
+\begin{tcolorbox}[title = Prototipo]
+Una versione iniziale di un sistema software
+utilizzata per dimostrare concetti, esplorare opzioni di progettazione
+e approfondire la comprensione del problema e delle sue soluzioni possibili.
+\end{tcolorbox}
+Lo sviluppo rapido e iterativo del prototipo aiuta a controllare i costi.
+Durante l'ingegneria dei requisiti, il prototipo aiuta nell'elicitation e
+nella validazione dei requisiti del sistema. Durante la progettazione del
+sistema, può essere utilizzato per esplorare soluzioni nell'ambito dell'interfaccia
+utente.
+\subsection{Vantaggi e Svantaggi dell'Approccio Incrementale}
+
+Lo sviluppo incrementale presenta vantaggi significativi. Permette
+di consegnare un prodotto funzionante al cliente in tempi brevi, consentendo
+così di ottenere un feedback tempestivo. Questo contribuisce a ridurre il rischio 
+di fallimento del progetto, in quanto il cliente può verificare se il prodotto soddisfa
+i requisiti stabiliti. Inoltre, l'approccio incrementale facilita l'implementazione di
+modifiche rapide ed economiche al prodotto.
+
+Tuttavia, vi sono anche svantaggi associati a questo approccio. Il prodotto finale
+potrebbe mancare di una struttura complessiva ben definita, poiché è stato sviluppato
+in modo incrementale, senza una pianificazione completa. Inoltre, il processo
+incrementale potrebbe comportare una minore copertura di test, in quanto lo sviluppo
+può concentrarsi sugli incrementi senza una visione completa del sistema.
