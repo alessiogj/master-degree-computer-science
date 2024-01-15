@@ -882,7 +882,7 @@ informazione sul segreto $s$.
 
 Costruiamo un polinomio $P$ casuale di grado $k$ tale che $P(0) = s$.
 \[
-  P(x) = a_0 + a_1x + \dots + a_{k-1}x^{k-1} + a_kx^k
+  P(x) = a_0 + a_1x + \dots + a_{k-1}x^{k-1}
 \]
 \[
   P(0) = a_0 = s
@@ -915,6 +915,6 @@ La ricostruzione del segreto può essere effettuata utilizzando una tecnica come
 polinomiale. Ad esempio, utilizzando l'interpolazione di Lagrange, il segreto può essere recuperato
 con la seguente formula:
 
-\[ s = P(0) = \sum_{i=1}^{k} P(x_i) \prod_{j=1, j\neq i}^{k} \frac{x_j}{x_i - x_j} \]
+\[ s = P(0) = \sum_{j=0}^{k-1} y_j \prod_{m=0, m \neq j}^{k-1} \frac{x_m}{x_m - x_j} \]
 
 Dove $x_1, x_2, \dots, x_k$ sono i punti in cui gli agenti hanno valori del polinomio $P$.
