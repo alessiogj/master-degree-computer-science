@@ -415,7 +415,7 @@ non viene effettivamente vista la differenza tra le due versioni di $H'$.
     In questo caso la differenza tra le due distribuzioni di probabilità è trascurabile, ovvero
     non esiste un algoritmo \texttt{PPT} che riesce a distinguere tra le due distribuzioni di probabilità.
     \[
-      \sum \big| \texttt{view}(P,V,x,h) - M(P,V,x,h) \big| \leq k^{-\omega(1)}
+      \sum_\omega \bigg| \texttt{view}(P,V,x,h)(\omega) - M(P,V,x,h)(\omega)  \bigg| \leq k^{-\omega(1)}
     \]
 \end{tcolorbox}
 \begin{tcolorbox}[title = Computational Zero Knowledge]
@@ -425,7 +425,7 @@ non viene effettivamente vista la differenza tra le due versioni di $H'$.
     sia $\mathcal{P}_k^{\mathcal{D}, \mathcal{M}}$ la probabilità che $\mathcal{D}$
     restituisca $1$ campionando da $M$,
     \[
-        \big| \mathcal{P}_k^{\mathcal{D}, \mathcal{V}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{M}} \big| \leq k^{-\omega(1)}
+        \bigg| \mathcal{P}_k^{\mathcal{D}, \mathcal{V}} - \mathcal{P}_k^{\mathcal{D}, \mathcal{M}} \bigg| \leq k^{-\omega(1)}
     \]
     Non esiste un algoritmo \texttt{PPT} che riesce a distinguere tra le due distribuzioni di probabilità.
 \end{tcolorbox}
