@@ -145,7 +145,7 @@ Un \textbf{interactive proof system} è una coppia di algoritmi (\textit{macchin
 che $P$ ha potenza di calcolo illimitata e $V \in \texttt{PPT}$. $P$ e $V$ interagiscono scambiandosi 
 messaggi e alla fine $V$ deve decidere se accettare o rifiutare l'input $x$.
 
-Un linguaggio $\mathcal{L}$ ammette un \texttt{IPS} (\textit{Interactive Polynomial time Space}) se
+Un linguaggio $\mathcal{L}$ ammette un \texttt{IPS} (\textit{Interactive Proof Space}) se
 esistono due algoritmi, \(P\) e \(V\), tali che:
 
 \[
@@ -181,8 +181,14 @@ che possa simulare una macchina di Turing con spazio limitato e risolvere il pro
 Pertanto, si conclude che \( \texttt{IP} \) e \( \texttt{PSPACE} \) sono equivalenti in termini di potenza computazionale.
 \end{proof}
 \subsection{Quadratic non-residuosity}
+Tale problema è un problema appartenente alla classe di problemi \texttt{CO-NP}, perché verificare che un numero 
+sia effettivamente un quadrato è un problema di \texttt{NP} e il certificato che mostra che un numero è un quadrato è
+una delle due radici quadrate del numero.
+
 Abbiamo un numero in $\mathbb{Z}_n^*$ che non è un quadrato e vogliamo costruire un interactive proof system
 per dimostrare che non è un quadrato.
+
+L'idea alla base è che se $x$ non è un quadrato, allora moltiplicando $x$ per un quadrato, il risultato non sarà un quadrato.
 
 L'input del problema è la coppia $(n,x)$, e l'output accetta se $x$ è un non-residuo quadratico in $\mathbb{Z}_n^*$.
 Victor manda a Peggy $w_1, w_2, \dots, w_l$ dove:
@@ -261,11 +267,17 @@ grafi che preserva gli archi.
         \end{tikzpicture}
     \caption{Esempio di due grafi isomorfi}
 \end{figure}
-$V$ sceglie un grafo $G\in \{G_1, G_2\}$ e lo permuta casualmente in $G'$. $V$ invia $G'$ a $P$ e $P$ 
+
+\begin{tcolorbox}[title=Isomorfismo di grafi]
+    Due grafi sono isomorfi, quando esiste un mapping biunivoco, che preserva 
+    gli archi, tra i vertici dei due grafi.
+\end{tcolorbox}
+
+$V$ sceglie un grafo $G\in_R \{G_1, G_2\}$ e lo permuta casualmente in $G'$. $V$ invia $G'$ a $P$ e $P$ 
 stabilisce se $G'$ è isomorfo a $G_1$ o $G_2$ e invia il risultato a $V$. $V$ accetta se $P$ indovina correttamente.
 
 Il fatto che $P$ sia in grado di rispondere è dovuto al fatto che abbia potenza di calcolo illimitata e non 
-è dovuto al fatto che vi siano informazioni trapdoors. 
+è dovuto al fatto che vi siano informazioni trapdoor. 
 
 Vorremo arrivare al punto che $V$ non impari nulla di più se non il non isomorfismo tra i grafi, poiché 
 potrebbe esistere un $V$ che ha come obiettivo di sapere qualcosa in più, come ad esempio capire se $G_2$
@@ -345,8 +357,8 @@ allora costruiamo $H'$ secondo il protocollo.
   \node[bob, mirrored, minimum size=2cm, label=below:{Verifier}] (Verifier) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\<\< \text{Codifica }H' \text{ con bit commitment} \\
-\< \sendmessageleft*{H'}\< \\
+\text{Codifica }H' \text{ con bit commitment}\<\<  \\
+\< \sendmessageright*{H'}\< \\
 \<\sendmessageleft*{\text{Dimostra che } G \simeq H}\<\\
 \<\sendmessageright*{\text{Rivela } H \text{ e }G \simeq H}\<\\
 }
@@ -361,8 +373,8 @@ bit commitment del grafo \textbf{completo}, scegliendo una permutazione casuale 
     \node[bob, mirrored, minimum size=2cm, label=below:{Verifier}] (Verifier) {};
 \end{tikzpicture}
 \\[0.1\baselineskip][\hline] \\[-0.5\baselineskip]
-\<\< \text{Codifica }H' \text{ con bit commitment} \\
-\<\sendmessageleft*{H'}\< \\
+\text{Codifica }H' \text{ con bit commitment}\<\<  \\
+\< \sendmessageright*{H'}\< \\
 \<\sendmessageleft*{H \text{ hamiltoniano}}\<\\
 \text{Codifica $H'$ con bit commitment} \<\< \\
 \text{del grafo completo con un ciclo} \<\< \\

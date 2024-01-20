@@ -526,3 +526,109 @@ sempre sbagliata, poiché verrebbe complementata la risposta pensando che $w$ no
 però è possibile sorvolare tale problema, poiché basta vedere come si comporta statisticamente 
 la macchina in presenza di non quadrati e di quadrati. Il comportamento della macchina è per forza diverso di fronte 
 alle due situazioni, perché altrimenti non sarebbe capace di distinguere i due input.
+
+\section{Distinguisher}\label{sec:distinguisher}
+Codificare $b_1, \dots, b_l$ in $E(b_1), \dots, E(b_l)$ può essere fatto facendo si che dal testo cifrato non si risalga 
+al testo in chiaro. Dimenticandoci del problema della malleabilità, vorremmo che dal cyphertext non si possa risalire
+ad alcuna informazione binaria sul plaintext, ma dobbiamo capire cosa vuol dire non poter risalire ad alcuna informazione
+binaria.
+\begin{tcolorbox}[title = Distinguisher]
+  Un \textbf{distinguisher} è un algoritmo binario $\mathcal{D} \in \texttt{PPT}$ che restituisce $0$ o $1$. Il distinguisher
+  prende in input un evento che soddisfa o meno una certa proprietà e 
+  un altro evento che soddisfa o meno la stessa proprietà. Il distinguisher deve essere in grado di distinguere
+  se i due eventi si comportano in modo diverso o meno.
+  Statisticamente il distinguisher verifica che i due eventi si comportino in modo polinomialmente diverso
+  (\ref{limite_chernoff}), altrimenti tale differenza non sarebbe distinguibile.
+\end{tcolorbox}
+Sia $\probP_k^{\mathcal{D}, m}$ la probabilità che il distinguisher $\mathcal{D}$ restituisca $1$ su input, una codifica 
+di $m$ quando il security parameter vale $k$. Un sistema di codifica nasconde $m_1$ e $m_2$ a $\mathcal{D}$ quando:
+\begin{equation}
+  \forall c \, \exists \bar{k} \, \forall k \geq \bar{k} \qquad
+  |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-c}
+\end{equation}
+Ovvero:
+\begin{equation}
+  |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| < k^{-\omega(1)}
+\end{equation}
+$E$ nasconde informazioni a $\mathcal{D}$ se per ogni $m_1$ e $m_2$ $E$ nasconde $m_1$ e $m_2$ a $\mathcal{D}$. 
+$E$ nasconde se per ogni $\mathcal{D} \in \texttt{PPT}$ $E$ nasconde $m_1$ e $m_2$ a $\mathcal{D}$.
+\begin{proof}
+  Supponiamo per assurdo che $\exists \mathcal{D} \in \texttt{PPT}$ tale che 
+  \[
+    \exists m_1, m_2, \,\forall \bar{k} \, \exists k \geq \bar{k} \qquad
+    |\probP_k^{\mathcal{D}, m_1} - \probP_k^{\mathcal{D}, m_2}| \geq k^{-c}
+  \]
+   Allora $\mathcal{D}$ può distinguere su due messaggi $m_1$ e $m_2$ che differiscono di un solo bit.
+   \begin{equation*}
+    m_1 = \alpha^1 \alpha^2 \dots \alpha^l \qquad
+    m_2 = \beta^1 \beta^2 \dots \beta^l 
+   \end{equation*}
+
+Definisco $\forall i \in \{0,\dots,l\} \,m(i) = \beta^1 \dots \beta^{i-1} \beta^i \alpha^{i+1} \dots \alpha^l$, 
+ovvero una serie di bit intermedi per poter passare da $m_1$ a $m_2$ variando un solo bit per volta.
+Quindi $m(0) = m_1$, $m(l) = m_2$, di conseguenza $\probP_k^{\mathcal{D}, m(i)} = \probP(i)$, ovvero la probabilità 
+che il distinguisher restituisca $1$ se viene data in input una codifica del messaggio $m_i$.
+  \[
+    \probP(0) = \probP_k^{\mathcal{D}, m_1} \qquad \probP(l) = \probP_k^{\mathcal{D}, m_2}
+  \]
+Scopriamo quindi che l'ipotesi diventa:
+\[
+  k^{-c} \leq |\probP(0) - \probP(l)| = |\sum_{i=0}^{l - 1} \probP(i) - \probP(i+1)| 
+  \leq \sum_{i=0}^{l - 1} |\probP(i) - \probP(i+1)|
+\]
+Poiché sappiamo che $\probP(0) - \probP(1) + \probP(1) - \probP(2) + \dots + \probP(l-1) - \probP(l) = \probP(0) - \probP(l)$. 
+Quindi:
+\[
+  \sum_{i=0}^{l - 1} |\probP(i) - \probP(i+1)| \geq k^{-c}
+\]
+Avendo la somma di numeri che eccede un determinato valore allora so che esiste almeno un elemento che è maggiore o uguale 
+della media.
+\[
+  \exists i \in \{0,\dots,l-1\}\qquad \textit{t.c.} \qquad |\probP(i) - \probP(i+1)| \geq \frac{k^{-c}}{l} \geq k^{-(c+1)} = k^{-c'}
+\]
+Abbiamo quindi trovato un polinomio $c'$ tale per cui il distinguisher è in grado di distinguere due messaggi che differiscono
+di un solo bit.
+I due messaggi $m_1$ e $m_2$ differiscono di un solo bit, quindi:
+\begin{align*}
+  \begin{array}{r c lllllllll}
+  m(i) & = & \beta^1 &\dots &\beta^{i-1} & \beta^i &\textcolor{red}{\alpha^{i+1}} & \alpha^{i+2} &\dots &\alpha^l \\
+  m(i+1) & = & \beta^1 &\dots &\beta^{i-1} & \beta^i &\textcolor{red}{\beta^{i+1}} & \alpha^{i+2} &\dots &\alpha^l \\
+  \end{array}
+\end{align*}
+A questo punto supponiamo senza perdita di generalità che $\alpha^{i+1} = 0$ e $\beta^{i+1} = 1$. Sia $z$ un 
+elemento di $\mathbb{Z}_n^*$ con $\left( \frac{z}{n} \right) = 1$, quindi $z$ potrebbe essere la codifica di uno 
+$0$ o di un $1$.
+
+Dato $z$ viene costruito $E(\beta_1)E(\beta_2)\dots E(\beta_i)zE(\alpha_{i+2})\dots E(\alpha_l)$ e viene lanciato 
+l'algoritmo $\mathcal{D}$ sul risultato. La probabilità con cui $\mathcal{D}$ restituisce $1$ è \probP(i) se $z$
+codifica $0$ e $\probP(i+1)$ se $z$ codifica $1$ se in input viene data la codifica di $m(i)$ secondo 
+l'algoritmo per codificare il messaggio $m_i$, ovvero applicando $E$ a tutti i bit del messaggio.
+Avendo però aggiunto $z$ in mezzo al messaggio non ho codificato secondo l'algoritmo che il distinguisher
+si aspetta, quindi bisogna codificare il messaggio $m(i)$ in maniera corretta:
+\[
+  E(\beta_1)E(\beta_2)\dots E(\beta_i)\,\textcolor{red}{z \cdot x^2}\,E(\alpha_{i+2})\dots E(\alpha_l)\qquad \text{con } 
+  x \in \mathbb{Z}_n^*
+\]
+A questo punto il distinguisher restituisce $1$ con probabilità $\probP(i)$ se $z$
+codifica $0$ e $\probP(i+1)$ se $z$.
+
+Chiamiamo $\mathcal{P}_0$ la probabilità che il distinguisher restituisca $0$ (\textit{quindi $\probP(i)$}) e 
+$\mathcal{P}_1$ la probabilità che il distinguisher restituisca $1$ (\textit{ovvero $\probP(i+1)$}) se in input dato è costruito come sopra.
+
+Se si riceve la codifica di un bit scelto a caso, con quale probabilità si riesce a distinguere se è $0$ o $1$?
+Si utilizza il risultato del distinguisher $\mathcal{D}$ come tentativo.
+\[
+  \probP[\texttt{indovinare}] = \frac{1}{2} \cdot (1 - \mathcal{P}_0) + \frac{1}{2} \cdot \mathcal{P}_1 = 
+  \frac{1}{2} + \frac{1}{2} \cdot (\mathcal{P}_1 - \mathcal{P}_0)
+\]
+Se sottraiamo $\frac{1}{2}$ otteniamo:
+  \begin{align*}
+    \probP[\texttt{non indovinare}] &= \frac{1}{2} + \frac{1}{2} \cdot (\mathcal{P}_1 -
+  \mathcal{P}_0) - \frac{1}{2} \\
+  &= \frac{1}{2} \cdot (\mathcal{P}_1 - \mathcal{P}_0) \\
+  &= \frac{1}{2} \cdot |\probP(i) - \probP(i+1)| \\
+  &\geq \frac{1}{2} \cdot k^{-c'}
+  \end{align*}
+L'algoritmo ha quindi un vantaggio di almeno $\frac{1}{2} \cdot k^{-c'}$, quindi tale algoritmo è 
+un attaccante.
+\end{proof}
