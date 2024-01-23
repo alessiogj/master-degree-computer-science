@@ -1,0 +1,190 @@
+\chapter{Design architetturale}
+\section{Design architetturale}
+L'obiettivo del design architetturale nel campo del software è di comprendere
+l'organizzazione del software, progettando la sua struttura generale e identificando
+i principali componenti strutturali e le loro relazioni all'interno del sistema.
+Un quesito rilevante in questo ambito è: perché è importante esplicitare un'architettura
+software?
+
+Ci sono molteplici motivi per questo. Primo, l'architettura agisce come una
+rappresentazione ad alto livello che facilita la comunicazione con gli stakeholder.
+Inoltre, aiuta nell'analisi del sistema, poiché alcune decisioni architetturali possono
+influenzare aspetti non funzionali del sistema come le performance e l'affidabilità.
+Infine, un'architettura ben definita può favorire il riutilizzo dei componenti in
+diversi sistemi.
+
+La \textbf{rappresentazione} dell'architettura è spesso realizzata tramite diagrammi a blocchi,
+che mostrano le relazioni tra le varie entità. Questi diagrammi, sebbene utili, sono
+talvolta criticati per la loro marcata astrazione e mancanza di significato dettagliato.
+
+Gli \textbf{utilizzi} di tali rappresentazioni includono la semplificazione delle discussioni sulla
+progettazione del sistema e la documentazione dell'architettura, evidenziando componenti,
+connessioni e interfacce. Questo approccio fornisce una visione chiara e organizzata
+dell'intero sistema, essenziale per una progettazione e implementazione efficace.
+
+Le \textbf{viste} dell'architettura sono le rappresentazioni dell'architettura che mostrano
+diversi aspetti del sistema. Queste viste sono utili per gli stakeholder che hanno
+interessi diversi nel sistema. Ad esempio, un programmatore può essere interessato
+alla vista dell'architettura che mostra i componenti del sistema e le loro interazioni,
+mentre un amministratore di sistema può essere interessato alla vista che mostra
+le risorse del sistema e le loro interazioni.
+Si distinguono quindi le seguenti viste:
+\begin{itemize}
+  \item \textbf{Vista logica}: mostra le entità chiave del sistema e le loro interazioni.
+  \item \textbf{Vista di processo}: mostra i processi del sistema e le loro interazioni.
+  \item \textbf{Vista di sviluppo}: mostra come il sistema è organizzato per il processo di sviluppo.
+  \item \textbf{Vista fisica}: mostra l'hardware e il software che compongono il sistema.
+\end{itemize}
+
+\section{Pattern architetturale}
+
+\subsection{Model View Controller}
+Il \textbf{Model View Controller} è un pattern architetturale che separa i dati e la logica
+dell'applicazione dalla loro rappresentazione e dal modulo che si occupa di gestire 
+l'interazione con l'utente. Il pattern MVC prevede la suddivisione dell'applicazione
+in tre componenti:
+\begin{itemize}
+  \item \textbf{Model}: rappresenta i dati dell'applicazione e le operazioni che possono essere
+  eseguite su di essi. In questo componente non è presente alcuna logica di presentazione.
+  \item \textbf{View}: rappresenta la visualizzazione dei dati contenuti nel model. In questo
+  componente non è presente alcuna logica di business.
+  \item \textbf{Controller}: riceve gli input dell'utente e li converte in comandi per il model
+  o per la view.
+\end{itemize}
+
+L'utilizzo di MVC è consigliato quando si vuole separare la logica di business dalla
+logica di presentazione. In questo modo è possibile modificare la rappresentazione
+dei dati senza dover modificare la logica di business e viceversa. 
+Quindi quando ci sono molti modi di vedere o interagire con gli stessi dati o quando il 
+modo in cui le viste interagiscono con i dati è soggetto a evoluzione.
+
+\subsubsection{Vantaggi e svantaggi}
+Tra i vantaggi di questo pattern si possono citare:
+\begin{itemize}
+    \item \textbf{Separazione delle responsabilità}: il pattern MVC separa le responsabilità
+    dell'applicazione in tre componenti. Questo rende più facile la manutenzione e l'evoluzione
+    dell'applicazione.
+    \item \textbf{Supporta la presentazione dei dati in maniere diverse}: il pattern MVC
+    permette di presentare i dati in maniere diverse.
+    \item \textbf{Cambiamenti nella logica}: il pattern MVC permette di cambiare la logica
+    dell'applicazione senza dover modificare la presentazione dei dati.
+\end{itemize}
+Tra gli svantaggi principali abbiamo che la separazione dei componenti
+può portare a un aumento
+della quantità di codice necessario per implementare l'applicazione.
+\subsection{Architettura stratificata}
+L'architettura stratificata è un pattern architetturale che prevede la suddivisione
+dell'applicazione in un insieme di livelli. Ogni livello è responsabile di un aspetto
+dell'applicazione. I livelli comunicano tra loro attraverso interfacce ben definite.
+
+Viene utilizzata quando si progetta su sistemi esistenti, quando lo sviluppo è 
+diviso tra vari team o se sono requisiti legati alla sicurezza multi-livello.
+
+\subsubsection{Vantaggi e svantaggi}
+Tra i vantaggi di questo pattern si possono citare:
+\begin{itemize}
+    \item Permette di rimpiazzare un livello fintanto che l'interfaccia di comunicazione 
+    tra livelli adiacenti è rispettata.
+    \item Si possono introdurre ridondanze tra i vari layer in maniera da incrementare 
+    l'affidabilità del sistema.
+\end{itemize}
+Tra gli svantaggi principali abbiamo che:
+\begin{itemize}
+    \item Nella pratica una separazione dei livelli così netta e pulita non 
+    è banale da raggiungere.
+    \item L'aggiunta di un nuovo livello può portare a un aumento della latenza.
+\end{itemize}
+\subsection{Architettura Repository}
+L'architettura Repository è un pattern architetturale che prevede la presenza di un
+componente che si occupa di gestire la persistenza dei dati. Questo componente
+fornisce un'interfaccia per accedere ai dati e per modificarli.
+
+Viene solitamente utilizzata quando ci sono grandi quantità di dati da gestire o
+quando devono essere gestiti dati che cambiano frequentemente, o in sistemi dove 
+l'inclusione di dati nella repository fa si che venga azionata una serie di
+eventi.
+
+\subsubsection{Vantaggi e svantaggi}
+Il vantaggio è che i componenti sono indipendenti, inoltre i cambiamenti fatti su una 
+risorsa da un componente sono immediatamente disponibili per gli altri componenti perché 
+vengono propagati tramite la repository. I dati possono essere gestiti consistentemente 
+dato che sono accessibili solo tramite la repository.
+
+Gli svantaggi sono che:
+\begin{itemize}
+    \item C'è un single point of failure. Se la repository fallisce,
+    l'intero sistema fallisce.
+    \item La repository può diventare un collo di bottiglia.
+    \item Distribuire la repository su più server può essere difficile.
+\end{itemize}
+\subsection{Architettura Client-Server}
+L'architettura Client-Server è un pattern architetturale che prevede la presenza
+di due componenti: un server che fornisce un servizio e un client che richiede
+il servizio. Il client e il server comunicano attraverso una rete utilizzando
+un protocollo ben definito.
+
+Viene utilizzata quando i dati condivisi devono essere acceduti da più posizioni, 
+e dato che i server sono replicabili per fare load-balancing e per garantire
+l'affidabilità del sistema.
+
+\subsubsection{Vantaggi e svantaggi}
+Tra i vantaggi di questo pattern si possono citare:
+\begin{itemize}
+    \item I server possono essere distribuiti sulla rete.
+    \item Funzionalità generali, sono disponibili a tutti i client senza che siano 
+    implementate da tutti i server.
+\end{itemize}
+Tra gli svantaggi principali abbiamo che:
+\begin{itemize}
+    \item Ogni servizio è un single point of failure.
+    \item La performance dipende dalla latenza della rete.
+    \item Problemi di management quando i server sono posseduti da differenti 
+    organizzazioni.
+\end{itemize}
+
+\subsection{Architettura Peer-to-Peer}
+Nelle architetture \textbf{Peer-to-Peer} (P2P), ogni componente agisce sia
+come client che come server. Ogni peer fornisce un'interfaccia che specifica
+sia i servizi offerti sia quelli richiesti. Quando un peer necessita di dati,
+esso comunica con gli altri peer della rete per identificare chi può fornirgli
+le informazioni richieste.
+
+Le architetture P2P sono note per la loro capacità di scalare efficacemente e
+per la loro tolleranza ai guasti. La replicazione dei dati tra vari peer è un
+elemento chiave, aumentando la disponibilità dei dati e riducendo il rischio di
+perdita di informazioni a causa di guasti di singoli nodi. Questa caratteristica
+rende le reti P2P particolarmente robuste e affidabili, adatte per sistemi che
+richiedono una distribuzione ampia e decentralizzata delle risorse.
+\subsection{Architettura Pipe and Filter}
+L'architettura Pipe and Filter è un pattern architetturale che i dati 
+vengano elaborati per step successivi, ad esempio prima generiamo i dati, poi li
+filtriamo, poi li analizziamo e infine li visualizziamo. 
+
+Si tratta di un'architettura molto appropriata per sistemi in cui i dati devono
+essere elaborati in maniera sequenziale, in cui i dati sono disponibili in
+quantità illimitate e in cui i dati possono essere elaborati in maniera
+indipendente. Non sono adatte per sistemi interattivi.
+La utilizziamo quindi in applicazioni che processano dei dati.
+
+\subsubsection{Vantaggi e svantaggi}
+Tra i vantaggi di questo pattern si possono citare:
+\begin{itemize}
+    \item Facile da capire e supporta il riuso.
+    \item Il workflow è simile alla struttura di danti processi di business.
+    \item L'evoluzione aggiungendo trasformazioni è semplice.
+    \item Può essere implementato come un sistema sequenziale o concorrente.
+\end{itemize}
+
+Tra gli svantaggi principali abbiamo che:
+\begin{itemize}
+    \item Il formato dei dati deve essere comune a tutti gli step di trasformazione.
+    \item Ogni trasformazione deve fare parsing dei dati come concordato, ciò incrementa 
+    l'overhead.
+\end{itemize}
+\section{Architetture eterogenee}
+Ovviamente si possono combinare tra di loro i vari pattern architetturali se vantaggioso.
+Li si può organizzare in una composizione gerarchica, ossia ad esempio ho un sistema pipe
+and filter che ha un sottosistema organizzato a livelli.
+Nelle architetture eterogenee inoltre un componente può avere due ruoli diversi
+in due pattern distinti, ad esempio un sottosistema accede ai dati tramite
+una repository ma comunica con gli altri componenti tramite una pipe.
