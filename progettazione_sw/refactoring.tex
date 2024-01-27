@@ -32,52 +32,59 @@ in cui è opportuno fare refactoring, ad esempio quando si deve iniziare
 a sviluppare nuove funzionalità, in modo che sia facile nel codice recepire 
 questa nuova funzionalità. Oppure quando si deve correggere un bug, o 
 in caso di identificazione di \textit{code smell}. 
-\subsection{Code smell}
-Sensazione che qualcosa nel codice non va, e che gli sviluppatori
-esperti sanno che è un problema. Gli sviluppatori esperti hanno 
-una sensazione di disagio quando vedono un code smell, lo sviluppatore 
-non avrebbe fatto così.
-\subsubsection{Code smell comuni}
-Duplicazione di codice, quando avviene si utilizza una funzione
-per rimuovere la duplicazione. Preventivamente vengono evitati 
-problemi, riducendo il costo di manutenzione futuro.
+\subsection{Code Smell}
+Un code smell è una sensazione che qualcosa nel codice non vada come dovrebbe, qualcosa che gli sviluppatori esperti riconoscono come un potenziale problema. Gli sviluppatori esperti spesso avvertono una sensazione di disagio quando si imbattono in un code smell, riconoscendo che essi stessi non avrebbero scritto il codice in quel modo.
 
-I metodi e le funzioni troppo lunghi, sono difficili da capire, 
-e ci si accorge quando si tende a commentare il codice ad ogni step. In 
-questo caso è utile spezzare il codice in più segmenti, già individuati 
-dai commenti.
+\subsubsection{Code Smell Comuni}
+Alcuni esempi comuni di code smell includono:
 
-Spesso lo switch case rappresenta un code smell, soprattutto quando
-si utilizza in un linguaggi ad oggetti. In questo caso è meglio
-sfruttare il polimorfismo.
-In termine di oggetti è più naturale.
+\paragraph{Duplicazione di Codice}
+Quando c'è duplicazione, è consigliabile utilizzare una funzione per
+eliminarla. Questo aiuta a prevenire problemi futuri e riduce il costo
+della manutenzione.
 
-Data clumping quando delle strutture dati sono sempre usate insieme,
-è un code smell. Ha senso creare una classe che racchiude queste
-strutture dati.
+\paragraph{Metodi e Funzioni Troppo Lunghi}
+I metodi e le funzioni troppo lunghi sono spesso difficili da comprendere
+e ci si accorge di questo quando si tende a commentare il codice ad ogni
+passaggio. In questi casi, è utile suddividere il codice in segmenti più
+piccoli, possibilmente già individuati dai commenti.
 
-Generalità speculativa, quando si crea un'interfaccia 
-per qualcosa che non è ancora necessario, ma questo crea difficoltà
-nella complessità del codice. 
+\paragraph{Uso dello Switch Case in Linguaggi ad Oggetti}
+Lo switch case può rappresentare un code smell, soprattutto nei linguaggi
+orientati agli oggetti. È spesso preferibile sfruttare il polimorfismo, che
+è più naturale in termini di oggetti.
 
-\subsection{Classi di smell}
+\paragraph{Data Clumping}
+Quando diverse strutture dati sono sempre utilizzate insieme, si può
+trattare di un code smell. In questi casi, ha senso creare una classe che
+racchiuda queste strutture dati.
+
+\paragraph{Generalità Speculativa}
+Si verifica quando si crea un'interfaccia per funzionalità che non sono
+ancora necessarie, aggiungendo complessità inutile al codice.
+\subsection{Classi di Smell}
+I code smell possono essere categorizzati in diverse classi
+in base alle loro caratteristiche. Di seguito sono elencati
+alcuni dei più comuni:
+
 \begin{itemize}
-    \item Troppo codice:
+    \item \textbf{Troppo Codice:}
     \begin{itemize}
-        \item \textbf{Large class}: una classe che ha troppe responsabilità
-        \item \textbf{Long method}: un metodo che è troppo lungo.
-        \item \textbf{Long parameter list}: una lista di parametri troppo lunga.
-        \item \textbf{Duplicated code}: codice duplicato.
-        \item \textbf{Dead code}: codice che non viene mai eseguito.
+        \item \textbf{Large Class:} una classe che ha troppe responsabilità.
+        \item \textbf{Long Method:} un metodo che è troppo lungo.
+        \item \textbf{Long Parameter List:} una lista di parametri troppo lunga.
+        \item \textbf{Duplicated Code:} codice duplicato.
+        \item \textbf{Dead Code:} codice che non viene mai eseguito.
     \end{itemize}
-    \item Troppo poco codice:
+    \item \textbf{Troppo Poco Codice:}
     \begin{itemize}
-        \item \textbf{Classi con poco codice}: una classe che non ha abbastanza
+        \item \textbf{Classi con Poco Codice:} una classe che non ha abbastanza
         codice.
-        \item \textbf{Empty catch clause}: un blocco catch che non fa nulla.
-        \item \textbf{Classi di dati}: classi con solo getter e setter.
+        \item \textbf{Empty Catch Clause:} un blocco catch che non fa nulla.
+        \item \textbf{Classi di Dati:} classi con solo getter e setter.
     \end{itemize}
-    \item Codice con troppi commenti: il codice non è autoesplicativo.
+    \item \textbf{Codice con Troppi Commenti:} indica che il codice non è
+    autoesplicativo.
 \end{itemize}
 \section{Software clone}
 \begin{tcolorbox}[title = Clone]
@@ -98,19 +105,26 @@ al 5\%. Esistono tool per identificare i cloni.
     di ritorno.
 \end{itemize}
 \section{Refactoring}
-Il fatto di avere i test automatizzati è importante, perché
-si può fare refactoring in modo sicuro. Test di non regressione,
-per verificare che il comportamento non cambi. 
-Quando tutti i test passano, si può fare refactoring, si identifica 
-il code smell e si determina il refactoring appropriato. Una volta completata 
-questa modifica si rieseguono i test, se passano si può continuare.
+L'importanza dei test automatizzati risiede nella possibilità di
+effettuare il refactoring del codice in modo sicuro. I test di non
+regressione sono essenziali per assicurare che le modifiche non alterino
+il comportamento atteso del sistema. Una volta che tutti i test hanno
+esito positivo, è possibile procedere con il refactoring: si identifica
+il 'code smell', ovvero gli aspetti del codice che necessitano di
+miglioramento, e si determina il tipo di refactoring più appropriato.
+Dopo aver apportato queste modifiche, i test vengono rieseguiti; se il
+risultato è positivo, si può procedere ulteriormente.
 
-Il ritmo da seguire è quello su scala piccola, si fa refactoring
-su una piccola parte di codice, si eseguono i test, si fa refactoring 
-su un'altra piccola parte di codice, si eseguono i test, e così via.
-In questo modo si riduce il rischio di introdurre bug e ci si accorge
-subito se si è introdotto un bug.
+Per minimizzare il rischio di introdurre bug, è consigliabile adottare un
+approccio incrementale al refactoring. Questo significa concentrarsi su
+piccole porzioni di codice per volta: si effettua il refactoring su una
+parte limitata del codice, si eseguono i test, e solo dopo si passa a
+un'altra sezione. Questo processo iterativo non solo riduce il rischio
+di bug, ma consente anche di identificare immediatamente eventuali errori
+introdotti durante il refactoring.
+
 \subsection{Applicazione del refactoring}
+\subsubsection{Ridenominazione}
 La ridenominazione è il refactoring più semplice, si cambia il nome
 di una variabile, di una funzione, di una classe, di un metodo. Per farlo possiamo 
 utilizzare tool automatici, che ci permettono di fare refactoring
