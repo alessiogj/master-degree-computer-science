@@ -227,15 +227,29 @@ venga sviluppato in maniera incrementale, ovvero in più fasi, dove ogni fase
 produce un incremento del prodotto software. Ogni incremento è un prodotto software
 che può essere rilasciato al cliente, e che può essere utilizzato dal cliente. 
 
+Nello sviluppo incrementale la prima versione del software conterrà una piccola parte 
+delle funzionalità che dovrà avere, talvolta anche solo una, però è considerata \textbf{completa} 
+perché è possibile metterla in esecuzione.
+
 Nel modello di sviluppo incrementale, l'implementazione iniziale del software viene esposta
 agli utenti fin dalle prime fasi. Questo approccio consente di evolvere il software
-attraverso diverse versioni, finché non si ottiene il sistema richiesto.
+attraverso diverse versioni, finché non si ottiene il sistema richiesto, in modo 
+da ricevere anche del feedback dai committenti in funzione dei successivi rilasci.
 Questo modello è generalmente preferito rispetto al modello a cascata,
 specialmente quando i requisiti si prevede possano evolvere nel corso dello sviluppo.
-A differenza del modello a cascata, le attività di specifica, sviluppo e validazione
-sono intrecciate e non separate. Ciò consente un feedback rapido e continuo tra le
-attività, promuovendo un affinamento progressivo del prodotto attraverso iterazioni
+Il software viene riadattato nei rilasci successivi in caso di cambiamento dei 
+requisiti.
+
+Nel processo di sviluppo incrementale, a differenza del modello a cascata, si parte da una 
+priva comprensione del sistema ad alto livello e successivamente le attività di specifica, sviluppo e validazione
+sono intrecciate e non separate, procedendo quindi in \textbf{parallelo} durante tutto 
+il processo di sviluppo software. Ciò consente un feedback rapido e continuo tra le
+attività, promuovendo un \textbf{affinamento progressivo del prodotto} attraverso iterazioni
 successive.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/incrementale.png}
+\end{figure}
 \subsubsection{Vantaggi e svantaggi}
 
 Il modello di sviluppo incrementale offre il vantaggio di ridurre i costi
@@ -247,28 +261,63 @@ consentendo la consegna e l'implementazione rapida delle parti più utili del so
 In questo modo, i clienti sono in grado di utilizzare il software, seppur parziale,
 più precocemente rispetto a un processo a cascata.
 
-Tuttavia, il processo presenta anche delle sfide. La visibilità del processo può
-non essere evidente, e i manager necessitano di consegne regolari per misurare i
-progressi. Se i sistemi vengono sviluppati rapidamente, non è economicamente conveniente
-produrre documentazione che rifletta ogni versione del sistema. La struttura del sistema
-tende a degradarsi man mano che vengono aggiunti nuovi incrementi. A meno che non si
-investa tempo e denaro in attività di \textit{refactoring} per migliorare il software,
-i cambiamenti regolari tendono a corrompere la sua struttura. Di conseguenza,
-incorporare ulteriori cambiamenti al software diventa sempre più difficile e costoso.
+Questo approccio stimola inoltre il cambiamento, che di fatto potrebbero non 
+emergere non vedendo il sistema in esecuzione. Il committente che non ha chiaro 
+il requisito da sviluppare, vedendo il sistema all'opera riesce a ragionare concretamente
+e quindi stimola delle riflessioni che astrattamente non venivano espresse.
+
+Le incomprensioni, inoltre, emergono fin da subito, permettendo di risolvere i problemi 
+in maniera tempestiva.
+
+Avere a disposizioni versioni precoci del sistema permette, oltre che ad avere feedback,
+anche il trasferimento di valore al cliente, permettendo a delle funzionalità di essere 
+già utilizzate nel business.
+
+Tuttavia, il processo presenta anche delle sfide. 
+Il processo non è monitorabile come nel processo guidato da piani, perché di fatto 
+non ci sono obiettivi che vengono raggiunti o un documento dei 
+requisiti che viene consegnato ad un certo punto e quindi, specialmente per il 
+management è difficile avere una chiara visione dell'andamento dello sviluppo, capendo 
+se si è in linea con le scadenze, o comunque non è così esplicito come con 
+l'ausilio di waterfall.
+Questo è uno dei motivi per la quale questo tipo di processo ha un po' di resistenze, soprattutto 
+in progetti costosi di grandi dimensioni.
+Inoltre, la documentazione è molto minimale e potrebbe essere obsoleta rispetto 
+alla versione corrente del software. Potrebbe essere che l'architettura ideata inizialmente 
+potrebbe non essere adatta a recepire, trovandoci quindi ad dover scendere a compromessi,
+riadattando funzionalità, causando la degradazione del sistema, richiedendo quindi 
+che si spenda del tempo nell'attività di \textbf{refactoring}. Non dare la giusta importanza 
+a tale attività può portare alla corruzione della struttura.
 
 \subsection{Integrazione e configurazione}
-Nel processo di sviluppo software di integrazione e configurazione, il sistema 
-è assemblato da componenti sviluppati separatamente. Tale processo può essere
-sia plan-driven che agile.
+Nel processo di sviluppo software di integrazione e configurazione, 
+invece di puntare sullo sviluppo del codice sorgente da zero, si punta ad integrare 
+componenti che si trovano sullo \textit{scaffale}, integrando quindi pezzi pronti
+per le singole funzionalità richieste, e il maggior sforzo sarà relativo alla 
+configurazione, ovvero la scrittura di codice \textit{colla} che cerca di mettere
+insieme queste componenti per realizzare le funzionalità richieste.
 
 Lo sviluppo di software basato sul riutilizzo è un approccio in cui i sistemi
 sono integrati a partire da componenti o sistemi già esistenti. Questo metodo
 sfrutta in particolare i componenti Commercial-off-the-shelf (\texttt{COTS}),
-che sono sistemi disponibili commercialmente e possono essere riutilizzati così
+che sono sistemi disponibili commercialmente o all'interno dell'azienda
+e possono essere riutilizzati così
 come sono o configurati per adattarsi alle esigenze e ai requisiti specifici degli
 utenti. Gli elementi riutilizzati possono essere configurati per adattare il loro
 comportamento e le loro funzionalità, rendendo il riutilizzo l'approccio standard
 per la costruzione di molti tipi di sistemi aziendali.
+
+Lo sforzo è mirato verso la \textbf{selezione dei componenti giusti} e all'integrazione 
+di questi nel sistema finale.
+Si parla di configurazione perché spesso si tratta di componenti \textit{general purpose},
+e più che implementazione lo sforzo è relativo alla configurazione dei parametri operativi,
+in modo che siano efficaci nel sistema che si va a sviluppare.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/integr_config.png}
+\end{figure}
+
 \subsubsection{Commonly used components - \texttt{COTS}}
 I sistemi autonomi (\texttt{COTS}), generalmente dotati di numerose funzionalità, vengono
 adattati o configurati per l'uso in un ambiente specifico. Si trovano anche collezioni
@@ -279,72 +328,46 @@ pluralità di opzioni disponibili per il riutilizzo nel software fornisce una
 flessibilità senza precedenti nella progettazione e nello sviluppo di nuovi sistemi,
 consentendo alle aziende di risparmiare tempo e risorse.
 \subsubsection{Specifica dei requisiti}
-Nella fase iniziale di concezione di un sistema, vengono proposti i requisiti
-iniziali. Questi non necessitano di essere elaborati in dettaglio ma dovrebbero
-includere brevi descrizioni delle necessità essenziali e delle caratteristiche
-desiderabili del sistema. È fondamentale che questi requisiti riflettano una
-comprensione di base delle aspettative del cliente e della funzionalità chiave
-che il sistema dovrà avere, senza tuttavia immergersi in specifiche tecniche
-complesse. Questo approccio permette di stabilire una direzione generale per
-il progetto, lasciando spazio per l'affinamento progressivo dei requisiti man
-mano che si procede con lo sviluppo.
-\subsubsection{Selezione di Componenti e Sistemi per il Riutilizzo}
-Nel processo di sviluppo software orientato al riutilizzo, è cruciale effettuare
-una ricerca accurata di componenti e sistemi che forniscano la funzionalità
-richiesta. Una volta identificati potenziali candidati, questi componenti e
-sistemi vengono valutati attentamente per determinare se soddisfano i requisiti
-essenziali e se sono generalmente adatti al riutilizzo nel sistema in questione.
-Questa valutazione implica un'analisi approfondita delle caratteristiche tecniche,
-della compatibilità con l'architettura esistente e della facilità di integrazione.
-La selezione accurata è fondamentale per garantire che il riutilizzo dei componenti
-non solo acceleri lo sviluppo ma contribuisca anche a una solida fondazione per il
-sistema finale.
-\subsubsection{Affinamento dei Requisiti e Componenti Riutilizzabili}
-Nel corso dello sviluppo software, i requisiti sono affinati utilizzando le
-informazioni sui componenti riutilizzabili scoperti. Questo processo di affinamento
-può comportare la modifica dei requisiti per riflettere i componenti disponibili,
-portando a una ridefinizione della specifica del sistema. È un'esercizio di
-bilanciamento tra le esigenze iniziali e le soluzioni pratiche offerte dai
-componenti esistenti. Laddove le modifiche ai requisiti si rivelino impossibili
-o impraticabili, l'attività di analisi dei componenti può essere ripetuta nella
-ricerca di alternative più adatte. Questa iterazione è vitale per assicurare che
-il sistema finale non solo soddisfi le necessità degli utenti ma sia anche
-costruito in modo efficiente e sostenibile.
-\subsubsection{Adozione di Sistemi Applicativi Preconfezionati}
-Nell'eventualità che sia disponibile un sistema applicativo preconfezionato
-che soddisfi i requisiti del progetto, è possibile procedere alla sua configurazione
-per l'uso al fine di creare il nuovo sistema. Questa operazione di configurazione si
-rivela spesso un'alternativa efficace allo sviluppo da zero, permettendo un notevole
-risparmio di tempo e risorse. La scelta di un'applicazione commerciale pronta all'uso
-può quindi trasformarsi in un vantaggio competitivo, specialmente quando si allinea
-con le necessità aziendali e si integra armoniosamente nell'infrastruttura \texttt{IT}
-esistente.
-\subsubsection{Sviluppo del Sistema in Assenza di Soluzioni Preconfezionate}
-Nel caso in cui non sia disponibile un sistema preconfezionato che soddisfi i
-requisiti specifici del progetto, è necessario intraprendere un approccio alternativo.
-In questa situazione, i componenti riutilizzabili individuali possono essere modificati
-per adattarli meglio alle esigenze del sistema. Inoltre, può essere necessario lo
-sviluppo di nuovi componenti per colmare le lacune funzionali o tecnologiche. Questi
-componenti, sia modificati che nuovi, sono poi integrati per creare il sistema finale.
-Questo processo richiede un'attenta pianificazione e coordinamento per assicurare che
-tutte le parti del sistema lavorino insieme in modo armonioso, risultando in una
-soluzione completa e funzionale.
-\subsubsection{Vantaggi e svantaggi}
-Lo sviluppo di software basato sul riutilizzo di componenti offre diversi vantaggi
-significativi. Tra questi, il più evidente è il \textbf{basso costo}, poiché meno
-software viene sviluppato da zero. Questo approccio riduce anche il \textbf{rischio}
-associato allo sviluppo di nuove soluzioni, rendendolo particolarmente attraente per
-progetti con budget e tempi limitati. Inoltre, permette una \textbf{consegna rapida}
-di un sistema funzionante, essendo gran parte del lavoro focalizzato sull'integrazione
-di componenti esistenti piuttosto che sulla creazione di nuovi.
+Nella fase iniziale si individuano le funzionalità che il sistema dovrà mettere a disposizione
+ad alto livello. Tipicamente si tratta di una descrizione essenziale che il sistema dovrà avere,
+perché i requisiti dovranno piegarsi a quelle che sono le funzionalità disponibili dalle 
+componenti già pronte per essere integrate.
+\subsubsection{Fase di ricerca e valutazione dei componenti}
+Le fasi di ricerca e valutazione dei componenti si svolgono in parallelo.
+Nella fase di ricerca si cercano nelle componenti le funzionalità che 
+sono state identificate, mentre nella fase di valutazione, nel caso in cui più componenti 
+espongano la stessa funzionalità, si decide quale utilizzare si in termini di \textbf{integrabilità}
+che in termini di \textbf{funzionabilità}.
+\subsubsection{Affinamento dei Requisiti}
+A questo punto di procede con l'affinamento dei requisiti, cercando di comprendere se 
+le componenti soddisfano appieno i requisiti prefissati e si valuta se accettare 
+requisiti leggermente diversi in modo da utilizzare le componenti a disposizione, 
+e in questo caso di itera in questo ciclo finché di raggiunge un allineamento tra le componenti 
+disponibili e i requisiti prefissati.
+\subsubsection{Configurazione del sistema}
+Se di fatto i componenti individuati forniscono una copertura completa dei requisiti possiamo 
+iniziare a \textbf{configurare} tali componenti, rendendo il sistema finale di fatto 
+composto dalle componenti selezionate. 
+\subsection{Adattamento delle componenti e sviluppo delle componenti}
+Nel caso in cui il sistema non risulta configurabile, dobbiamo o adattare le componenti 
+disponibili o sviluppare nuove componenti, per poter \textbf{integrare il sistema}. 
+\subsection{Vantaggi e svantaggi}
+I vantaggi sono legati al basso costo, al rischio basso, dato che le componenti sono 
+già state testate e sviluppate in precedenza (\textit{sia da terzi che da progetti esistenti}).
+Il software da sviluppare è poco, rendendo di fatto il team di sviluppo abbastanza piccolo e 
+il sistema viene consegnato in tempi brevi. Questo approccio è tipicamente adottato in caso di 
+startup, dove c'è la necessità di raggiungere il mercato il più presto possibile, potendo quindi 
+trasferire valore dal mercato all'azienda.
 
-Tuttavia, ci sono anche degli svantaggi. Uno dei principali è la potenziale
-\textbf{bassa qualità} dei componenti riutilizzati, che potrebbe non essere all'altezza
-degli standard richiesti. Inoltre, spesso si verifica un \textbf{compromesso sui requisiti},
-con il rischio di ottenere un sistema finale che non soddisfa completamente gli utenti.
-Un altro punto critico è la \textbf{perdita di controllo sull'evoluzione} dei componenti
-riutilizzati. Questo può portare a problemi nel lungo termine, specialmente se i
-componenti non sono più supportati o aggiornati dai loro fornitori originali.
+Gli svantaggi sono legati alla qualità del prodotto più bassa, nel senso che spesso è 
+necessario adottare dei compromessi e quindi avere soluzioni non pienamente ottimali.
+Come effetto collaterale della qualità bassa, il sistema finale potrebbe non rispondere 
+ai requisiti completi dei miei utenti.
+Lo svantaggio principale è dovuto al fatto che non c'è controllo dell'evoluzione del 
+sistema software, poiché lo sviluppo dei singoli componenti è in capo alla azienda o 
+comunità che ha sviluppato quel componente, quindi se dovessero esserci dei problemi 
+legati all'implementazione dei componenti, io come team di sviluppo, non ho pieno
+controllo sui tempi necessari per risolvere tale problema.
 
 \section{Attività di sviluppo software}
 Le attività comuni che il processo di sviluppo software deve affrontare sono:
