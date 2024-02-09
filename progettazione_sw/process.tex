@@ -390,7 +390,7 @@ causare il fallimento.
 Talvolta, è opportuno condurre un'attività preliminare di \textbf{studio di fattibilità}
 per verificare se il sistema proposto è fattibile dal punto di vista tecnico, economico
 e organizzativo. Di fatto si tratta di una versione in miniatura del progetto che 
-permette di valutare se avviare o meno il progetto completo.
+permette di valutare se avviare o meno il progetto.
 
 Tipicamente questa fare produce un \textbf{documento dei requisiti} che definisce
 formalmente i requisiti del sistema. Questo documento deve essere comprensibile sia
@@ -497,10 +497,28 @@ Anche il testing si divide in sottofasi:
     dati realistici, per capire se il sistema
     soddisfa i requisiti fissati.
 \end{enumerate}
+\subsubsection{Modello a V}
+Quando si adotta questa tipologia di test gerarchico, si parla di modello a V della 
+verifica e validazione.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/validation.png}
+    \caption{Modello a V della verifica e validazione}
+\end{figure}
+Il piano di test viene elaborato in modo inverso rispetto al piano di sviluppo.
+Inizialmente, quando le funzionalità che il sistema deve offrire vengono stabilite,
+si definiscono i test di accettazione, che saranno gli ultimi a essere eseguiti,
+solo dopo che il sistema è stato completamente implementato. Successivamente, una
+volta che l'architettura del sistema è stata delineata, si procede con la definizione
+del piano di test a livello di sistema. Man mano che i singoli componenti vengono
+specificati, si definiscono anche i test per ciascuno di questi componenti. In
+questo modo, i test sono pianificati partendo dal livello più alto fino a quello
+più basso,
+ma la loro esecuzione avviene in ordine inverso, dal più basso al più alto.
 \subsection{Evoluzione del software}
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.5]{img/evolution.png}
+    \includegraphics[scale=0.7]{img/evolution.png}
     \caption{Processo di evoluzione del software}
 \end{figure}
 Quando si ritiene necessario apportare una modifica, può essere seguito uno schema
@@ -544,26 +562,58 @@ Tre aspetti chiave della gestione dei cambiamenti sono:
 È anche importante menzionare il ruolo del prototipo nell'ambito dello
 sviluppo del software:
 \begin{tcolorbox}[title = Prototipo]
-Una versione iniziale di un sistema software
-utilizzata per dimostrare concetti, esplorare opzioni di progettazione
-e approfondire la comprensione del problema e delle sue soluzioni possibili.
+    Il prototipo aiuta a rendere tangibile un concetto che altrimenti
+    sarebbe astratto. Permette di esplorare diversi approcci per implementare
+    un cambiamento, come modifiche all'architettura o all'interfaccia utente,
+    senza apportare modifiche dirette al sistema. Questo processo facilita il
+    team di sviluppo nella comprensione di come minimizzare l'impatto dei
+    cambiamenti. Inoltre, consente una convalida efficace
+    del cambiamento con il cliente.
 \end{tcolorbox}
 Lo sviluppo rapido e iterativo del prototipo aiuta a controllare i costi.
-Durante l'ingegneria dei requisiti, il prototipo aiuta nell'elicitation e
-nella validazione dei requisiti del sistema. Durante la progettazione del
+Durante l'ingegneria dei requisiti, il prototipo aiuta la fase di elicitazione
+dei requisiti e
+nella validazione dei requisiti del sistema, per capire se un requisito è stato appreso
+correttamente, o per aiutare i clienti ad esprimere idee che altrimenti risulterebbero 
+astratte. Durante la progettazione del
 sistema, può essere utilizzato per esplorare soluzioni nell'ambito dell'interfaccia
 utente.
-\subsection{Vantaggi e Svantaggi dell'Approccio Incrementale}
+\subsection{Gestione del cambiamento nell'Approccio Incrementale}
+Quando abbiamo riportato il processo di sviluppo incrementale, avviamo detto che 
+si tratta del processo di sviluppo che si presta meglio alla gestione dei cambiamenti
+perché prevede diverse consegne al cliente e quindi il cambiamento avviene proprio 
+per natura del processo. I cambiamenti possono essere legati ai requisiti, ma anche
+a nuove funzionalità che il cliente vuole aggiungere, di natura tecnica legata
+all'implementazione o esigenze di mercato.
 
-Lo sviluppo incrementale presenta vantaggi significativi. Permette
-di consegnare un prodotto funzionante al cliente in tempi brevi, consentendo
-così di ottenere un feedback tempestivo. Questo contribuisce a ridurre il rischio 
-di fallimento del progetto, in quanto il cliente può verificare se il prodotto soddisfa
-i requisiti stabiliti. Inoltre, l'approccio incrementale facilita l'implementazione di
-modifiche rapide ed economiche al prodotto.
+Il cliente può sperimentare il sistema, fornire feedback e richiedere modifiche
+prima che il prodotto sia completato. Questo approccio consente di ridurre il rischio
+di fallimento del progetto e di garantire che il prodotto soddisfi le esigenze del
+cliente. 
 
-Tuttavia, vi sono anche svantaggi associati a questo approccio. Il prodotto finale
-potrebbe mancare di una struttura complessiva ben definita, poiché è stato sviluppato
-in modo incrementale, senza una pianificazione completa. Inoltre, il processo
-incrementale potrebbe comportare una minore copertura di test, in quanto lo sviluppo
-può concentrarsi sugli incrementi senza una visione completa del sistema.
+Il prodotto in questo modo sarà facilmente allineato con le necessità del cliente,
+che potevano non essere chiare all'inizio del progetto, non avendo avuto modo di
+integrare il sistema software con il proprio ambiente di lavoro.
+\subsection{Vantaggi e svantaggi dell'approccio incrementale}
+Le funzionalità del sistema sono disponibili in tempi brevi, il che consente
+di ottenere un feedback rapido dal cliente. Questo feedback può essere utilizzato
+per guidare lo sviluppo futuro e garantire che il prodotto soddisfi le esigenze
+del cliente. Inoltre, le consegne incrementali sono funzionali per la fase 
+di elicitazione dei requisiti, in quanto consentono di esplorare i requisiti
+con il cliente e di ottenere un feedback immediato.
+Si ha minor rischio di fallimento del progetto, in quanto il prodotto viene
+consegnato in piccole parti, e quindi è più facile correggere eventuali errori
+e allinearsi con le esigenze del cliente, dando inoltre priorità alle funzionalità
+più importanti che saranno quelle maggiormente testate e quindi più affidabili.
+
+Gli svantaggi sono legati al fatto che la maggior parte dei progetti software,
+anche per le prime versioni, richiedono un \textbf{grosso sottoinsieme} di funzionalità
+per essere utilizzabili, non permettendo quindi di trasferire immediatamente 
+valore al cliente, che è il principale obiettivo del processo incrementale.
+Inoltre, la specifica delle funzionalità viene sviluppata insieme al sistema,
+non avendo quindi modo di congelare un documento dei requisiti per verificare 
+in maniera rigorosa e completa i requisiti del sistema.
+Non è possibile quindi applicare tale approccio in commesse governative o 
+ministeriali in cui i requisiti sono ben definiti nel contratto
+e non possono essere modificati
+durante il processo di sviluppo.
