@@ -207,46 +207,250 @@ Le sue fasi principali includono:
     si riflette sulle lezioni apprese.
 \end{enumerate}
 
-\subsection{Terminologia}
-Alcuni termini chiave in Scrum includono:
+\subsubsection{Terminologia}
+Di seguito sono riportati alcuni termini chiave in Scrum:
 
-\begin{itemize}
-    \item Team piccolo, con un massimo di $7$ persone.
-    \item Ad ogni incremento deve corrispondere un prodotto consegnabile 
-    al cliente, ovvero un incremento di funzionalità.
-    \item Backlog, che rappresenta la lista di tutte le funzionalità richieste dal cliente.
-    \item Product Owner, responsabile della priorizzazione delle funzionalità e delle decisioni su cosa è più necessario.
-    \item Sprint, che rappresenta un periodo di lavoro di $2$-$4$ settimane.
-    \item Scrum Master, responsabile del monitoraggio e del supporto al processo di sviluppo.
-    \item Velocità, che rappresenta la produttività del team e viene calcolata e aggiornata durante lo sviluppo per la
-    pianificazione dei prossimi sprint.
-    \item Sprint Review, una sessione per riflettere sull'iterazione e fornire input per migliorare i prossimi sprint.
-\end{itemize}
+\begin{center}
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Termine} & \textbf{Descrizione} \\
+\hline
+Team piccolo & Gruppo di massimo $7$ persone, ottimale per favorire la comunicazione diretta e l'agilità nelle attività. \\
+\hline
+Incremento & Ogni incremento corrisponde a un prodotto consegnabile al cliente, completo e testato. Ad esempio, se ci sono link, devono essere cliccabili e funzionanti. \\
+\hline
+Product Backlog & Lista di tutte le funzionalità che il prodotto deve avere, utilizzata come ``to-do list" per il team di sviluppo. \\
+\hline
+Product Owner & Cliente, committente o stakeholder che fa parte del team e ha il compito di priorizzare le funzionalità, rappresentando le esigenze degli utenti finali. \\
+\hline
+Scrum & Meeting giornaliero veloce, noto anche come stand-up meeting, per verificare il progresso del team e priorizzare le attività. \\
+\hline
+Sprint & Periodo di lavoro di $2$-$4$ settimane, durante il quale il team si impegna a consegnare un incremento di funzionalità. \\
+\hline
+Scrum Master & Responsabile del monitoraggio e del supporto al processo di sviluppo, garantisce che il team segua le regole di Scrum. \\
+\hline
+Velocità & Produttività del team, misurata durante lo sviluppo, che indica quanti elementi del backlog il team è in grado di sviluppare durante uno sprint. \\
+\hline
+Sprint Review & Sessione in cui il team riflette sull'iterazione appena conclusa e fornisce input per migliorare i prossimi sprint. \\
+\hline
+\end{tabular}
+\end{center}
 
-\subsection{Benefici}
-I benefici di Scrum includono la gestione efficiente di funzionalità nel breve termine, una conoscenza approfondita
-dei problemi e delle attività di ogni membro del team, nonché la puntualità delle consegne per il cliente. Scrum favorisce
-un clima di fiducia tra il cliente e il team di sviluppo, poiché il cliente ha la possibilità di visualizzare il sistema software
-funzionante e fornire un feedback continuo. Questo feedback aiuta a chiarire le esigenze del cliente e ad adattare il prodotto
+\subsubsection{Ciclo di sviluppo Scrum}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/sprintcycle.png}
+    \caption{Ciclo di sviluppo Scrum}
+\end{figure}
+Si parte con la definizione del Product Backlog, che è una lista di tutte le
+funzionalità che il prodotto deve avere. Il product owner è responsabile di
+priorizzare le funzionalità, in modo da inserire in cima alla lista quelle più
+importanti per il cliente.
+
+Per farlo tipicamente si utilizzano task board, in cui
+si possono visualizzare le attività da svolgere, le attività relative allo 
+sprint non ancora iniziate, le attività in corso e le attività in rilascio. 
+
+Le attività con più alta priorità verranno inserite nello sprint backlog, che è
+la lista di attività che il team si impegna a completare entro la fine dello
+sprint. Il numero di attività inserite nello sprint backlog è determinato dalla
+velocità del team, ovvero dalla produttività del team, stimata inizialmente e 
+calibrata durante lo sviluppo.
+
+Durante lo sprint, il team si impegna a completare le attività dello sprint
+backlog, e si tiene un meeting giornaliero veloce, noto anche come scrum,
+per verificare il progresso del team e priorizzare le attività. Di norma 
+la durata di uno sprint è di $2$-$4$ settimane e questa durata viene stabilita all'inizio 
+del progetto e non viene modificata.
+
+Durante queste due settimane il team lavora in modo autonomo, senza comunicare 
+con il cliente. Tutte le comunicazioni con il product owner avvengono
+tramite lo scrum master, che ha il compito di mediare la comunicazione tra
+il team e il cliente.
+
+Durante lo scrum meeting, l'obiettivo è comunicare ciò che verrà fatto 
+nella giornata corrente, riassumendo ciò che è stato fatto il giorno precedente
+e identificando eventuali ostacoli che impediscono il completamento delle attività.
+
+Al termine dello sprint, il team si riunisce per riflettere sull'iterazione appena
+conclusa e fornire input per migliorare i prossimi sprint. Questa sessione è
+nota come sprint review. Se alcune attività non vengono completate
+entro la fine dello sprint, vengono inserite nel backlog e verranno riproposte
+nello sprint successivo.
+
+\subsubsection{Benefici}
+I benefici di Scrum includono la gestione efficiente di funzionalità nel breve termine,
+una conoscenza approfondita
+dei problemi e delle attività di ogni membro del team, nonché la puntualità delle consegne
+per il cliente. Scrum favorisce
+un clima di fiducia tra il cliente e il team di sviluppo, poiché il cliente ha la possibilità
+di visualizzare il sistema software
+funzionante e fornire un feedback continuo. Questo feedback aiuta a chiarire le esigenze
+del cliente e ad adattare il prodotto
 in modo efficace.
 
-\section{Scrum Distribuito}
-Lo Scrum distribuito si riferisce a situazioni in cui il team di sviluppo è distribuito in più sedi geografiche. In questo contesto,
-la comunicazione tra i membri del team avviene attraverso strumenti come chat in tempo reale, chiamate video e l'utilizzo di sistemi
-di continuous integration per garantire che il software sia sempre funzionante. Un piano di sviluppo comune aiuta a facilitare la
-comunicazione tra i vari team e sedi geografiche.
+\subsection{Scrum Distribuito}
+Lo Scrum distribuito si riferisce a situazioni in cui il team di sviluppo è distribuito
+in più sedi geografiche.
+È importante che il product owner faccia visita agli sviluppatori in modo da stabilire 
+una relazione di fiducia e a garantire che il team sia allineato con le esigenze del cliente.
+In questo contesto, la comunicazione tra i membri del team avviene attraverso strumenti
+come chat in tempo reale, chiamate video.
+La continuous integration server per garantire che il software sia sempre funzionante 
+e pronto per il rilascio, in modo che i membri del team siano in grado si sincronizzare
+e lavorare in modo collaborativo.
+È importante adottare un ambiente di sviluppo condiviso, in modo che tutti i membri del team
+possano accedere alle stesse risorse e strumenti di sviluppo.
+\section{Scalabilità delle metodologie Agili}
+Abbiamo detto che tipicamente le metodologie agili sono adatte a progetti di piccole
+dimensioni, dove gli sviluppatori sono collocati nella stessa sede e i progetti sono 
+di piccola e media dimensione. Tuttavia, è possibile adattare le metodologie agili
+a progetti di grandi dimensioni, dove gli sviluppatori sono distribuiti in più sedi
+geografiche lavorando anche in più team di sviluppo, e i progetti durano per più tempo.
 
-\subsection{Scalabilità}
-La scalabilità di Scrum si riferisce alla sua capacità di adattarsi a progetti più grandi che coinvolgono più persone e team,
-o che richiedono un'implementazione distribuita. Alcuni punti chiave da considerare includono la necessità di mantenere le pratiche
-chiave come il Test Driven Development (TDD), la comunicazione e la consegna di incrementi funzionanti. La coordinazione tra lo
-sviluppo Agile e la manutenzione del sistema è altrettanto importante, specialmente quando le persone coinvolte potrebbero cambiare
-nel corso del progetto.
+Quando viene applicata la scalabilità è importante mantenere i fondamenti agili relativi a:
+\begin{itemize}
+    \item Pianificazione flessibile
+    \item Rilasci frequenti
+    \item Continuous integration
+    \item Test driven development
+    \item Buona comunicazione tra i membri del team
+\end{itemize}
+È inoltre importante coordinare lo sviluppo agile con esigenze del post-sviluppo, ovvero 
+della manutenzione del software. Per le caratteristiche viste, la metodologia di sviluppo 
+agile prevede una documentazione minima, ma quando viene affrontata la manutenzione del
+software, è necessario avere una documentazione più dettagliata, perché il team di manutenzione
+potrebbe non essere lo stesso team di sviluppo. Le problematiche principali che si incontrano
+sono che i sistemi sviluppati con metodologie agili potrebbero essere \textbf{difficili da
+mantenere},
+perché la documentazione può essere non allineata con il codice, e quando i membri 
+del team originale lasciano l'azienda, la conoscenza del sistema potrebbe andare persa.
+\subsection{Problematiche nell'adozione delle metodologie agili}
+In generale potrebbero verificarsi delle problematiche legate all'adozione di metodologie
+agili.
+\subsubsection{Problematiche di sistema}
+Quando si adotta una metodologia agile è importante chiedersi:
+\begin{itemize}
+    \item Quanto grande sarà il sistema? I metodi agili sono adatti a
+    sistemi dove gli sviluppatori sono collocati nella stessa sede,
+    in modo da comunicare in maniera non formale e i progetti
+    sono di piccola e media dimensione.
+    \item Che tipologia di sistema si sta sviluppando? I metodi agili
+    sono adatti a sistemi dove non è richiesta una grossa analisi 
+    iniziale prima di iniziare lo sviluppo.
+    \item Quanto sarà la vita del sistema? Solitamente i progetti 
+    di lunga durata richiedono una documentazione più dettagliata
+    rispetto a quelli di breve durata, e i metodi agili prevedono
+    una documentazione minima.
+    \item Il sistema è soggetto a regolamentazioni? I metodi agili
+    sono adatti a sistemi dove non è richiesta una grossa documentazione
+    per soddisfare regolamentazioni.
+\end{itemize}
+\subsubsection{Problematiche legate al team}
+\begin{itemize}
+    \item Il supporto tecnologico è adeguato? I metodi agili richiedono
+    un ambiente di sviluppo condiviso, in modo che tutti i membri del team
+    possano accedere alle stesse risorse e strumenti di sviluppo. È necessario 
+    che gli \texttt{IDE} supportino la visualizzazione e l'analisi del codice
+    se la documentazione è minima. 
+    \item Il team è competente? È necessario
+    che il team sia formato e competente in modo da poter prendere decisioni
+    in maniera autonoma.
+    \item Come è organizzato il team? Se le persone sono tutte insieme 
+    allora possono decidere in maniera coordinata le decisioni da prendere.
+    In caso di team distribuiti, è necessario adottare una documentazione 
+    più dettagliata.
+\end{itemize}
+\subsubsection{Problematiche legate all'organizzazione}
+\begin{itemize}
+    \item Come è organizzato il lavoro? Se il lavoro è organizzato in modo
+    gerarchico, potrebbe essere difficile adottare metodologie agili. 
+    \item Come è la cultura aziendale? Inoltre,
+    la comunicazione informale può o meno far parte del profilo aziendale.
+    \item Il cliente è coinvolto? È necessario che il cliente sia disponibile 
+    per fornire un feedback continuo, senza feedback continuo il team di sviluppo
+    non riuscirà a capire le esigenze del cliente e adottare un cambiamento 
+    dei requisiti in modo efficace.
+\end{itemize}
+\subsection{Metodi agili per sistemi di grandi dimensioni}
+Nel contesto dello sviluppo di sistemi software complessi, è comune
+incontrare la necessità di adattare le metodologie agili per gestire sfide specifiche.
+Questo può verificarsi, ad esempio, quando si lavora su un ``sistema di sistemi", ovvero
+un insieme di sistemi software che interagiscono tra loro e possono essere sviluppati da
+più team.
 
-\subsection{Problemi e Resistenze}
-Alcuni problemi e resistenze comuni nell'adozione di metodi Agile come Scrum includono la mancanza di esperienza del management nell'ambito
-della metodologia Agile, la necessità di adattarsi a procedure di controllo della qualità preesistenti e le resistenze culturali all'interno
-dell'organizzazione. Il successo della metodologia Agile può essere dimostrato attraverso casi di studio e una maggiore stabilità dei requisiti
-nel tempo.
+Le situazioni che richiedono questa personalizzazione includono:
 
+\begin{enumerate}
+    \item \textbf{Configurazione anziché sviluppo orientato al codice:} In alcuni contesti,
+    come quelli in cui la configurazione è più rilevante rispetto allo sviluppo del codice,
+    è necessario adattare le pratiche agili per gestire efficacemente questo processo.
+    
+    \item \textbf{Regolamentazioni e documentazione dettagliata:} In presenza di molte
+    regolamentazioni, è fondamentale avere una documentazione dettagliata. Le metodologie
+    agili possono essere adattate per integrare questo requisito, assicurando che la
+    documentazione sia adeguatamente gestita e aggiornata durante il processo di sviluppo.
+    
+    \item \textbf{Lunghezza dei contratti e rischio di perdere figure chiave:} In situazioni
+    in cui i contratti sono estesi e vi è il rischio che figure chiave lascino il progetto
+    prima del suo completamento, è necessario adottare approcci che garantiscano una gestione
+    efficace delle risorse umane e una transizione fluida tra i membri del team.
+    
+    \item \textbf{Diversi stakeholder e rappresentanza:} Quando ci sono diversi stakeholder
+    con interessi e requisiti vari, è importante disporre di rappresentanti per ogni categoria
+    di stakeholder. Le metodologie agili possono essere personalizzate per includere meccanismi
+    di coinvolgimento degli stakeholder e per gestire efficacemente le loro diverse esigenze e
+    aspettative.
+\end{enumerate}
+\subsubsection{Scaling up}
 
+Nel caso di software di grandi dimensioni, che richiedono l'impiego di più team di
+sviluppo, è essenziale adottare un approccio strategico per gestire i requisiti e
+l'implementazione del sistema. Un approccio incrementale potrebbe non essere
+praticabile in questo contesto, pertanto è consigliabile una trattazione iniziale
+dei requisiti seguita dall'implementazione.
+
+Date le dimensioni del sistema, non è realistico assegnare la responsabilità di
+product owner a una singola persona. È essenziale coinvolgere rappresentanti di
+tutte le tipologie di stakeholder per garantire che i requisiti siano adeguatamente
+compresi e considerati durante lo sviluppo.
+
+Inoltre, in sistemi di grandi dimensioni, non è sufficiente fare affidamento
+esclusivamente sul codice sorgente. È necessario documentare e stabilizzare
+l'architettura e le parti critiche del sistema in modo da consentire lo sviluppo
+indipendente dei vari componenti.
+
+La comunicazione tra i team di sviluppo è fondamentale per garantire un allineamento
+coerente e coeso del sistema. Questo assicura che il lavoro di ogni team sia complementare
+e che il sistema complessivo sia sviluppato in modo armonico.
+
+L'implementazione della continuous integration potrebbe risultare complessa in un sistema
+di grandi dimensioni, poiché richiederebbe una verifica continua di ogni singola linea di
+codice per garantire il corretto funzionamento complessivo del sistema. Tuttavia, è
+possibile pianificare momenti specifici per integrare e testare i vari componenti del
+sistema per garantire la coerenza e l'integrità complessiva del sistema.
+
+\subsection{Multi-team Scrum}
+In un contesto di multi-team Scrum, ciascun team è strutturato con un
+Product Owner, responsabile della massimizzazione del valore del prodotto,
+e uno ScrumMaster, responsabile di facilitare il processo
+Scrum e rimuovere eventuali ostacoli che ostacolano il progresso del team.
+
+Per garantire una coerenza nell'architettura del sistema, ogni team dispone
+di un architetto del prodotto. Gli architetti del prodotto lavorano in collaborazione,
+discutendo e definendo l'architettura complessiva del sistema. Questa collaborazione
+assicura che il sistema sia progettato
+in modo coerente e che soddisfi i requisiti di tutti gli stakeholder coinvolti.
+
+Per massimizzare il valore del prodotto e garantire una migliore gestione dei
+rischi, le date di rilascio del prodotto per tutti i team sono allineate.
+Questo permette di produrre un sistema dimostrabile e completo, evitando
+dispersione di risorse e assicurando che il prodotto soddisfi le aspettative
+degli utenti e degli stakeholder.
+
+Per mantenere un'efficace comunicazione e coordinazione tra i team, viene
+organizzato un ``Scrum of Scrums" giornaliero. In questo incontro, i
+rappresentanti di ciascun team si riuniscono per discutere i progressi,
+le sfide e pianificare il lavoro da svolgere. Questo permette di identificare
+tempestivamente eventuali problemi e risolverli in
+modo collaborativo, garantendo il successo del progetto nel suo complesso.
