@@ -1,21 +1,22 @@
 \chapter{Agile}
 \section{Agile}
-\subsection{Approccio Agile}
+\subsection{Metodologia Agile}
 Costruire sistemi safety-critical, governativi o gestire molti team distribuiti sul territorio richiede una
 coordinazione efficace. Verso la fine degli anni '90, il contesto di sviluppo software è cambiato radicalmente.
 I piani rigidi non erano più sempre efficaci, specialmente considerando le richieste di consegne sempre più rapide.
 Con team piccoli, l'overhead generato da processi pesanti sarebbe stato un costo eccessivo, portando così all'adozione
-di un approccio Agile.
+di una metodologia Agile.
 
-Il requisito fondamentale dell'approccio Agile è rispondere rapidamente ai cambiamenti anziché seguire pedissequamente
+Il requisito fondamentale nella metodologia Agile è rispondere rapidamente ai cambiamenti anziché seguire pedissequamente
 un piano preciso. Data l'incertezza sulle esigenze finali e la loro probabile evoluzione nel corso dello sviluppo,
 l'Agile propone una strategia per gestire tali cambiamenti. In questo contesto, si evita di congelare i requisiti
 iniziali, ma si cerca piuttosto di capire meglio cosa si vuole ottenere.
 
-Nell'approccio Agile, la specifica, il design e l'implementazione procedono in parallelo e sono strettamente collegati.
+Nella metodologia Agile, la specifica, il design e l'implementazione procedono in parallelo e sono strettamente collegati.
 Il software finale viene gestito attraverso una serie di versioni, con ciascuna versione successiva che rappresenta un
 incremento del prodotto. È cruciale coinvolgere il cliente e gli stakeholder durante tutto il processo di sviluppo Agile
-in modo da assicurare un feedback costante e un allineamento continuo con le aspettative.
+in modo da assicurare un feedback costante e un allineamento continuo con le aspettative,
+dotandosi di strumenti informali di comunicazione.
 
 Di solito, si stabilisce un intervallo di tempo limitato per lo sviluppo di ciascuna versione, che va da 2 a 4 settimane.
 La documentazione è mantenuta al minimo per evitare discrepanze e inconsistenze tra la documentazione e il codice stesso.
@@ -23,7 +24,7 @@ La comunicazione all'interno del team è spesso informale ma frequente, promuove
 
 Per automatizzare il processo di testing, è fondamentale adottare strumenti per il testing automatico, in quanto il testing
 manuale risulterebbe troppo lento e inefficiente data la necessità di coprire numerosi scenari di test. Alcuni strumenti
-chiave per l'approccio Agile includono:
+chiave per la metodologia Agile includono:
 
 \begin{itemize}
     \item Testing automatico
@@ -38,40 +39,46 @@ L'obiettivo è rilevare e correggere gli errori il prima possibile, in modo da e
 L'Agile si basa su alcuni principi chiave che sono riassunti nel Manifesto Agile:
 
 \begin{itemize}
-    \item L'importanza è spostata dal processo formale all'individuo e alle interazioni.
+    \item L'importanza è spostata dal processo formale all'individuo e alle interazioni
+    che i membri devono avere.
     \item È più importante avere un software funzionante rispetto a una documentazione esaustiva.
-    \item Si promuove la collaborazione con il cliente, che dovrebbe essere parte integrante del team di sviluppo piuttosto che
+    \item Si promuove la collaborazione con il cliente, che dovrebbe essere parte integrante
+    del team di sviluppo piuttosto che
     un soggetto esterno con cui contrattare.
     \item L'attenzione è posta sulla capacità di rispondere al cambiamento in modo rapido e flessibile, piuttosto che
     sull'aderenza rigorosa a un piano prestabilito.
 \end{itemize}
 
-\subsection{Implementazione dell'Approccio Agile}
+\subsection{Implementazione della metodologia Agile}
+\subsubsection{Coinvolgimento del Cliente}
 Per realizzare appieno i principi dell'Agile, è fondamentale coinvolgere attivamente il cliente nel processo di sviluppo.
 Il coinvolgimento del cliente deve andare oltre il semplice fornitore di specifiche, incoraggiando il cliente a partecipare
 attivamente alle discussioni e al processo decisionale. Questo assicura che le funzionalità sviluppate siano allineate con
 le aspettative del cliente e che i feedback siano integrati tempestivamente nel processo di sviluppo.
-
+\subsubsection{Sviluppo Incrementale}
 Un altro aspetto chiave è lo sviluppo incrementale, dove le funzionalità vengono fornite in maniera graduale e integrata
-nel sistema in crescita. In questo contesto, è fondamentale avere team con competenze solide e diversificate, che si fidino
-a vicenda per garantire un flusso di lavoro efficiente e un'efficace condivisione delle responsabilità.
-
-Nell'approccio Agile, è importante prepararsi al cambiamento continuo dei requisiti nel corso del progetto. La capacità di
+nel sistema in crescita. 
+\subsubsection{Persone e non Processi}
+In questo contesto, è fondamentale avere team con competenze solide e diversificate, che si fidino
+a vicenda per garantire un flusso di lavoro efficiente e un'efficace condivisione delle
+responsabilità.
+\subsubsection{Risposta al Cambiamento}
+Nella metodologia Agile, è importante prepararsi al cambiamento continuo dei requisiti nel corso del progetto. La capacità di
 adattarsi rapidamente ai nuovi requisiti e di integrarli nel processo di sviluppo è un fattore cruciale per il successo.
-
+\subsubsection{Semplicità}
 Il principio cardine per lo sviluppo Agile è quello di mantenere la semplicità. Ciò implica resistere alla tentazione di
 aggiungere funzionalità non essenziali che potrebbero introdurre una complessità eccessiva nel sistema. L'obiettivo è quello
 di adottare strategie che semplifichino il processo e riducano al minimo il rischio di complicazioni impreviste durante lo
 sviluppo.
 
-\subsection{Applicabilità dell'Approccio Agile}
-L'approccio Agile è particolarmente adatto in contesti in cui il cliente è disponibile e desideroso di partecipare attivamente
+\subsection{Applicabilità della metodologia Agile}
+La metodologia Agile è particolarmente adatto in contesti in cui il cliente è disponibile e desideroso di partecipare attivamente
 al processo di sviluppo del software. È efficace in ambienti in cui le normative sono meno restrittive e permettono una maggiore
 flessibilità nel processo di sviluppo. I processi di sviluppo Agile sono spesso implementati in combinazione con metodologie di
 gestione progetti agili, come ad esempio Scrum.
 
 \section{Extreme Programming (\texttt{XP})}
-Spesso, nell'ambito dell'approccio Agile, si fa riferimento a \textbf{Extreme Programming}, che spinge all'estremo
+Spesso, nell'ambito della metodologia Agile, si fa riferimento a \textbf{Extreme Programming}, che spinge all'estremo
 alcune delle caratteristiche fondamentali dell'Agile. Ad esempio, in Extreme Programming, sono comuni varie versioni del software
 consegnate al cliente quotidianamente, con incrementi che vengono immediatamente messi in produzione. Un principio chiave è che i
 casi di test devono superare con successo per ogni build, pertanto è necessario assicurarsi che tutti i casi di test siano funzionanti
@@ -94,6 +101,43 @@ delle varie attività, poiché, in un contesto di sviluppo incrementale, non è 
 
 Tuttavia, con questo tipo di approccio, non si ha la certezza di implementare tutte le funzionalità richieste, poiché alcune di esse
 potrebbero non emergere in determinati scenari o iterazioni di sviluppo.
+\subsubsection{Esempio di User Story}
+\begin{tcolorbox}[title ={Prescrizione}]
+    Kate è un medico che desidera prescrivere farmaci per un paziente che sta
+    frequentando una clinica. Il record del paziente è già visualizzato sul suo
+    computer, quindi fa clic sul campo dei farmaci e può selezionare \textit{farmaci attuali},
+    \textit{nuovi farmaci} o \textit{formulario}.
+    Se seleziona \textit{farmaci attuali}, il sistema le chiede di controllare la dose;
+    Se vuole modificare la dose, inserisce la nuova dose e quindi conferma la prescrizione.
+    Se sceglie \textit{nuovi farmaci}, il sistema presume che lei sappia quale farmaco
+    prescrivere. Digita le prime lettere del nome del farmaco. Il sistema visualizza un
+    elenco di possibili farmaci che iniziano con queste lettere. Lei sceglie il farmaco
+    richiesto e il sistema risponde chiedendole di verificare che il farmaco selezionato
+    sia corretto. Inserisce la dose e quindi conferma la prescrizione.
+    Se sceglie \textit{formulario}, il sistema visualizza una casella di ricerca per
+    il formulario approvato. Può quindi cercare il farmaco richiesto. Seleziona un farmaco
+    e le viene chiesto di verificare che il farmaco sia corretto. Inserisce la dose e
+    quindi conferma la prescrizione.
+
+    Il sistema controlla sempre che la dose sia nell'intervallo approvato. Se non lo è,
+    a Kate viene chiesto di cambiare la dose.
+    Dopo che Kate ha confermato la prescrizione, questa verrà visualizzata per il controllo.
+    Lei fa clic su \textit{OK} o \textit{Modifica}. Se fa clic su \textit{OK},
+    la prescrizione viene registrata nel database di audit. Se fa clic su \textit{Modifica},
+    riprende il processo di \textit{Prescrizione di farmaci}.
+    
+\end{tcolorbox}
+
+\subsubsection{Esempio di Task Card}
+\begin{tcolorbox}[title ={Task 1: Controllo della dose}]
+Il controllo della dose è una precauzione di sicurezza per verificare che il medico
+non abbia prescritto una dose pericolosamente piccola o grande.
+Utilizzando l'identificativo del formulario per il nome del farmaco generico,
+consultare il formulario e recuperare la dose massima e minima raccomandata.
+Controllare la dose prescritta rispetto al minimo e al massimo. Se è al di fuori
+dell'intervallo, emettere un messaggio di errore che indica che la dose è troppo
+alta o troppo bassa. Se è all'interno dell'intervallo, abilitare il pulsante ``Conferma''.
+\end{tcolorbox}
 
 \section{Test-Driven Development (\texttt{TDD})}
 Nel Test-Driven Development (\texttt{TDD}), i test vengono scritti prima del codice stesso, e tali test possono essere eseguiti durante la fase
@@ -147,7 +191,7 @@ manuale per la distribuzione in produzione, nel Continuous Deployment ogni cambi
 automaticamente senza intervento umano.
 
 \section{Project Management Agile}
-Nel contesto dell'approccio Agile, il project manager ha la responsabilità di assicurarsi che il software venga consegnato entro i tempi
+Nel contesto della metodologia Agile, il project manager ha la responsabilità di assicurarsi che il software venga consegnato entro i tempi
 previsti, con tutte le funzionalità richieste e nel rispetto del budget stabilito. È responsabile del coordinamento del progetto e del
 monitoraggio dei progressi.
 
@@ -158,7 +202,9 @@ Le sue fasi principali includono:
 \begin{enumerate}
     \item Definizione di obiettivi generali e architettura ad alto livello del sistema.
     \item Sprint planning, in cui si definiscono gli obiettivi per la prossima iterazione.
-    \item Fase conclusiva, che include la documentazione finale, la code review e la riflessione sulle lezioni apprese.
+    \item Fase conclusiva, dove si ``incarta'' il progetto,
+    si completa la documentazione finale, si esegue code review e
+    si riflette sulle lezioni apprese.
 \end{enumerate}
 
 \subsection{Terminologia}
@@ -166,6 +212,8 @@ Alcuni termini chiave in Scrum includono:
 
 \begin{itemize}
     \item Team piccolo, con un massimo di $7$ persone.
+    \item Ad ogni incremento deve corrispondere un prodotto consegnabile 
+    al cliente, ovvero un incremento di funzionalità.
     \item Backlog, che rappresenta la lista di tutte le funzionalità richieste dal cliente.
     \item Product Owner, responsabile della priorizzazione delle funzionalità e delle decisioni su cosa è più necessario.
     \item Sprint, che rappresenta un periodo di lavoro di $2$-$4$ settimane.
