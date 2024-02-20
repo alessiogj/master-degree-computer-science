@@ -166,17 +166,18 @@ Come ad esempio:
 \]
 In questo modo il progetto viene controllato la classe progetto,
 poiché si tratta di una proprietà del progetto.
-\subsubsection{Replace temp}
+\subsubsection{Replace temp with query}
 Si sostituisce una variabile temporanea con un metodo, in modo da
 rendere più chiaro il codice.
 \begin{lstlisting}
-    double basePrice = quantity * itemPrice;
+    double basePrice = _quantity * _itemPrice;
     if(basePrice > 1000)
         return basePrice * 0.95;
     else
         return basePrice * 0.98;
 \end{lstlisting}
-
+Quando si ha una variabile temporanea, composta dalla combinazione 
+di alcuni campi della classe, si può sostituire con un metodo.
 Si crea il metodo \texttt{basePrice()} che restituisce il
 prezzo base, in questo modo il codice diventa più chiaro.
 \begin{lstlisting}
@@ -190,7 +191,7 @@ Si sostituisce un metodo con un oggetto, in modo da avere un metodo
 che fa una sola cosa. In questo modo si evita di avere metodi troppo lunghi.
 \begin{lstlisting}
     int basePrice = quantity * itemPrice;
-    double discountLvel = getDiscountLevel();
+    double discountLevel = getDiscountLevel();
     double finalPrice = computeFinalPrice(basePrice, discountLevel);
 \end{lstlisting}
 Si elimina il parametro discountLevel, chiamando il metodo al suo interno 
@@ -199,9 +200,6 @@ per ridurre la complessità del metodo.
 Si estrae una classe da un'altra, in modo da avere una classe che
 fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
 \subsection{Replace inheritance with delegation}
-Si sostituisce l'ereditarietà con la delega, in modo da avere una classe che
-fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
-
 Pensando all'esempio dello stack, potremmo utilizzare un design dove lo stack 
 che al posto di ereditare informazioni del vettore come, utilizzerà funzionalità 
 di delega. incapsulando il vettore all'interno della classe. Una eredità 
@@ -213,9 +211,8 @@ selettiva e parziale.
     }
 \end{lstlisting}
 \subsection{Replace conditional with polymorphism}
-Si sostituisce un costrutto condizionale con il polimorfismo, in modo da
-avere una classe che fa una sola cosa. In questo modo si evita di avere
-classi troppo grandi.
+Nei linguaggi ad oggetti, si può sostituire un costrutto condizionale con
+polimorfismo.
 
 Prendiamo il calcolo dell'area:
 \begin{lstlisting}
@@ -255,6 +252,5 @@ class Square implements Shape
 ...
 \end{lstlisting}
 \subsection{Separate domain from presentation}
-Separazione dal dominio della presentazione, in modo da avere una classe che
-fa una sola cosa. In questo modo si evita di avere classi troppo grandi.
-Dividendo quindi le responsabilità.
+Si separa la logica di dominio dalla presentazione, in modo da
+avere una struttura più chiara. Si può utilizzare il pattern \texttt{MVC}.
