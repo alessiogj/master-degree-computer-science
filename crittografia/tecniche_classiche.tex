@@ -559,10 +559,10 @@ trasmessa. Il contenuto del registro a scorrimento viene spostato a sinistra di
 a scorrimento. Questo processo continua fino a quando tutti i segmenti di testo
 in chiaro sono stati crittografati.
 
-Per la decifratura, viene utilizzato lo stesso schema, ad eccezione che l'unità
+Per la decodifica, viene utilizzato lo stesso schema, ad eccezione che l'unità
 di testo cifrato ricevuta viene combinata tramite \verb|XOR| con l'output della funzione
 di crittografia per produrre l'unità di testo in chiaro. È importante notare che
-viene utilizzata la funzione di crittografia e non quella di decifratura. Questo
+viene utilizzata la funzione di crittografia e non quella di decodifica. Questo
 è facilmente spiegabile. Sia \(\texttt{MSBs}(X)\) definita come i \(s\) bit più significativi
 di \(X\). Quindi
 
@@ -595,7 +595,7 @@ l'espressione di crittografia come:
 
 \[ C_j = P_j \oplus E(K, [C_{j-1} \oplus P_{j-1}]) \]
 
-Riarrangiando i termini, possiamo dimostrare che la decifratura funziona:
+Riarrangiando i termini, possiamo dimostrare che la decodifica funziona:
 
 \[ P_j = C_j \oplus E(K, [C_{j-1} \oplus P_{j-1}]) \]
 
@@ -659,7 +659,7 @@ Tale struttura ha delle caratteristiche distintive:
             R_i = L_{i-1} \oplus f(R_{i-1}, K_{i-1})
         \]
     \end{itemize}
-    \item La struttura è simmetrica, il che significa che la decifratura 
+    \item La struttura è simmetrica, il che significa che la decodifica 
     avviene semplicemente invertendo l'ordine delle chiavi usate per la cifratura.
     \begin{itemize}
         \item \[ R_{i-1} = L_i \]
@@ -698,7 +698,7 @@ un'operazione XOR.
 
 Dopo l'ultimo round, le due metà del blocco vengono scambiate, e questo è seguito da una
 \textit{Final Permutation (FP)}, che è l'inverso della permutazione iniziale. Il risultato
-è il blocco di testo cifrato. La decifratura con \texttt{DES} segue lo stesso processo ma
+è il blocco di testo cifrato. La decodifica con \texttt{DES} segue lo stesso processo ma
 in ordine inverso, utilizzando le chiavi di round in ordine inverso.
 
 Nonostante la sua ampiamente testata sicurezza, la principale vulnerabilità di \texttt{DES}

@@ -6,7 +6,7 @@ quella privata è nota solo al proprietario.
 Con codifica avviene con la chiave pubblica, mentre la decodifica avviene con la
 chiave privata.
 
-Ovviamente l'idea di fondo è avendo in mano il testo cifrato non si riesce a
+Ovviamente l'idea di fondo è che avendo in mano il testo cifrato non si riesce a
 risalire al testo in chiaro senza la chiave privata. Chiunque può cifrare un
 messaggio, ma solo il proprietario della chiave privata può decifrarlo.
 
@@ -80,7 +80,7 @@ potrebbe esistere, ma non è stato ancora trovato.
 Sia $\mathcal{A} \in \texttt{PPT}$ che calcola $g^{xy} \mod p$ a partire da $g^x \mod p$ e $g^y \mod p$. 
 Usiamo $\mathcal{A}$ per costruire un algoritmo $\mathcal{B}$ che risolve il problema del logaritmo discreto,
 ma tale dimostrazione non è ancora stata data, perciò non l'algoritmo di Diffie-Hellman non è dimostrabilmente 
-sicuro. non siamo in grado di dire che rompere Diffie-Hellman è almeno difficile quanto risolvere il problema
+sicuro. Non siamo in grado di dire che rompere Diffie-Hellman è almeno difficile quanto risolvere il problema
 del logaritmo discreto.
 
 \subsection{Ipotesi di Diffie-Hellman}
@@ -98,9 +98,9 @@ Se un attaccante avesse anche un minimo vantaggio, allora potrebbe utilizzare ta
 ottenere informazioni sul segreto. Tale vantaggio può essere utilizzato per ottenere l'informazione 
 totale mediante esperimenti ripetuti.
 
-\section{Rivest Shamir Adleman - RSA}
-$g^x$ è una funzione che è facile da calcolare, ma è difficile da invertire, ovvero calcolare $x$
-a partire da $g^x$. Una funzione con questa proprietà è detta \textbf{one-way function}. Il protocollo di 
+\section{Rivest Shamir Adleman - \texttt{RSA}}
+Sappiamo che $g^x$ è una funzione che è facile da calcolare, ma è difficile da invertire, ovvero calcolare $x$
+a partire da $g^x$, una funzione con questa proprietà è detta \textbf{one-way function}. Il protocollo di 
 Diffie-Hellman è sicuro se e solo se esiste una one-way function.
 Vorremmo che la one-way function sia anche \textbf{trapdoor}, ovvero che esista un algoritmo 
 efficiente che permetta di invertire la funzione. Tale algoritmo è detto \textbf{trapdoor algorithm}.
@@ -124,13 +124,13 @@ La trapdoor è una informazione aggiuntiva che permette di invertire la funzione
 \end{tcolorbox}
 Siano $p, q$ due numeri primi molto grandi, $n = pq$. Sia $e$ un numero casuale tale che 
 \texttt{mcd}(e, $\varphi(n)$) = 1, dove $\varphi(n) = (p-1)(q-1)$, ovvero il numero di Eulero. Scegliamo 
-une elemento $d$ co-primo con $\varphi(n)$ tale che $de \equiv 1 \mod \varphi(n)$.
+un elemento $d$ co-primo con $\varphi(n)$ tale che $de \equiv 1 \mod \varphi(n)$.
 La chiave pubblica è la coppia $(n, e)$, mentre la chiave privata è la coppia $(n, d)$.
 \subsubsection{Algoritmo di cifratura}
 \[
   \mathcal{E}: m, (n, e) \mapsto m^e \mod n  
 \]
-\subsubsection{Algoritmo di decifratura}
+\subsubsection{Algoritmo di decodifica}
 \[
   \mathcal{D}: c, (n, d) \mapsto c^d \mod n
 \]
@@ -151,10 +151,10 @@ ad oggi non esiste un algoritmo efficiente. L'unico modo per calcolare la radice
 
 Ci piacerebbe dimostrare che se fossimo in grado di invertire la radice 
 e-esima di un numero allora saremmo in grado di fattorizzare $n$, o di calcolare 
-il residuo quadratico. Se fosse vero, allora RSA sarebbe sicuro, ma non è stato ancora
-dimostrato ad oggi. L'unica sicurezza di RSA è l'esistenza dell'ipotesi di RSA.
-\subsection{Attacchi a RSA}
-Ci sono casi in cui RSA è stato attaccato, il motivo però era legato alla cattiva 
+il residuo quadratico. Se fosse vero, allora \texttt{RSA} sarebbe sicuro, ma non è stato ancora
+dimostrato ad oggi. L'unica sicurezza di \texttt{RSA} è l'esistenza dell'ipotesi di \texttt{RSA}.
+\subsection{Attacchi a \texttt{RSA}}
+Ci sono casi in cui \texttt{RSA} è stato attaccato, il motivo però era legato alla cattiva 
 implementazione dell'algoritmo, e non all'algoritmo in sé.
 Quando parliamo di un crittosistema in realtà parliamo di un insieme di algoritmi,
 e non di un singolo algoritmo. L'algoritmo di generazione delle chiave impone 
@@ -170,7 +170,7 @@ invertiamo tutto facilmente, più è piccola $e$, più è facile avere
 messaggi che elevati a $e$ sono più piccoli di $n$. Bisogna quindi
 star attenti a scenari in cui $m^e < n$.
 \subsubsection{Attacco sulla base di messaggi sparsi}
-Altri problemi che potrebbe avere RSA sono legati allo spargimento dei 
+Altri problemi che potrebbe avere \texttt{RSA} sono legati allo spargimento dei 
 messaggi.
 Immaginiamo di avere un messaggio:
 
@@ -183,7 +183,7 @@ Immaginiamo di avere un messaggio:
 \end{center}
 Uno che vuole decifrare il messaggio può prendere i $32$ messaggi e
 cifrarli tutti, per poi distinguerli.
-Se con RSA devo codificare messaggi che sono presi da un insieme piccolo,
+Se con \texttt{RSA} devo codificare messaggi che sono presi da un insieme piccolo,
 devo far attenzione perché potrei venir attaccato da qualcuno che utilizza 
 la stessa chiave pubblica.
 \subsubsection{Attacco sulla informazione parziale}
@@ -200,7 +200,7 @@ alta probabilità il messaggio non sia mai uguale. In questo modo, anche se
 il messaggio è sempre lo stesso, il cypertext è sempre diverso, utilizzando 
 quindi la probabilistic encryption.
 \section{Sicurezza di un crittosistema}
-RSA è sicuro perché non conosciamo un algoritmo probabilistico polinomiale 
+\texttt{RSA} è sicuro perché non conosciamo un algoritmo probabilistico polinomiale 
 per calcolare la radice $e$-esima di un numero. Ma cosa vuol dire?
 Se esistesse un algoritmo probabilistico polinomiale per calcolare la radice 
 $e$-esima di un numero con probabilità $\frac{1}{k}$, sarebbe un problema,
@@ -280,13 +280,14 @@ il problema.
   Si pensa che non esista un algoritmo \texttt{PPT} che dati $n$, $e$ e $a$,
   calcola $\sqrt[e]{a} \in \mathbb{Z}_n^*$ con probabilità polinomiale.
 \end{tcolorbox}
-\subsection{Utilizzo pratico di RSA}
-Nel caso pratico il costo computazionale di RSA è molto alto, infatti codificare 
-un blocco di $k$ bit con RSA richiede $k$ esponenziazioni modulari, ovvero $k^3$, 
-un costo computazionale molto alto. Per questo motivo RSA viene utilizzato per
+\subsection{Utilizzo pratico di \texttt{RSA}}
+
+Nel caso pratico il costo computazionale di \texttt{RSA} è molto alto, infatti codificare 
+un blocco di $k$ bit con \texttt{RSA} richiede $k$ esponenziazioni modulari, ovvero $k^3$, 
+un costo computazionale molto alto. Per questo motivo \texttt{RSA} viene utilizzato per
 codificare una chiave di sessione, che viene utilizzata per codificare
-il messaggio con un algoritmo simmetrico, che è molto più veloce di RSA.
-Tipicamente l'algoritmo utilizzato è l'algoritmo simmetrico \texttt{AES} (\ref{section:des}).
+il messaggio con un algoritmo simmetrico, che è molto più veloce di \texttt{RSA}.
+Tipicamente l'algoritmo utilizzato è l'algoritmo simmetrico \texttt{AES}.
 
 Tra l'altro vi è una notevole differenza con Diffie-Hellman, infatti in Diffie-Hellman
 riesco a scambiarmi un'unica chiave, a meno che non faccia un nuovo scambio di chiavi,
@@ -294,7 +295,7 @@ ogni volta.
 
 Se si parte dall'idea che la crittografia simmetrica sia meno sicura della crittografia
 asimmetrica, allora si può pensare di utilizzare una chiave di sessione diversa dopo 
-un certo periodo. Con RSA è possibile fare questo, perché è possibile scambiarsi
+un certo periodo. Con \texttt{RSA} è possibile fare questo, perché è possibile scambiarsi
 chiavi diverse, mentre con Diffie-Hellman non è possibile, perché si dovrebbero scambiare
 chiavi diverse ogni volta, e questo è molto costoso. La generazione della chiave di sessione 
 per Diffie-Hellman è molto costosa, per via delle Certification Authority, che devono
