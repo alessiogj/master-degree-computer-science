@@ -23,7 +23,7 @@ In un sistema a chiave pubblica abbiamo i seguenti algoritmi:
     \]
     \item Un algoritmo di decription:
     \[
-          \mathcal{D}: C, S_k \to D(C, P_k)
+          \mathcal{D}: C, S_k \to \mathcal{D}(C, S_k)
     \]
 \end{itemize}
 Ovviamente vale la seguente relazione:
@@ -37,7 +37,7 @@ $k$ è proporzionale alla lunghezza della chiave e al crescere di $k$ cresce
 la sicurezza del sistema.
 
 Gli algoritmi citati sono algoritmi probabilistici polinomiali. Se voglio 
-affermare che tali algoritmi sono polinomiali l'input che rappresenta la 
+affermare che tali algoritmi sono polinomiali, l'input che rappresenta la 
 lunghezza della chiave non può essere 
 rappresentato in binario, perché la lunghezza della chiave sarebbe
 esponenziale nel numero di bit utilizzati per rappresentare il numero. 
