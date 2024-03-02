@@ -529,12 +529,12 @@ generare oggetti con la stessa natura, ma casuali (\textit{con quadraticità}).
   \[
     \Rightarrow (x-y)(x+y) = k \cdot n \qquad \text{per qualche $k$}
   \]
-  Supponiamo che $p$ divida $x+y$, ma è possibile che $q$ divida $x-y$?
+  Supponiamo che $p$ divida $x+y$, ma è possibile che $q$ divida $x+y$?
   Se fosse possibile allora $n$ divide $x +y$, ma ciò vorrebbe dire che $x+y \equiv 0 \mod n$,
   ovvero $x \equiv -y \mod n$ e ciò è assurdo perché $x \not \equiv \pm y$.
   Quindi $\texttt{mcd}(x+y, n) = p$.
   
-  Supponiamo che $q$ divida $x+y$, ma è possibile che $p$ divida $x-y$?
+  Supponiamo che $q$ divida $x+y$, ma è possibile che $p$ divida $x+y$?
   Se fosse possibile allora $n$ divide $x +y$, ma ciò vorrebbe dire che $x+y \equiv 0 \mod n$,
   ovvero $x \equiv -y \mod n$ e ciò è assurdo perché $x \not \equiv \pm y$.
   Quindi $\texttt{mcd}(x+y, n) = q$.
@@ -554,7 +554,7 @@ che calcoli la radice quadrata di un numero in $\mathbb{Z}_n^*$. Allora:
   \Procedure{Factorial}{$n$}
     \State $x \in_R \mathbb{Z}_n^*$
     \State $y \gets A(x^2)$
-    \State $z \gets \texttt{mcd}(x-y, n)$
+    \State $z \gets \texttt{mcd}(x+y, n)$
     \If{$z \neq n$}
       \Return $z$
     \Else

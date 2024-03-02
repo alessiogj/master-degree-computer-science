@@ -92,7 +92,7 @@ Qualcuno potrebbe costruire un algoritmo che si basa sull'ipotesi che l'algoritm
 
 Il concetto di distinguibilità è un concetto probabilistico, ovvero che la possibilità di poter 
 distinguere due insiemi di elementi è trascurabile. Ovvero che la probabilità di distinguere 
-sia inferiore a $1/2 + \epsilon$, dove $\epsilon$ è trascurabile. Quindi l'attaccante non abbia 
+sia inferiore a $1/2 + \epsilon$, dove $\epsilon$ è trascurabile. Quindi che l'attaccante non abbia 
 alcun vantaggio rispetto ad un attaccante che non ha alcuna informazione.
 Se un attaccante avesse anche un minimo vantaggio, allora potrebbe utilizzare tale vantaggio per
 ottenere informazioni sul segreto. Tale vantaggio può essere utilizzato per ottenere l'informazione 
@@ -237,7 +237,7 @@ partenza.
 Quindi se prendo il risultato e lo divido per $r$, ottengo $\sqrt[e]{a}$,
 che è distribuito uniformemente in $\mathbb{Z}_n^*$, perché $r$ è distribuito uniformemente.
 
-Ed ecco che abbiamo un algoritmo che a partire da una blackbox che con $a$ causale 
+Ed ecco che abbiamo un algoritmo che a partire da una blackbox che con $a$ causale, 
 calcola correttamente la radice $e$-esima di $a$ una volta su $k$, abbiamo una macchina 
 che con $a$ fissato calcola la radice $e$-esima di $a$ con probabilità $1$.
 
@@ -252,7 +252,7 @@ che funziona in un tempo medio di $k$.
   Diciamo che un sistema è attaccabile se il tempo medio per attaccarlo è polinomiale.
 \end{tcolorbox}
 Se esistesse un qualsiasi algoritmo in grado di attaccare la radice $e$-esima di $a$,
-con una probabilità polinomiale in $k$, riusciamo a costruire un algoritmo che calcola
+con una probabilità polinomiale in $k$, riusciremmo a costruire un algoritmo che calcola
 la stessa cosa con un tempo medio polinomiale in $k$.
 
 Visto che partiamo  dall'idea che non esista un algoritmo probabilistico polinomiale 
@@ -261,7 +261,7 @@ che sia in grado di calcolarlo con una probabilità che sia polinomialmente picc
 Quindi la \textbf{probabilità di successo è più piccola di qualsiasi polinomio}, dove per polinomio 
 si intende:
 \[
-  \probP[\texttt{attacco}] < \frac{1}{k}\quad \forall c
+  \probP[\texttt{attacco}] < \frac{1}{k^c}\quad \forall c
 \]
 Fissando un polinomio, con chiavi corte, però, la possibilità di trovare un polinomio esiste, 
 perciò bisogna correggere tale definizione.
@@ -272,8 +272,8 @@ Per attacco non intendiamo solo il fatto di non poter essere in grado di poter c
 radice $e$-esima di $a$, ma anche il fatto di non essere in grado di capire 
 \textbf{informazioni binarie}.
 
-L'algoritmo che calcola la radice $e$-esima di $a$ è l'algoritmo che calcola la
-la fattorizzazione di $n$, la fattorizzazione di $n$ è l'informazione 
+L'algoritmo che calcola la radice $e$-esima di $a$ è l'algoritmo che calcola 
+la fattorizzazione di $n$. La fattorizzazione di $n$ è l'informazione 
 binaria che vogliamo proteggere, ovvero la \textbf{trapdoor} che permette di risolvere 
 il problema.
 \begin{tcolorbox}[title=Fattorizzazione di $n$]
@@ -398,11 +398,11 @@ Servirebbe quindi stimare, dato un $\epsilon$ fissato, il numero di esperimenti 
   Tale formula dice che la probabilità che più della metà degli eventi dia $1$ è 
   esponenzialmente vicina a $1$, dove l'esponenziazione è in funzione di $n$.
   \[
-    \probP[\texttt{errore}] = e^{-2 \epsilon n}
+    \probP[\texttt{errore}] = e^{-2 \epsilon^2 n}
   \]
   Dove $\epsilon$ è il vantaggio.
 \end{tcolorbox}
-Supponiamo di volere $e^{-2 \epsilon n} < \frac{1}{2^k}$, quindi:
+Supponiamo di volere $e^{-2 \epsilon^2 n} < \frac{1}{2^k}$, quindi:
 \[
   e^{-2c\epsilon^2 n} < 2^{-k}
 \]
@@ -410,7 +410,7 @@ Supponiamo di volere $e^{-2 \epsilon n} < \frac{1}{2^k}$, quindi:
   -2\epsilon^2 n < c' - k 
 \]
 \[
-  n > \frac{c' - k}{2\epsilon^2}
+  n > \frac{k - c'}{2\epsilon^2}
 \]
 Se $\epsilon$ è polinomiale in $k$ allora $n$ è polinomiale in $k$.
 Di conseguenza, se il vantaggio è polinomiale in qualche security parameter, allora
@@ -446,7 +446,7 @@ altrimenti.
 
 Tale algoritmo però ha un difetto, ovvero che se $z$ è un quadrato, allora $w_i$ è un quadrato
 sempre, quindi l'algoritmo restituisce sempre $1$, se invece $z$ non è un quadrato, allora
-$w_i$ è un quadrato con probabilità $\frac{1}{2} + \epsilon$.
+$w_i$ è sempre un non quadrato, quindi l'algoritmo restituisce sempre $0$.
 \subsubsection{Costruzione di un controesempio}
 Supponiamo che $\mathcal{A}$ dica correttamente che il $40\%$ dei numeri quadrati sono quadrati e 
 che il $62\%$ dei non quadrati sono non quadrati. Sostanzialmente l'algoritmo $\mathcal{A}$
