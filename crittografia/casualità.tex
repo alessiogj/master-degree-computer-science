@@ -6,13 +6,13 @@ la codifica di un singolo bit richiede una quantità molto alta di bit. Infatti
 implicherebbe un enorme spreco di banda, di risorse. Ci piacerebbe giungere 
 ad uno scenario in cui un singolo bit viene codificato con un solo bit.
 
-Per arrivare a questo punto impareremo a costruire numeri \textbf{pseudo-casuali
+Per arrivare a questo punto impareremo a costruire \textbf{numeri pseudo-casuali
 crittograficamente sicuri} da utilizzare come base per simulare un one-time pad, 
 dove la chiave non è realmente casuale, ma è una chiave generata da noi, 
 ma nessuno con potenza di calcolo polinomiale possa realmente notare la 
 differenza.
 
-Il lancio di monete in rete è un problema molto importante, infatti simulare 
+Il lancio di monete in rete è un problema molto importante, infatti, simulare 
 un reale lancio di monete è molto difficile, in quanto non si può avere
 la certezza che uno dei due agenti non stia mentendo.
 Disponiamo dei due agenti $A$ e $B$ che vogliono simulare un
@@ -45,7 +45,7 @@ fornire alcuna garanzia su $B$, possiamo però tutelare $A$. Per tutelarlo,
 $A$ deve essere in grado di osservare il risultato di un lancio di una 
 moneta.
 \[
-  | \probP[Coin_a = 0] - \frac{1}{2} | < k^{-\omega(1)}
+  \bigg| \probP[Coin_a = 0] - \frac{1}{2} \bigg| < k^{-\omega(1)}
 \]
 Ammettiamo che $B$ possa alterare tale probabilità, ma non la può alterare di troppo,
 quindi la differenza tra la probabilità reale e quella che $B$ può alterare deve essere
@@ -784,7 +784,7 @@ poiché la conoscenza di $p$ e $q$, ovvero la fattorizzazione di $n$,
 permette di calcolare la radice quadrata in tempo polinomiale.
 Sappiamo inoltre che ogni funzione \textit{one-way} ammette un \textit{hardcore predicate}, infatti:
 \[
-  \texttt{LSB}(x) = \texttt{HCP}(\sqrt{x^2})
+  \texttt{LSB}(\sqrt{x}) \textit{ è un hardcore predicate}
 \]
 Il problema è che $x$ ha più di una radice quadrata, che radice bisogna selezionare?
 \begin{theorem}[Primi di Blum]
@@ -895,7 +895,7 @@ In un generatore di funzioni pseudocasuali, partiamo dall'idea che:
     $\mathcal{F}_k \subseteq \mathcal{U}_k$, tale che $|\mathcal{F}_k| = 2^k$; imponendo per definizione
     tale dimensione, siamo in grado di generare funzioni casuali avendo a disposizione $k$ bit;
     \item Esiste un algoritmo probabilistico polinomiale che calcola la funzione $(i,x) \mapsto f_i(x)$;
-    \item Sia $\mathcal{D}\in \mathcal{PPT}$ un algoritmo che, su input $1^k$ (\textit{il 
+    \item Sia $\mathcal{D}\in \texttt{PPT}$ un algoritmo che, su input $1^k$ (\textit{il 
     security parameter rappresentato in unario, nel valore, ovvero nel numero di bit che
     usiamo per rappresentare le nostre informazioni}), che interroga $f$ aribitrariamente,
     anche in maniera adattiva (\textit{scegliendo l'argomento su cui interrogare la funzione 
