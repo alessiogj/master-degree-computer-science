@@ -1,7 +1,7 @@
 \documentclass[oneside,a4paper,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{svg}
-\usepackage[english]{babel}
+\usepackage[italian]{babel}
 \usepackage{float}
 \usepackage{fancyvrb}
 \usepackage{titling}
@@ -37,8 +37,22 @@
 \fancyhead[R]{\thepage}
 \usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,decorations.pathreplacing,shapes.multipart,calc,snakes}
 \usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart}
+\usetikzlibrary{positioning,fit,arrows.meta,backgrounds}
 \tcbuselibrary{skins}
 \counterwithin{figure}{section}
+\usetikzlibrary{arrows,shapes,positioning,arrows.meta}
+
+\tikzset{
+    block/.style={
+        rectangle,
+        draw,
+        text width=1.5cm,
+        align=center,
+        minimum height=0.75cm,
+        font=\sffamily
+    },
+    arrow/.style={-Latex}
+}
 %Nuovi comandi
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \newcommand\prodG{\stackrel{\mathclap{\normalfont\mbox{\tiny{G}}}}{\Longrightarrow}}
@@ -88,7 +102,7 @@
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%
 %%======================================================================
-\title{Parallel Programming}
+\title{Programmazione Parallela}
 \author{\textit{Alessio Gjergji}}
 \date{}
 \begin{document}
@@ -98,8 +112,8 @@
   \huge
   \textbf{\thetitle}\\[0.5cm]
   \normalsize
-  Course taught by Professor Nicola Bombieri\\[0.5cm]
-  University of Verona\\[1cm]
+  Corso tenuto dal Professor Nicola Bombieri\\[0.5cm]
+  Università di Verona\\[1cm]
   \large
   \theauthor\\[0.5cm]
   \vspace{\stretch{2}}
