@@ -10,7 +10,7 @@
 \usepackage[DIV=12,BCOR=2mm,headinclude=true,footinclude=false]{typearea}
 \usepackage{color, colortbl,xcolor}
 \usepackage[hidelinks]{hyperref}
-\usepackage{tcolorbox}
+\usepackage[most]{tcolorbox}
 \usepackage{chngcntr}
 \usepackage{diagbox}
 \usepackage{calc}
@@ -27,13 +27,20 @@
 \usepackage{enumitem}
 \usepackage{makecell}
 \usepackage{tikz}
+\usepackage{graphicx}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{fancyhdr}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{xskak}
+\SetKwComment{Comment}{/* }{ */}
 \fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}}
 \pagestyle{fancy}
 \fancyhf{}% Clear header/footer
 \fancyhead[L]{\nouppercase\leftmark}
+
 \fancyhead[R]{\thepage}
 \usetikzlibrary{positioning,shapes.geometric,arrows.meta,matrix,automata,decorations.pathmorphing,patterns,decorations.pathreplacing,shapes.multipart,calc,snakes}
 \usetikzlibrary{arrows.meta, backgrounds, chains, positioning, shapes.geometric, shapes.multipart}
@@ -77,6 +84,45 @@
 \newtheorem{exmp}{Esempio}[section]
 \newtheorem{theorem}{Teorema}[section]
 \newtheorem{proposizione}{Proposizione}[section]
+
+% Definizione dei colori pastello
+\definecolor{Pastel1}{RGB}{255,179,186} % Rosso pastello
+\definecolor{Pastel2}{RGB}{255,223,186} % Arancione pastello
+\definecolor{Pastel3}{RGB}{255,255,186} % Giallo pastello
+\definecolor{Pastel4}{RGB}{186,255,201} % Verde pastello
+\definecolor{Pastel5}{RGB}{186,225,255} % Blu pastello
+
+
+\newtcolorbox{pastelbox1}[1][]{
+  colback=Pastel1!10,
+  colframe=Pastel1!50!black,
+  #1
+}
+
+\newtcolorbox{pastelbox2}[1][]{
+  colback=Pastel2!10,
+  colframe=Pastel2!50!black,
+  #1
+}
+
+\newtcolorbox{pastelbox3}[1][]{
+  colback=Pastel3!10,
+  colframe=Pastel3!50!black,
+  #1
+}
+
+\newtcolorbox{pastelbox4}[1][]{
+  colback=Pastel4!10,
+  colframe=Pastel4!50!black,
+  #1
+}
+
+\newtcolorbox{pastelbox5}[1][]{
+  colback=Pastel5!10,
+  colframe=Pastel5!50!black,
+  #1
+}
+
 \tcbuselibrary{listings,skins}
 \newtcblisting{mylisting}[2][]{
     arc=0pt, outer arc=0pt,
@@ -92,7 +138,18 @@
 \author{\textit{Alessio Gjergji}}
 \date{}
 \begin{document}
-\maketitle
+\begin{titlingpage}
+  \centering
+  \vspace*{\stretch{1}}
+  \huge
+  \textbf{\thetitle}\\[0.5cm]
+  \normalsize
+  Corso tenuto dal Professor Ferdinando Cicalese\\[0.5cm]
+  Università di Verona\\[1cm]
+  \large
+  \theauthor\\[0.5cm]
+  \vspace{\stretch{2}}
+\end{titlingpage}
 \tableofcontents
-\chapter{Introduzione}
+\input{introduzione}
 \end{document}
