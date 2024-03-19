@@ -1,0 +1,149 @@
+\chapter{\texttt{NP} completezza e \texttt{co-NP}}
+\section{Classi di complessità}
+L'idea fondamentale per dimostrare che determinati problemi sono più difficili dei problemi 
+risolvibili in tempo polinomiale è quella di ``ritagliare'' una classe di problemi
+che abbiano una determinata caratteristica, e dimostrare che un problema specifico
+è almeno tanto difficile quanto i problemi di quella classe, \textbf{riducendo} il problema
+specifico ad un problema della classe.
+\subsection{Tipologie di problemi}
+\begin{itemize}
+    \item \textbf{Problemi decisionali}: problemi che ammettono risposta
+    sì/no. Un problema di decisione è quindi un insieme di istanze, e la risposta
+    è sì se l'istanza appartiene all'insieme, no altrimenti.
+
+    \textit{Un problema di decisione è il seguente: dato un grafo $\mathcal{G}$ dire se 
+    esiste un cammino euleriano in $\mathcal{G}$.}
+
+    \item \textbf{Problemi di ricerca}: problemi di ricerca ammettono una soluzione
+    che può essere trovata in tempo polinomiale.
+
+    \textit{Un problema di ricerca è il seguente: dato un grafo $\mathcal{G}$
+    trovare un cammino euleriano in $\mathcal{G}$.}
+            
+    \item \textbf{Problemi di ottimizzazione}: problemi di ottimizzazione
+    ammettono una soluzione che può essere trovata in tempo polinomiale.
+
+    \textit{Un problema di ottimizzazione è il seguente: dato un grafo $\mathcal{G}$
+    trovare il cammino euleriano più lungo in $\mathcal{G}$.}
+\end{itemize}
+Nello studio della complessità considereremo solo problemi decisionali, in quanto
+tutti i problemi di ricerca e di ottimizzazione possono essere ricondotti a problemi
+di decisione. Ciò significa che se siamo in grado di dire che un determinato problema
+di decisione è difficile, allora possiamo dire che anche il problema di ricerca e
+quello di ottimizzazione sono difficili, perché se fossimo in grado di risolvere un 
+problema di ricerca o di ottimizzazione, potremmo risolvere anche il problema di decisione
+in tempo polinomiale.
+\subsection{Formalizzazione di un problema computazionale}
+In relazione a ciò che è stato detto nella sezione \ref{sec:problema_computazionale}, 
+un problema computazionale è un insieme infinito di istanze e la loro relazione con
+la soluzione associata. Matematicamente, possiamo definire un problema computazionale
+attraverso:
+\begin{itemize}
+    \item $\mathbb{A}$ denota il problema computazionale sotto esame.
+    \item $\mathscr{I}(\mathbb{A})$ rappresenta lo spazio delle istanze,
+    ovvero il dominio dei possibili quesiti.
+    \item $\texttt{sol}(\mathbb{A})$ esprime la relazione che associa a
+    ciascuna istanza la sua soluzione o insieme di soluzioni.
+\end{itemize}
+
+\begin{exmp}
+Consideriamo, ad esempio, il problema del ciclo hamiltoniano. In questo contesto:
+    \begin{itemize}
+        \item $\mathbb{A}$ corrisponde alla questione di determinare l'esistenza
+        di un ciclo hamiltoniano.
+        \item $\mathscr{I}(\mathbb{A})$ comprende tutti i possibili grafi $\mathcal{G}$
+        sui quali indaghiamo.
+        \item $\texttt{sol}(\mathbb{A})$ identifica i percorsi che visitano ogni nodo del
+        grafo esattamente una volta, se esistenti.
+    \end{itemize}
+\end{exmp}
+
+Pertanto, la relazione $\mathbb{A}$ si configura come una \textbf{connessione} fra lo
+spazio delle istanze e le corrispondenti soluzioni. Matematicamente, ciò si traduce
+nella seguente inclusione:
+\[ \mathbb{A} \subseteq \mathscr{I}(\mathbb{A}) \times \texttt{sol}(\mathbb{A}), \]
+indicando con $(\mathcal{G}, \mathcal{P})$ l'insieme delle coppie dove $\mathcal{P}$
+rappresenta un valido ciclo hamiltoniano nel grafo $\mathcal{G}$.
+
+Per ciascuna istanza $x$ appartenente allo spazio dei problemi computazionali,
+$\texttt{sol}(x)$ denota l'insieme delle soluzioni $y$ tali che $(x, y) \in \mathbb{A}$,
+ovvero:
+\[
+    \texttt{sol}(x) = \{ y \mid (x, y) \in \mathbb{A} \}.
+\]
+
+\subsubsection{Problemi di Decisione}
+Nei problemi di decisione, lo spazio delle soluzioni è binario, $\texttt{sol}(\mathbb{A})
+= \{ \texttt{yes}, \texttt{no} \}$. Pertanto, $A$ associa a ciascuna istanza $x$ una delle
+due possibili risposte, determinando se l'istanza soddisfa la proprietà esaminata:
+\[
+    A : \mathscr{I}(\mathbb{A}) \rightarrow \{ \texttt{yes}, \texttt{no} \}.
+\]
+
+\subsubsection{Problemi di Ricerca}
+Per i problemi di ricerca $\mathbb{A}^S$, il problema di decisione associato $\mathbb{A}^D$
+verifica l'esistenza di almeno una soluzione per l'istanza $x$:
+\[
+    \mathbb{A}^D(x) = 
+    \begin{cases}
+        \texttt{yes} & \text{se esiste almeno una soluzione}, \\
+        \texttt{no} & \text{altrimenti}.
+    \end{cases}
+\]
+
+\subsection{La Classe \texttt{P}}
+
+Nella teoria della complessità computazionale, la capacità di risolvere un problema
+computazionale va oltre la semplice identificazione di una soluzione per un'istanza
+specifica. Ciò richiede l'impiego di un algoritmo deterministico $A$ che, per ogni istanza
+$x$ nell'insieme $\mathscr{I}(\mathbb{A})$, produce una soluzione $y$ valida, ovvero $y
+\in \texttt{sol}(x)$:
+\[
+  A(x) = y \quad \text{con} \quad y \in \texttt{sol}(x).  
+\]
+
+Il \textit{tempo di esecuzione} $T_A(x)$ dell'algoritmo $A$ su un'istanza $x$ è fondamentale,
+poiché riflette l'efficienza con cui l'algoritmo raggiunge la soluzione.
+
+\begin{pastelbox2}[title={Complessità Polinomiale}]
+Un algoritmo $A$ è definito \textit{polinomiale} (\texttt{poly-time}) quando il suo tempo di
+esecuzione, per ogni istanza $x \in \mathscr{I}(\mathbb{A})$, è limitato superiormente da
+un polinomio nella dimensione di $x$:
+\[
+    T_A(x) = O(|x|^c) \quad \text{per una certa costante } c \in \mathbb{N}.
+\]
+\end{pastelbox2}
+
+Un problema computazionale viene considerato \textit{fuori dalla classe \texttt{P}} qualora
+non esista, per nessuna costante $c$, un algoritmo capace di risolvere tutte le sue istanze
+in tempo polinomiale $O(n^c)$.
+
+\subsection{La Classe \texttt{EXP}}
+\begin{pastelbox4}[title={Complessità Esponenziale}]
+    La classe \texttt{EXP} raggruppa i problemi di decisione risolvibili da un algoritmo
+    deterministico in tempo esponenziale rispetto
+    alla dimensione dell'input. Un problema $\mathbb{A}$ appartiene a \texttt{EXP} se
+    esiste un algoritmo $A$ per cui, data una costante $c_A$, per ogni istanza $x \in
+    \mathscr{I}(\mathbb{A})$ si ha che:
+    \[
+        T_A(x) = O(2^{|x|^{c_A}}).
+    \]
+    In altre parole, il tempo di esecuzione di $A$ è limitato superiormente da una
+    funzione esponenziale della dimensione dell'input elevata a una costante. Questa
+    classe include quindi problemi per i quali la risoluzione richiede una quantità di
+    tempo che cresce esponenzialmente con l'aumentare della dimensione dell'input.
+\end{pastelbox4}
+Da qui segue che la classe \texttt{EXP} è una generalizzazione della classe \texttt{P},
+poiché ogni problema risolvibile in tempo polinomiale è anche risolvibile in tempo
+esponenziale. In altre parole, \texttt{P} è un sottoinsieme di \texttt{EXP}.
+\[ \texttt{P} \subseteq \texttt{EXP}. \]
+Perché se un problema $\mathcal{A} \in \texttt{P}$, allora esiste un algoritmo $A$, 
+per cui, data una costante $c_A$, per ogni istanza $x \in \mathscr{I}(\mathbb{A})$ si ha che:
+\[ T_A(x) = O(|x|^{c_A}). \]
+Poiché, ogni polinomio è anche una funzione esponenziale, si ha che:
+\[ T_A(x) = O(2^{|x|^{c_A}}). \]
+Quindi $\mathbb{A} \in \texttt{EXP}$.
+
+È importante notare che un problema è nella classe \texttt{EXP}, non se gli unici 
+algoritmi conosciuti per risolverlo sono esponenziali, ma se esiste almeno un algoritmo
+deterministico che lo risolve in tempo esponenziale.
