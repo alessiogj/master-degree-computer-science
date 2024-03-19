@@ -221,12 +221,6 @@ crittografia moderni, che si affidano alla difficoltà di fattorizzare come
 garanzia di sicurezza.
 
 \subsection{Il problema degli scacchi}
-%Re: K per il bianco, k per il nero.
-%Regina (o Donna): Q per il bianco, q per il nero.
-%Torre: R per il bianco, r per il nero.
-%Alfiere: B per il bianco, b per il nero.
-%Cavallo: N per il bianco, n per il nero.
-%Pedone: P per il bianco, p per il nero.
 \begin{minipage}{0.5\textwidth}
     \begin{figure}[H]
         \centering
@@ -343,4 +337,85 @@ Questo esempio illustra come l'analisi della complessità fornisca una comprensi
 profonda sia delle potenzialità sia dei limiti degli algoritmi nel risolvere problemi
 computazionali.
 
-\subsection{Tracciabilità di un problema}
+\subsection{Trattabilità di un problema}
+La comprensione della differenza tra \textbf{crescita polinomiale} e \textbf{crescita esponenziale}
+delle risorse necessarie da un algoritmo è fondamentale per valutare la sua efficienza e praticabilità.
+Jack Edmonds, nel 1965, ha sottolineato l'importanza di questa distinzione, che rimane centrale
+nell'analisi degli algoritmi.
+
+\subsubsection{Crescita Polinomiale}
+La crescita polinomiale si verifica quando il requisito di risorse di un algoritmo è limitato
+da \(n^k\) per qualche costante \(k\). In questo contesto, se l'input raddoppia da \(n\) a \(2n\),
+il requisito di risorse aumenta di un fattore costante, da \(n^k\) a \(2^k n^k\). Questo indica che
+la crescita delle risorse necessarie è gestibile e prevedibile al crescere delle dimensioni dell'input.
+
+\subsubsection{Crescita Esponenziale}
+Al contrario, la crescita esponenziale descrive una situazione in cui il requisito di risorse cresce
+proporzionalmente a \(c^n\) per qualche costante \(c > 1\). Quando l'input raddoppia, il requisito di
+risorse si quadruplica, passando da \(c^n\) a \(c^{2n} = (c^n)^2\). Questa rapida escalation rende gli
+algoritmi con crescita esponenziale impraticabili per input di grandi dimensioni.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis lines=left,
+            title={Confronto tra crescita polinomiale ed esponenziale},
+            xlabel={$n$},
+            ylabel={$f(n)$},
+            ymin=0, ymax=50, 
+            xmin=1, xmax=10,
+            domain=1:10,
+            samples=100, 
+            no markers,
+            thick,
+            grid=both,
+            legend pos=north west,
+            legend style={nodes={scale=0.75, transform shape}}
+        ]
+
+        % 2^n
+        \addplot+[domain=1:10, style=densely dotted, ultra thick] {2^x};
+        \addlegendentry{$2^n$};
+        
+        % n
+        \addplot+[domain=1:10, style=dashed, ultra thick] {x};
+        \addlegendentry{$n$};
+        
+        % n*log2(n)
+        \addplot+[domain=2:10, style=dashdotted, ultra thick] {x*log2(x)};
+        \addlegendentry{$n \log_2(n)$};
+        
+        % log2(n)
+        \addplot+[domain=1:10, style=solid, ultra thick] {log2(x)};
+        \addlegendentry{$\log_2(n)$};
+        
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\begin{pastelbox1}[title=Legge di Moore]
+    La legge di Moore, formulata da Gordon Moore nel 1965, afferma che il numero di transistor
+    in un microprocessore raddoppia approssimativamente ogni 18 mesi.
+\end{pastelbox1}
+Ogni due anni la velocità dei computer raddoppia, ma questo non è sempre decisivo.
+Consideriamo due scenari:
+    
+\subsubsection*{Algoritmi Polinomiali: \(O(n^k)\)}
+Con un algoritmo polinomiale, il tempo di esecuzione cresce polinomialmente con la
+dimensione dell'input \(n\). In un tempo \(T\):
+\begin{itemize}
+    \item Se oggi risolviamo istanze di dimensione \(n_T\),
+    \item tra due anni possiamo risolvere istanze di dimensione \(n' = n_T 2^{1/k}\).
+\end{itemize}
+Questo dimostra che l'aumento di potenza computazionale ci permette di gestire istanze
+significativamente più grandi in modo più efficiente.
+    
+\subsubsection{Algoritmi Esponenziali: \(\Omega(2^n)\)}
+Con un algoritmo esponenziale, il tempo di esecuzione cresce esponenzialmente con la dimensione
+dell'input \(n\). In un tempo \(T\):
+\begin{itemize}
+    \item Se oggi risolviamo istanze di dimensione \(n_T\),
+    \item tra due anni possiamo risolvere istanze di dimensione \(n' = n_T + 1\).
+\end{itemize}
+In questo caso, l'aumento di potenza computazionale ci consente di affrontare solo istanze
+leggermente più grandi, evidenziando i limiti degli algoritmi con crescita esponenziale.
