@@ -35,6 +35,9 @@
 \usepackage{algpseudocode}
 \usepackage{xcolor}
 \usepackage{xskak}
+\usepackage{tikz,amsmath,ifthen}
+
+
 \SetKwComment{Comment}{/* }{ */}
 \fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}}
 \pagestyle{fancy}
@@ -84,44 +87,30 @@
 \newtheorem{exmp}{Esempio}[section]
 \newtheorem{theorem}{Teorema}[section]
 \newtheorem{proposizione}{Proposizione}[section]
+\usepackage{tikz,amsmath,ifthen}
 
+\newcommand{\xcontrol}{.4}
+\newcommand{\ycontrol}{.1}
+\newcommand{\mayeq}{\overset{?}{=}}
+\newcommand{\cclasses}[1]{\begin{tikzpicture}
+    \foreach \c[count=\n] in {#1}{\xdef\numclasses{\n}}
+    \foreach \c[count=\n, evaluate=\n as \m using \numclasses-\n+1, evaluate=\n as \drk using 10+80*\n/\numclasses] in {#1}{
+        \fill[gray!\drk] (0,\m/3) ellipse ({\xcontrol+.5*\m} and {\ycontrol+.5*\m});
+        \ifthenelse{\n=1}{}{\node at (0,\m/3+\ycontrol+.5*\m){$\mayeq$};}
+        \node[right,font={\sffamily}] at (0,{(\m/3+\ycontrol+.5*\m)-.45}){\c};}
+    \draw ((0,\numclasses/3) ellipse ({\xcontrol+.5*\numclasses} and {\ycontrol+.5*\numclasses});
+\end{tikzpicture}}
 % Definizione dei colori pastello
 \definecolor{Pastel1}{RGB}{255,179,186} % Rosso pastello
 \definecolor{Pastel2}{RGB}{255,223,186} % Arancione pastello
 \definecolor{Pastel3}{RGB}{255,255,186} % Giallo pastello
 \definecolor{Pastel4}{RGB}{186,255,201} % Verde pastello
 \definecolor{Pastel5}{RGB}{186,225,255} % Blu pastello
-
-
-\newtcolorbox{pastelbox1}[1][]{
-  colback=Pastel1!10,
-  colframe=Pastel1!50!black,
-  #1
-}
-
-\newtcolorbox{pastelbox2}[1][]{
-  colback=Pastel2!10,
-  colframe=Pastel2!50!black,
-  #1
-}
-
-\newtcolorbox{pastelbox3}[1][]{
-  colback=Pastel3!10,
-  colframe=Pastel3!50!black,
-  #1
-}
-
-\newtcolorbox{pastelbox4}[1][]{
-  colback=Pastel4!10,
-  colframe=Pastel4!50!black,
-  #1
-}
-
-\newtcolorbox{pastelbox5}[1][]{
-  colback=Pastel5!10,
-  colframe=Pastel5!50!black,
-  #1
-}
+\definecolor{Pastel6}{RGB}{255,182,193} % Rosa pastello
+\definecolor{Pastel7}{RGB}{250,235,215} % Avorio pastello
+\definecolor{Pastel8}{RGB}{221,160,221} % Lilla pastello
+\definecolor{Pastel9}{RGB}{176,224,230} % Azzurro pastello
+\definecolor{Pastel10}{RGB}{244,164,96} % Salmone pastello
 
 \tcbuselibrary{listings,skins}
 \newtcblisting{mylisting}[2][]{

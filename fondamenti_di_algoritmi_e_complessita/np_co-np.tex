@@ -61,7 +61,7 @@ Consideriamo, ad esempio, il problema del ciclo hamiltoniano. In questo contesto
 Pertanto, la relazione $\mathbb{A}$ si configura come una \textbf{connessione} fra lo
 spazio delle istanze e le corrispondenti soluzioni. Matematicamente, ciò si traduce
 nella seguente inclusione:
-\[ \mathbb{A} \subseteq \mathscr{I}(\mathbb{A}) \times \texttt{sol}(\mathbb{A}), \]
+\[ \mathbb{A} \subseteq \mathscr{I}(\mathbb{A}) \times \texttt{sol}(\mathbb{A}) \]
 indicando con $(\mathcal{G}, \mathcal{P})$ l'insieme delle coppie dove $\mathcal{P}$
 rappresenta un valido ciclo hamiltoniano nel grafo $\mathcal{G}$.
 
@@ -69,7 +69,7 @@ Per ciascuna istanza $x$ appartenente allo spazio dei problemi computazionali,
 $\texttt{sol}(x)$ denota l'insieme delle soluzioni $y$ tali che $(x, y) \in \mathbb{A}$,
 ovvero:
 \[
-    \texttt{sol}(x) = \{ y \mid (x, y) \in \mathbb{A} \}.
+    \texttt{sol}(x) = \{ y \mid (x, y) \in \mathbb{A} \}
 \]
 
 \subsubsection{Problemi di Decisione}
@@ -77,7 +77,7 @@ Nei problemi di decisione, lo spazio delle soluzioni è binario, $\texttt{sol}(\
 = \{ \texttt{yes}, \texttt{no} \}$. Pertanto, $A$ associa a ciascuna istanza $x$ una delle
 due possibili risposte, determinando se l'istanza soddisfa la proprietà esaminata:
 \[
-    A : \mathscr{I}(\mathbb{A}) \rightarrow \{ \texttt{yes}, \texttt{no} \}.
+    A : \mathscr{I}(\mathbb{A}) \rightarrow \{ \texttt{yes}, \texttt{no} \}
 \]
 
 \subsubsection{Problemi di Ricerca}
@@ -87,7 +87,7 @@ verifica l'esistenza di almeno una soluzione per l'istanza $x$:
     \mathbb{A}^D(x) = 
     \begin{cases}
         \texttt{yes} & \text{se esiste almeno una soluzione}, \\
-        \texttt{no} & \text{altrimenti}.
+        \texttt{no} & \text{altrimenti}
     \end{cases}
 \]
 
@@ -99,51 +99,228 @@ specifica. Ciò richiede l'impiego di un algoritmo deterministico $A$ che, per o
 $x$ nell'insieme $\mathscr{I}(\mathbb{A})$, produce una soluzione $y$ valida, ovvero $y
 \in \texttt{sol}(x)$:
 \[
-  A(x) = y \quad \text{con} \quad y \in \texttt{sol}(x).  
+  A(x) = y \quad \text{con} \quad y \in \texttt{sol}(x)
 \]
 
 Il \textit{tempo di esecuzione} $T_A(x)$ dell'algoritmo $A$ su un'istanza $x$ è fondamentale,
 poiché riflette l'efficienza con cui l'algoritmo raggiunge la soluzione.
 
-\begin{pastelbox2}[title={Complessità Polinomiale}]
+\begin{tcolorbox}[title={Classe \texttt{P}}]
 Un algoritmo $A$ è definito \textit{polinomiale} (\texttt{poly-time}) quando il suo tempo di
 esecuzione, per ogni istanza $x \in \mathscr{I}(\mathbb{A})$, è limitato superiormente da
 un polinomio nella dimensione di $x$:
 \[
     T_A(x) = O(|x|^c) \quad \text{per una certa costante } c \in \mathbb{N}.
 \]
-\end{pastelbox2}
+\end{tcolorbox}
 
 Un problema computazionale viene considerato \textit{fuori dalla classe \texttt{P}} qualora
 non esista, per nessuna costante $c$, un algoritmo capace di risolvere tutte le sue istanze
 in tempo polinomiale $O(n^c)$.
 
 \subsection{La Classe \texttt{EXP}}
-\begin{pastelbox4}[title={Complessità Esponenziale}]
+\begin{tcolorbox}[title={Classe \texttt{EXP}}]
     La classe \texttt{EXP} raggruppa i problemi di decisione risolvibili da un algoritmo
     deterministico in tempo esponenziale rispetto
     alla dimensione dell'input. Un problema $\mathbb{A}$ appartiene a \texttt{EXP} se
     esiste un algoritmo $A$ per cui, data una costante $c_A$, per ogni istanza $x \in
     \mathscr{I}(\mathbb{A})$ si ha che:
     \[
-        T_A(x) = O(2^{|x|^{c_A}}).
+        T_A(x) = O(2^{|x|^{c_A}})
     \]
     In altre parole, il tempo di esecuzione di $A$ è limitato superiormente da una
     funzione esponenziale della dimensione dell'input elevata a una costante. Questa
     classe include quindi problemi per i quali la risoluzione richiede una quantità di
     tempo che cresce esponenzialmente con l'aumentare della dimensione dell'input.
-\end{pastelbox4}
+\end{tcolorbox}
 Da qui segue che la classe \texttt{EXP} è una generalizzazione della classe \texttt{P},
 poiché ogni problema risolvibile in tempo polinomiale è anche risolvibile in tempo
 esponenziale. In altre parole, \texttt{P} è un sottoinsieme di \texttt{EXP}.
-\[ \texttt{P} \subseteq \texttt{EXP}. \]
+\[ \texttt{P} \subseteq \texttt{EXP} \]
 Perché se un problema $\mathcal{A} \in \texttt{P}$, allora esiste un algoritmo $A$, 
 per cui, data una costante $c_A$, per ogni istanza $x \in \mathscr{I}(\mathbb{A})$ si ha che:
-\[ T_A(x) = O(|x|^{c_A}). \]
+\[ T_A(x) = O(|x|^{c_A}) \]
 Poiché, ogni polinomio è anche una funzione esponenziale, si ha che:
-\[ T_A(x) = O(2^{|x|^{c_A}}). \]
+\[ T_A(x) = O(2^{|x|^{c_A}}) \]
 Quindi $\mathbb{A} \in \texttt{EXP}$.
 
 È importante notare che un problema è nella classe \texttt{EXP}, non se gli unici 
 algoritmi conosciuti per risolverlo sono esponenziali, ma se esiste almeno un algoritmo
 deterministico che lo risolve in tempo esponenziale.
+\begin{exmp}
+    Consideriamo il problema del cammino euleriano. Un cammino euleriano è un cammino che
+    attraversa ogni arco del grafo esattamente una volta. 
+    In input si ha un grafo $\mathcal{G}$ e si vuole sapere se esiste un cammino euleriano
+    in $\mathcal{G}$, quindi l'output è \texttt{yes} se esiste un cammino euleriano e
+    \texttt{no} altrimenti. 
+    Questo problema è nella classe \texttt{P}, infatti esiste un algoritmo polinomiale
+    per risolverlo, controllando se il grafo è connesso e se ogni nodo ha grado pari.
+\end{exmp}
+\begin{exmp}
+    Consideriamo il problema del commesso viaggiatore. In input si ha un grafo completo
+    pesato $\mathcal{G}$ e si vuole sapere se esiste un ciclo hamiltoniano di peso minimo
+    in $\mathcal{G}$, quindi l'output è \texttt{yes} se esiste un ciclo hamiltoniano e
+    \texttt{no} altrimenti. 
+    Non sappiamo se esiste un algoritmo polinomiale per risolvere questo problema, quindi
+    non sappiamo se è nella classe \texttt{P}. Sappiamo che per ogni istanza, se la soluzione 
+    è \texttt{yes} possiamo certificarla in tempo polinomiale. 
+\end{exmp}
+
+\begin{tcolorbox}[title={Prova Semplice}]
+    Una \textbf{prova semplice} è un certificato di lunghezza polinomiale che può essere
+    verificato in tempo polinomiale. 
+\end{tcolorbox}
+Cerchiamo di caratterizzare i problemi che hanno una prova semplice.
+\subsection{La Classe \texttt{NP}}
+
+\begin{tcolorbox}[title = {Classe \texttt{NP}}]
+    Un problema $\mathbb{A}$ appartiene alla classe \texttt{NP} se esiste un algoritmo
+    deterministico $A$ (\textit{verificatore}) e una funzione polinomiale $p$ tale che, per ogni istanza $x \in
+    \mathscr{I}(\mathbb{A})$, esiste un certificato $y$ di lunghezza polinomiale rispetto
+    alla dimensione di $x$ tale che:
+    \[
+        B(x, y) = \begin{cases}
+            \texttt{yes} & \text{se } x \in \texttt{sol}(\mathbb{A}), \\
+            \texttt{no} & \text{altrimenti}
+        \end{cases}
+    \]
+
+    Inoltre, esiste una costante $c_A$ tale che il tempo di esecuzione di $A$ è limitato
+    superiormente da una funzione polinomiale della dimensione di $x$:
+    \[
+        T_A(x, y) = O(p(|x|^{c_A}))
+    \]
+
+    In notazione formale, si ha che:
+    \begin{align*}
+        \texttt{NP} = \{ &\mathbb{A} \mid \exists A, c_A,
+        \forall x \in \mathscr{I}(\mathbb{A}): \mathbb{A}(x) = \texttt{yes} \Rightarrow \\
+        &\exists y, |y| = O((|x|^{c_A})), \text{ t.c. } A(x, y) = \texttt{yes} \land T_A(x, y) 
+        = O((|x|^{c_A})) \}
+    \end{align*}
+\end{tcolorbox}
+È importante notare che il tempo di esecuzione del verificatore $A$ è polinomiale rispetto 
+alla dimensione dell'input $x$ e del certificato $y$. Ciò significa che, se esiste un
+certificato $y$ tale che $A(x, y) = \texttt{yes}$, allora esiste un algoritmo che può
+verificare la soluzione in tempo polinomiale. Da questo segue che il certificato deve 
+essere di lunghezza polinomiale rispetto alla dimensione dell'input $x$.
+\[
+    |y| = O((|x|^{c_A}))  
+\]
+
+\begin{theorem}
+    La classe \texttt{P} è un sottoinsieme della classe \texttt{NP}.
+    \[
+        \texttt{P} \subseteq \texttt{NP}.
+    \]
+\end{theorem}
+\begin{proof}
+    Consideriamo il problema $\mathbb{A} \in \texttt{P}$. Allora esiste un algoritmo 
+    deterministico $A$ che risolve per ogni istanza $x \in \mathscr{I}(\mathbb{A})$ in
+    tempo polinomiale:
+    \[
+        T_A(x) = O(|x|^{c_A}).
+    \]
+    Definiamo un verificatore $B$ per $\mathbb{A}$. Per ogni istanza
+    $x \in \mathscr{I}(\mathbb{A})$ e $y$, $B(x, y) = A(x)$. 
+    Quindi se $\mathbb{A}(x) = \texttt{yes}$, allora per ogni $y \in \{0,1\}^*$,
+    $B(x, y) = \texttt{yes}$ e se $\mathbb{A}(x) = \texttt{no}$, allora per ogni
+    $y \in \{0,1\}^*$, $B(x, y) = \texttt{no}$.
+\end{proof}
+
+\begin{theorem}
+    La classe \texttt{NP} è sottoinsieme della classe \texttt{EXP}.
+    \[
+        \texttt{NP} \subseteq \texttt{EXP}.
+    \]
+\end{theorem}
+\begin{proof}
+    Consideriamo un problema $\mathbb{A} \in \texttt{NP}$. Allora esiste un algoritmo
+    deterministico $B$ e una costante $c_B$ tale che per ogni istanza $x \in
+    \mathscr{I}(\mathbb{A})$, esiste un certificato $y$ di lunghezza polinomiale rispetto
+    alla dimensione di $x$ tale che:
+    \[
+        B(x, y) = \begin{cases}
+            \texttt{yes} & \text{se } x \in \texttt{sol}(\mathbb{A}), \\
+            \texttt{no} & \text{altrimenti}.
+        \end{cases}
+    \]
+    Quindi il tempo di esecuzione di $B$ è limitato superiormente da una funzione polinomiale
+    della dimensione di $x$:
+    \[
+        T_B(x, y) = O((|x|^{c_B}))
+    \]
+    Definiamo un algoritmo deterministico $A^{\texttt{EXP}}$ che per ogni 
+    $x \in \mathscr{I}(\mathbb{A})$ cicla su tutti i possibili certificati $y$ della 
+    taglia ammissibile per i certificati e usa $B(x, y)$ per verificare se $x$ è 
+    una soluzione di $\mathbb{A}$:
+
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \caption{Algoritmo $A^{\texttt{EXP}}$}
+        \KwIn{Un'istanza $x \in \mathscr{I}(\mathbb{A})$}
+        \KwOut{\texttt{yes} se $x \in \texttt{sol}(\mathbb{A})$, \texttt{no} altrimenti}
+        \ForEach{$y \in \{0,1\}^{|x|^{c_B}}$}{
+            \If{$B(x, y) = \texttt{yes}$}{
+                \Return{\texttt{yes}}
+            }
+            \Return{\texttt{no}}
+        }
+    \end{algorithm}
+    Sappiamo che $A^{\texttt{EXP}}(x) = \texttt{yes}$ se e solo se esiste un certificato
+    $y \in \{0,1\}^{|x|^{c_B}}$ tale che $B(x, y) = \texttt{yes}$, ovvero se 
+    $\mathbb{A} = \texttt{yes}$. Il tempo di esecuzione di $A^{\texttt{EXP}}$ è limitato
+    superiormente da una funzione esponenziale della dimensione di $x$:
+    \[
+        T_{A^{\texttt{EXP}}}(x) = O(2^{|x|^{c_B}})
+    \]
+    Quindi $\mathbb{A} \in \texttt{EXP}$, ovvero $\texttt{NP} \subseteq \texttt{EXP}$.
+\end{proof}
+
+\begin{figure}[H]
+    \centering
+    \cclasses{\texttt{EXP}, \texttt{NP}, \texttt{P}}
+\end{figure}
+Non sappiamo se le inclusioni sono strette, ma sappiamo che \texttt{P} è incluso
+strettamente in \texttt{EXP}.
+
+\begin{tcolorbox}[title = {Congettura $\texttt{P} \neq \texttt{NP}$}]
+    Se $\texttt{P} \neq \texttt{NP}$, quindi $\texttt{P} \subset \texttt{NP}$, allora
+    esistono problemi che possono essere verificati in tempo polinomiale, ma non possono
+    essere risolti in tempo polinomiale.
+    \begin{align*}
+        \texttt{P} &\subset \texttt{NP} \\
+        \texttt{P} &\neq \texttt{NP}
+    \end{align*}
+    Il problema è che non esiste una dimostrazione formale che 
+    $\texttt{P} \neq \texttt{NP}$. Siamo convinti di ciò perché crediamo che alcuni
+    problemi \texttt{NP} siano
+    più difficili di altri e se siamo in grado di risolvere tali problemi allora 
+    siamo in grado di risolvere tutti i problemi \texttt{NP}. Questa situazione
+    porta alla distinzione tra i problemi \texttt{NP} cosiddetti ``difficili" o
+    \texttt{NP-hard} e i problemi \texttt{NP-completi}, per i quali una soluzione
+    efficiente implicherebbe la possibilità di risolvere efficientemente ogni problema
+    nell'insieme \texttt{NP}.
+
+\end{tcolorbox}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[set/.style={draw, circle, inner sep=0pt, align=center}]
+        \node[set, fill=gray!40, text width=2.5cm] (P) at (0,0) {Problemi \texttt{P}};
+        \node[set, fill=gray!40, text width=2.5cm] (NP) at (3,0) {\texttt{NP}-Completi};
+        \begin{pgfonlayer}{background}
+            \node[fill=gray!20, fit=(P) (NP), draw, rounded corners=0.5cm, inner
+            sep=0.5cm, label={above: Problemi \texttt{NP}}] {};
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+\section{Riduzione polinomiale tra problemi}
+\begin{tcolorbox}[title = {Riduzione polinomiale}]
+    Siano $\mathbb{A}$ e $\mathbb{B}$ due problemi decisionali. Diciamo che $\mathbb{A}$
+    si riduce polinomialmente a $\mathbb{B}$, e scriviamo $\mathbb{A} \leq_p \mathbb{B}$,
+    se esiste una funzione calcolabile in tempo polinomiale $f: \{0,1\}^* \rightarrow
+    \{0,1\}^*$ tale che per ogni $x \in \{0,1\}^*$:
+    \[
+        x \in \texttt{sol}(\mathbb{A}) \Leftrightarrow f(x) \in \texttt{sol}(\mathbb{B})
+    \]
+\end{tcolorbox}

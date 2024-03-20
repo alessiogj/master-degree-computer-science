@@ -19,10 +19,10 @@ Esplorando queste domande, la Teoria della Complessità ci fornisce strumenti e 
 per valutare e confrontare problemi computazionali, gettando luce sui limiti del calcolo
 e sull'efficacia degli algoritmi.
 
-\begin{pastelbox1}[title=Definizione di Complessità Computazionale]
+\begin{tcolorbox}[title=Definizione di Complessità Computazionale]
     La Complessità Computazionale è lo studio delle risorse necessarie per risolvere
     problemi computazionali.
-\end{pastelbox1}
+\end{tcolorbox}
 
 \subsection{Primi problemi computazionali}
 Supponiamo di di avere il seguente grafo:
@@ -78,13 +78,13 @@ Il problema del Ciclo Euleriano è stato formulato da Leonhard Euler nel 1736, q
 
 Euler riuscì a trasformare questo problema pratico in un quesito astratto di teoria dei grafi. Sostanzialmente, il problema chiede se esiste un ciclo in un grafo che attraversi tutti gli archi esattamente una volta. Euler formulò un teorema, che descrive le condizioni necessarie affinché esista tale ciclo.
 
-\begin{pastelbox2}[title=Teorema di Euler]
+\begin{tcolorbox}[title=Teorema di Euler]
     Un grafo connesso e non orientato possiede un ciclo che inizia e termina sullo
     stesso vertice e attraversa ogni arco esattamente una volta se e solo se ogni
     vertice ha grado pari. Se ci sono esattamente due vertici di grado dispari, allora
     esiste un percorso che inizia in un vertice, attraversa ogni arco esattamente una volta,
     e termina nell'altro vertice.
-\end{pastelbox2}
+\end{tcolorbox}
 Euler dimostrò che un grafo ha un ciclo euleriano se e solo se è connesso e
 ogni nodo ha un grado pari. Se il grafo non è connesso, o se ha più di due nodi
 con un grado dispari, allora non può avere un ciclo euleriano. Questo risultato non
@@ -139,13 +139,13 @@ esattamente una volta, un ciclo hamiltoniano deve passare per tutti i vertici un
 sola volta e tornare al vertice di partenza. Il problema del ciclo hamiltoniano
 chiede se tale ciclo esista in un dato grafo.
 
-\begin{pastelbox3}[title=Problema del Ciclo Hamiltoniano]
+\begin{tcolorbox}[title=Problema del Ciclo Hamiltoniano]
     Un ciclo hamiltoniano esiste in un grafo $\mathcal{G}$ se e solo se esiste una
     sequenza chiusa che
     visita ogni vertice una volta prima di ritornare al vertice iniziale. Tuttavia, a
     differenza del problema euleriano, non esiste un criterio semplice per verificare
     l'esistenza di un ciclo hamiltoniano in un grafo generale.
-\end{pastelbox3}
+\end{tcolorbox}
 
 Il problema del ciclo hamiltoniano è \texttt{NP-completo}, il che significa che non è noto
 alcun algoritmo efficiente che lo risolva per ogni grafo in tempo polinomiale.
@@ -259,11 +259,11 @@ richiedere molto tempo.
 
 \section{Problema computazionale}
 \label{sec:problema_computazionale}
-\begin{pastelbox4}[title=Problema computazionale]
+\begin{tcolorbox}[title=Problema computazionale]
     Un problema computazionale descrive un infinito insieme di possibili input,
     chiamati \textit{istanze}, e rappresenta una relazione che mappa ogni istanza a
     un insieme non vuoto di possibili output.
-\end{pastelbox4}
+\end{tcolorbox}
 Questa definizione sottolinea due componenti fondamentali di un problema computazionale:
 \begin{itemize}
     \item \textbf{Insieme di Istanze}: Ogni problema computazionale ammette un'infinità di possibili istanze di input. Queste istanze rappresentano le diverse configurazioni o scenari su cui il problema può operare.
@@ -394,10 +394,10 @@ algoritmi con crescita esponenziale impraticabili per input di grandi dimensioni
         \end{axis}
     \end{tikzpicture}
 \end{figure}
-\begin{pastelbox1}[title=Legge di Moore]
+\begin{tcolorbox}[title=Legge di Moore]
     La legge di Moore, formulata da Gordon Moore nel 1965, afferma che il numero di transistor
     in un microprocessore raddoppia approssimativamente ogni 18 mesi.
-\end{pastelbox1}
+\end{tcolorbox}
 Ogni due anni la velocità dei computer raddoppia, ma questo non è sempre decisivo.
 Consideriamo due scenari:
     
