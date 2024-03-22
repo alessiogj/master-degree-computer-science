@@ -435,3 +435,101 @@ Per $k \geq 3$ non sappiamo se esiste un algoritmo polinomiale per la colorazion
     da $v^*$. Quindi, se $\mathcal{G'}$ è \texttt{(k+1)-colorabile},
     allora $\mathcal{G}$ è \texttt{k-colorabile}.
 \end{proof}
+
+\section{Problemi \texttt{NP}-completi}
+I problemi \texttt{NP}-completi sono una classe di problemi che sono problemi in \texttt{NP} e se uno 
+di questi problemi è in \texttt{P}, allora tutti i problemi in \texttt{NP} sono in \texttt{P}, 
+ovvero $\texttt{P} = \texttt{NP}$. Se $\texttt{P} \neq \texttt{NP}$, allora nessun problema
+\texttt{NP}-completo è in \texttt{P}.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[set/.style={draw, circle, inner sep=0pt, align=center}]
+        \node[set, fill=gray!40, text width=2.5cm] (P) at (0,0) {Problemi \texttt{P}};
+        \node[set, fill=gray!40, text width=2.5cm] (NP) at (3,0) {\texttt{NP}-Completi};
+        \begin{pgfonlayer}{background}
+            \node[fill=gray!20, fit=(P) (NP), draw, rounded corners=0.5cm, inner
+            sep=0.5cm, label={above: Problemi \texttt{NP}}] {};
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{figure}
+Supponiamo che esista un problema $\mathbb{B}\in \texttt{NP}$ tale che per ogni problema $\mathbb{A}$ in \texttt{NP},
+esiste una riduzione polinomiale da $\mathbb{A}$ a $\mathbb{B}$. 
+Quindi se $\mathbb{B}$ è in \texttt{P}, allora $\mathbb{A}$ è in \texttt{P} allora 
+per ogni problema $\mathbb{A}$ in \texttt{NP} esiste una riduzione polinomiale da
+$\mathbb{A}$ a $\mathbb{B}$ e quindi $\mathbb{A}$ è in \texttt{P}.
+Per contrapposizione, se $\texttt{P} \neq \texttt{NP}$,
+allora $\mathbb{B}$ non è in \texttt{P} e quindi $\mathbb{A}$ non è in \texttt{P}.
+
+Diciamo che $\mathbb{B}$ è \texttt{NP}-completo se $\mathbb{B}$ è in \texttt{NP} e
+per ogni problema $\mathbb{A}$ in \texttt{NP}, $\mathbb{A}$ è riducibile a $\mathbb{B}$ in tempo polinomiale, 
+ovvero $\mathbb{A} \leq_p \mathbb{B}$. 
+
+\begin{tcolorbox}
+    Un problema $\mathbb{B}$ è \texttt{NP}-completo se $\mathbb{B}$ è in \texttt{NP}
+    e $\mathbb{B}$ è \texttt{NP}-hard.
+\end{tcolorbox}
+
+Un problema $\texttt{NP}$-completo deve essere un problema rappresentativo di tutti
+i problemi in \texttt{NP}, deve essere quindi codificabile in modo tale che tutti i problemi
+in \texttt{NP} siano riducibili a esso.
+
+\subsection{Soddisfacibilità booleana}
+Il problema della soddisfacibilità booleana è il problema di determinare se una formula booleana
+è soddisfacibile, ovvero se esiste un assegnamento di valori di verità alle variabili della formula
+che rende la formula vera. L'input al problema è una formula booleana in forma normale congiuntiva
+(\texttt{CNF}) $\phi$ e l'output è \texttt{yes} se e solo se esiste un assegnamento di valori di verità
+alle variabili della formula che rende la formula vera.
+
+Una \textbf{formula booleana in forma normale congiuntiva (\texttt{CNF})} è definita come una
+congiunzione di clausole. Formalmente, sia $\phi(x_1, \dots, x_n)$ una formula booleana
+che dipende dalle variabili booleane $x_1, \dots, x_n$. Questa formula può essere espressa
+come segue:
+\[
+\phi(x_1, \dots, x_n) = C^{(1)} \land C^{(2)} \land \dots \land C^{(m)}
+\]
+dove $m$ è il numero totale di clausole nella formula, e ogni clausola $C^{(i)}$ è definita
+come una disgiunzione di uno o più letterali:
+\[
+C^{(i)} = l_1^{(i)} \lor l_2^{(i)} \lor \dots \lor l_{k_i}^{(i)}
+\]
+In questa definizione, $k_i$ rappresenta il numero di letterali nella $i$-esima clausola
+$C^{(i)}$, e ogni letterale $l_j^{(i)}$ può essere una variabile booleana $x_t$ o la sua
+negazione $\bar{x_t}$, per qualche $t \in \{1, \dots, n\}$. In altre parole, ogni letterale
+è definito come:
+\[
+l_j^{(i)} \in \{x_1, \bar{x_1}, x_2, \bar{x_2}, \dots, x_n, \bar{x_n}\}
+\]
+
+Questa struttura garantisce che la formula $\phi$ sia una congiunzione di clausole, dove
+ogni clausola è una disgiunzione di letterali, e ogni letterale è una variabile booleana
+o la sua negazione.
+
+Una formula \texttt{CNF} è quindi una funzione di $n$ variabili booleane che
+restituisce un valore booleano. Un assegnamento $a$ di valori di verità alle
+variabili della formula è una funzione $a: \{a_1, \dots, a_n\} \to \{0, 1\}$
+che assegna un valore di verità a ciascuna variabile della formula. Un
+assegnamento $a$ è detto \textbf{soddisfacente} per la formula $\phi$
+se e solo se $\phi(a_1, a_2, \dots, a_n) = \texttt{true}$.
+\subsubsection{Esempio}
+Consideriamo la seguente formula booleana in forma normale congiuntiva:
+
+\[
+\phi(x_1, x_2, x_3, x_4) = (x_1 \lor x_2 \lor x_3 \lor \bar{x_4}) \land 
+(\bar{x_1} \lor \bar{x_2}) \land (x_1 \lor x_2 \lor x_3 \lor \bar{x_4})
+\]
+Un assegnamento $a: \{a_1, a_2, a_3, a_4\} \to \{0, 1\}$ può essere il seguente:
+\[
+a = \{\texttt{true}, \texttt{false}, \texttt{true}, \texttt{true}\}
+\]
+Risolvendo la formula con l'assegnamento $a$ otteniamo:
+\[
+\phi(a_1, a_2, a_3, a_4) = \texttt{true} \land \texttt{true} \land \texttt{true} = \texttt{true}
+\]
+Quindi l'assegnamento $a$ soddisfa la formula $\phi$.
+
+\subsection{\texttt{NP}-completezza di \texttt{SAT}}
+Prima di dimostrare che \texttt{SAT} è un problema \texttt{NP}-completo, dimostriamo
+che \texttt{SAT} si riduce a \texttt{k-col}.
+\begin{theorem}
+    $\texttt{K-col} \leq_p \texttt{SAT}$
+\end{theorem}
