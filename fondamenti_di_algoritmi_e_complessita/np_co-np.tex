@@ -315,12 +315,123 @@ strettamente in \texttt{EXP}.
     \end{tikzpicture}
 \end{figure}
 \section{Riduzione polinomiale tra problemi}
-\begin{tcolorbox}[title = {Riduzione polinomiale}]
+La riduzione polinomiale ci permette di mettere in relazione i problemi tra loro, 
+permettendoci di dimostrare che un problema è almeno tanto difficile quanto un altro
+problema.
+\begin{tcolorbox}[title = {Riduzione polinomiale (Karp)}]
     Siano $\mathbb{A}$ e $\mathbb{B}$ due problemi decisionali. Diciamo che $\mathbb{A}$
     si riduce polinomialmente a $\mathbb{B}$, e scriviamo $\mathbb{A} \leq_p \mathbb{B}$,
     se esiste una funzione calcolabile in tempo polinomiale $f: \{0,1\}^* \rightarrow
     \{0,1\}^*$ tale che per ogni $x \in \{0,1\}^*$:
     \[
-        x \in \texttt{sol}(\mathbb{A}) \Leftrightarrow f(x) \in \texttt{sol}(\mathbb{B})
+        \forall x \in \mathbb{A} \qquad \mathbb{A}(x) = \texttt{yes} \iff \mathbb{B}(f(x)) = \texttt{yes}
     \]
 \end{tcolorbox}
+\subsection{Colorazione di un grafo}
+Consideriamo il problema della colorazione di un grafo. Dato un grafo $\mathcal{G} = (V, E)$,
+dove $V$ è l'insieme dei vertici e $E$ è l'insieme degli archi, il problema consiste
+nel determinare se è possibile colorare i vertici di $\mathcal{G}$ con $k$ colori in modo che
+due vertici adiacenti non abbiano lo stesso colore. Solitamente tale problema si associa 
+al problema di allocazione di risorse, dove i vertici rappresentano le risorse e gli archi
+rappresentano le relazioni di dipendenza tra le risorse.
+
+\begin{tcolorbox}
+    La coloriazione è \textbf{propria} se per ogni arco $(u, v) \in E$ si ha che
+    $c(u) \neq c(v)$, ovvero due vertici adiacenti non possono avere lo stesso colore.
+\end{tcolorbox}
+Il problema della \texttt{k-colorazione} è un problema \texttt{NP} perché possiamo
+verificare in tempo polinomiale se una colorazione è propria. Quindi una \textbf{prova semplice} 
+che dimostra che il problema della \texttt{k-colorazione} è \texttt{NP} è la seguente:
+\begin{itemize}
+    \item Dato un grafo $\mathcal{G}$ e una colorazione $c: V \rightarrow \{1, \ldots, k\}$,
+    possiamo verificare in tempo polinomiale se $c$ è una colorazione propria, e tale 
+    colorazione si verifica in tempo polinomiale $O(|V| + |E|)$.
+    Immaginiamo che la colorazione sia una funzione che associa ad ogni vertice un numero 
+    intero che rappresenta il colore del vertice. Se $c$ è una colorazione propria, allora
+    per ogni arco $(u, v) \in E$ si ha che $c(u) \neq c(v)$.
+\end{itemize}
+
+Ci chiediamo ora se esiste un algoritmo polinomiale per la colorazione di un grafo.
+La risposta è legata al parametro $k$ che rappresenta la diversa tipologia di 
+problemi che possiamo avere. Proviamo a vedere per i diversi valori di $k$ se esiste
+un algoritmo polinomiale per la colorazione di un grafo:
+\begin{itemize}
+    \item \textbf{k = 1}: se $k = 1$ allora il problema è banale, perché tutti i vertici
+    devono avere lo stesso colore, per farlo basta che il grafo sia massimamente disconnesso,
+    ovvero non ci siano archi tra i vertici. Questo problema è risolvibile in tempo polinomiale.
+    \item \textbf{k = 2}: se $k = 2$ allora il problema è equivalente al problema della
+    \texttt{bipartizione} di un grafo, ovvero se è possibile dividere i vertici di un grafo
+    in due insiemi $V_1$ e $V_2$ tali che non esistano archi tra vertici dello stesso insieme.
+    Per verificare che un grafo è bipartito possiamo verificare che non esistano cicli dispari
+    nel grafo. Questo problema è risolvibile in tempo polinomiale, infatti possiamo utilizzare
+    l'algoritmo di \texttt{BFS}, che ha complessità $O(|V| + |E|)$.
+\end{itemize}
+Per $k \geq 3$ non sappiamo se esiste un algoritmo polinomiale per la colorazione di un grafo.
+
+\begin{tcolorbox}[title = {$\texttt{k-colorazione} \leq_p \texttt{(k + 1)-colorazione}$}]
+    Se \texttt{(k+1)-colorazione} è \texttt{P}, allora \texttt{k-colorazione} è \texttt{P},
+    ovvero \texttt{(k+1)-colorazione} non è più facile di \texttt{k-colorazione}.
+    \[
+      \texttt{(k+1)-col} \in \texttt{P} \implies \texttt{k-col} \in \texttt{P} 
+      \equiv \texttt{k-col} \not \in \texttt{P} \implies \texttt{(k+1)-col} \not \in \texttt{P}
+    \]
+\end{tcolorbox}
+\begin{proof}
+    Forniamo la funzione calcolabile in tempo polinomiale $f$, 
+    tale che per ogni grafo $\mathcal{G}$, se $\mathcal{G}$ è un grafo \texttt{k-colorabile},
+    se e solo se $f(\mathcal{G})$ è un grafo
+    \texttt{(k+1)-colorabile}. 
+
+    \begin{figure}[H]
+        \centering 
+        \begin{tikzpicture}[node distance={20mm}, thick,
+             main/.style = {draw, circle, minimum size=0.7cm}]
+            % Nodi grafo 1
+            \node[main, fill = red!50] (1) {};
+            \node[main, fill = blue!50] (2) [above right of=1] {};
+            \node[main, fill = red!50] (3) [below right of=2] {};
+            \node[main, fill = blue!50] (4) [below left of=3] {};
+
+            \draw[<-] (6,0) -- (3.5,0) node[midway,above] {$f$};
+
+            % Nodi grafo 2 identico a destra 
+            \node[main, fill = red!50] (5) [right of=1, xshift=5cm] {};
+            \node[main, fill = blue!50] (6) [above right of=5] {};
+            \node[main, fill = red!50] (7) [below right of=6] {};
+            \node[main, fill = blue!50] (8) [below left of=7] {};
+            \node[main, fill = green!50] (9) [below left of=8] {$v^*$};
+
+            % Archi
+            \draw (1) -- (2);
+            \draw (2) -- (3);
+            \draw (3) -- (4);
+            \draw (4) -- (1);
+
+            \draw (5) -- (6);
+            \draw (6) -- (7);
+            \draw (7) -- (8);
+            \draw (8) -- (5);
+            \draw[bend left = 1cm] (8) to (9);
+            \draw[bend left = 3cm] (7) to (9);
+            \draw[bend right = 3cm] (6) to (9);
+            \draw[bend right = 1cm] (5) to (9);
+        \end{tikzpicture}
+    \end{figure}
+    L'idea è quella di aggiungere un vertice $v^*$ al grafo $\mathcal{G}$, e collegare $v^*$ a tutti i vertici
+    di $\mathcal{G}$, in modo tale che $v^*$ abbia un colore diverso da tutti gli altri vertici.
+    Per costruire la funzione $f$ possiamo procedere come segue:
+    \begin{itemize}
+        \item Dato un grafo $\mathcal{G}$, aggiungiamo un vertice $v^*$ al grafo $\mathcal{G}$.
+        \item Colleghiamo $v^*$ a tutti i vertici di $\mathcal{G}$.
+        \item Assegnamo a $v^*$ un colore diverso da tutti gli altri vertici, ovvero il colore $k+1$.
+    \end{itemize}
+    Se $\mathcal{G}$ è \texttt{k-colorabile}, allora esiste una colorazione $c$ tale che per ogni arco
+    $(u,v) \in E$ si ha $c(u) \neq c(v)$. Se aggiungiamo un vertice $v^*$ al grafo $\mathcal{G}$, e lo colleghiamo
+    a tutti i vertici di $\mathcal{G}$, allora $v^*$ deve avere un colore diverso da tutti gli altri vertici, ovvero
+    il colore $k+1$. Quindi, se $\mathcal{G}$ è \texttt{k-colorabile}, allora $\mathcal{G'}$ è \texttt{(k+1)-colorabile}.
+    
+    Se $\mathcal{G}'$ è \texttt{(k+1)-colorabile} senza perdita di generalità diciamo che il colore di $v^*$ è $k+1$.
+    Poiché per ogni $v$, $c(v) \neq k+1$, $c(v) \in \{1,\dots,k\}$ e quindi $c(v) \neq c(v^*)$, ovvero tutti i vertici $v$ hanno un colore diverso
+    da $v^*$. Quindi, se $\mathcal{G'}$ è \texttt{(k+1)-colorabile},
+    allora $\mathcal{G}$ è \texttt{k-colorabile}.
+\end{proof}
