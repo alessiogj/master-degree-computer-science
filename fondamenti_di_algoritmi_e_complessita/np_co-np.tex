@@ -524,7 +524,7 @@ Risolvendo la formula con l'assegnamento $a$ otteniamo:
 \]
 Quindi l'assegnamento $a$ soddisfa la formula $\phi$.
 
-\subsection{\texttt{NP}-completezza di \texttt{SAT}}
+\subsection{Riduzione di \texttt{SAT} a \texttt{k-col}}
 Prima di dimostrare che \texttt{SAT} è un problema \texttt{NP}-completo, dimostriamo
 che \texttt{SAT} si riduce a \texttt{k-col}. L'obiettivo è mostrare che problemi molto 
 diversi, come il problema di decisione su grafi, hanno una codifica in un problema 
@@ -646,8 +646,9 @@ Quindi la formula $\phi_\mathcal{G}$ è:
     \phi_\mathcal{G} = C^{(a)} \land D^{(a)} \land C^{(b)} \land D^{(b)} \land C^{(c)} \land D^{(c)} \land E^{(e_1)} \land E^{(e_2)} \land E^{(e_3)}
 \]
 
+Dimostriamo che \texttt{k-col} si riduce polinomialmente a \texttt{SAT}.
 \begin{theorem}
-    $\mathcal{G}$ è k-colorabile se e solo se $\phi_\mathcal{G}$ è soddisfacibile.
+    $\texttt{k-col} \leq_p \texttt{SAT}$
 \end{theorem}
 \begin{proof} Dimostriamo entrambi i versi dell'implicazione.
     
@@ -745,3 +746,214 @@ Quindi la formula $\phi_\mathcal{G}$ è:
 Questo teorema dimostra che la difficoltà di risolvere il problema della colorazione di un grafo
 è equivalente alla difficoltà di risolvere il problema della soddisfacibilità di una formula
 booleana. 
+
+\subsection{\texttt{Circuit-SAT}}
+Il problema \texttt{Circuit-SAT} è un problema di soddisfacibilità di una formula booleana
+particolare, in cui la formula è rappresentata da un circuito logico. Un circuito logico è una
+rappresentazione di una formula booleana in cui le porte logiche sono connesse tra loro da
+cavi. Ogni porta logica è rappresentata da un nodo del circuito, mentre i cavi sono rappresentati
+dagli archi del circuito.
+
+L'input del problema \texttt{Circuit-SAT} è un circuito logico $\mathcal{C}$ e
+l'output è \texttt{yes} se e solo se il circuito $\mathcal{C}$ è soddisfacibile.
+
+Si tratta di un grafo aciclico diretto (\texttt{DAG}) in cui i nodi
+interni sono porte logiche e i nodi di input sono costituiti da variabili booleane.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[circuit logic US, every circuit symbol/.style={thick}]
+        % Inputs
+        \node (x1) at (0, 0) {$x_1$};
+        \node (x2) at (0, -1) {$x_2$};
+        \node (x3) at (0, -2) {$x_3$};
+        \node (x4) at (0, -3) {$x_4$};
+        \node (x5) at (0, -4) {$x_5$};
+
+        % Logic gates
+        \node[and gate, draw, logic gate inputs=nn] at (2, -0.5) (p1) {};
+        \node[or gate, draw, logic gate inputs=nn] at (2, -2.5) (p2) {};
+        \node[not gate, draw] at (2, -4) (p3) {};
+
+        \node[and gate, draw, logic gate inputs=nn] at (4, -1.5) (p4) {};
+
+        \node[and gate, draw] at (6, -2.5) (p6) {};
+
+        % Output
+        \node (y) at (8, -2.5) {$y$};
+
+        % Connections
+        \draw (x1.east) -- ([xshift=0.2cm]x1.east) |- (p1.input 1);
+        \draw (x2.east) -- ([xshift=0.2cm]x2.east) |- (p1.input 2);
+        \draw (x3.east) -- ([xshift=0.2cm]x3.east) |- (p2.input 1);
+        \draw (x4.east) -- ([xshift=0.2cm]x4.east) |- (p2.input 2);
+        \draw (x5.east) -- (p3.input);
+        \draw (p1.output) -- ([xshift=0.2cm]p1.output) |- (p4.input 1);
+        \draw (p2.output) -- ([xshift=0.2cm]p2.output) |- (p4.input 2);
+        \draw (p4.output) -- ([xshift=0.2cm]p4.output) |- (p6.input 1);
+        \draw (p3.output) -- ([xshift=0.2cm]p3.output) |- (p6.input 2);
+        \draw (p6.output) -- (y.west);
+    \end{tikzpicture}
+    \caption{Esempio di circuito logico}
+\end{figure}
+Ogni vertice del circuito logico ha associato l'operatore booleano \texttt{AND},
+\texttt{OR} o \texttt{NOT}. In particolare l'operatore \texttt{NOT} è associato
+a nodi con \textit{in-degree} $1$, mentre gli operatori \texttt{AND} e \texttt{OR} sono associati
+a nodi con \textit{in-degree} $2$.
+I vertici con \textit{in-degree} $0$ sono detti \textit{input}, mentre i vertici
+con \textit{out-degree} $0$ sono detti \textit{output}.
+
+Dato un assegnamento booleano $a$ delle variabili di input,
+possiamo valutare il circuito logico $\mathcal{C}$ assegnando ad ogni nodo
+il valore booleano corrispondente all'operatore associato al nodo e ai valori
+booleani dei nodi di input. In questo modo possiamo valutare il circuito logico
+come una formula booleana.
+
+\subsection{\texttt{NP}-completezza di \texttt{SAT}}
+
+\begin{theorem}[di Cook-Levin]
+    Il problema \texttt{SAT} è \texttt{NP}-completo.
+\end{theorem}
+Per dimostrare il seguente teorema utilizziamo il seguente lemma.
+\begin{lemma}
+    \label{lemma:np-completeness}
+    Per ogni problema in $\mathbb{B} \in \texttt{P}$ e per ogni $n \in \mathbb{N}$,
+    esiste un circuito booleano $\mathcal{C}_n$ tale che per ogni $x \in \mathcal{I}(\mathbb{B})$
+    tale che $|x| = n$, $\mathbb{B}(x) = 1$ se e solo se $\mathcal{C}_n(x) = 1$, ovvero
+    \[
+        \texttt{C}_n(x) = \mathbb{B}(x)  
+    \]
+    Inoltre $\mathcal{C}_n$ ha dimensione polinomiale rispetto a $n$.
+\end{lemma}
+\begin{proof}
+    Per dimostrare che \texttt{SAT} è \texttt{NP}-completo, dobbiamo dimostrare che
+    \begin{enumerate}
+        \item \texttt{SAT} è in \texttt{NP}.
+
+            Sappiamo che \texttt{SAT} è in \texttt{NP} in quanto
+            possiamo verificare in tempo polinomiale una soluzione proposta per il problema.
+        \item $\texttt{Circuit-SAT}$ è \texttt{NP}-completo.
+            
+        Dimostrare che $\texttt{Circuit-SAT}$ è \texttt{NP}-completo equivale a dimostrare
+            che \texttt{Circuit-SAT} appartiene a \texttt{NP}
+            e per ogni problema in \texttt{NP} esiste una riduzione polinomiale da esso a
+            $\texttt{Circuit-SAT}$.
+            \begin{itemize}
+                \item Dimostriamo che \texttt{Circuit-SAT} appartiene a \texttt{NP}. Dato un circuito logico
+                    $\mathcal{C}$ e un assegnamento booleano $a$ delle variabili di input, possiamo valutare
+                    il circuito logico $\mathcal{C}$ assegnando ad ogni nodo il valore booleano corrispondente
+                    all'operatore associato al nodo e ai valori booleani dei nodi di input. In questo modo
+                    possiamo valutare il circuito logico come una formula booleana. Se la formula booleana
+                    è soddisfacibile, allora il circuito logico $\mathcal{C}$ è soddisfacibile.
+                \item Sfruttiamo il lemma \ref{lemma:np-completeness} per dimostrare che $\texttt{Circuit-SAT}$ è
+                    \texttt{NP}-completo.
+
+                    Per ogni problema \( \mathbb{A} \) appartenente alla classe \texttt{NP}, possiamo
+                    affermare
+                    che \( \mathbb{A} \) è riducibile a \texttt{Circuit-SAT}. Questa riduzione comporta la
+                    definizione di una trasformazione che, fissato un input \( x \) appartenente all'insieme
+                    delle istanze \( \mathcal{I}(\mathbb{A}) \) di \( \mathbb{A} \), genera un circuito
+                    booleano \( \mathcal{C}^{\mathbb{A}}_x \) tale che \( \mathbb{A}(x) = 1 \) se e solo
+                    se \( \mathcal{C}^{\mathbb{A}}_x \) è soddisfacibile.
+
+                    Essendo \( \mathbb{A} \) un problema in \texttt{NP}, esiste un verificatore
+                    polinomiale \( B(x,y) \) che determina se \( y \) è una soluzione corretta per
+                    l'input \( x \) fissato, per ogni \( x \) in \( \mathcal{I}(\mathbb{A}) \). In altre parole:
+
+                    \[
+                    \mathbb{A}(x) = \texttt{yes} \iff \exists y \in \{0,1\}^{|x|^c} : B(x,y) = \texttt{yes}
+                    \]
+
+                    dove \( y \) è una stringa di lunghezza polinomiale in \( |x| \) e \( c \) è una
+                    costante.
+
+                    Il calcolo di \( B(x,y) \) appartiene alla classe \texttt{P}, il che implica che,
+                    fissato l'input \( x \), esiste un circuito booleano \( \mathcal{C}^{\mathbb{A}}_x \)
+                    di dimensione polinomiale che, per ogni assegnazione di \( y \) di lunghezza \( n \),
+                    soddisfa la relazione \( \mathcal{C}^{\mathbb{A}}_x(y) = B(x,y) \).
+
+                    Quindi, \( \mathcal{C}^{\mathbb{A}}_x \) rappresenta un circuito booleano che può essere
+                    costruito in tempo polinomiale e che codifica il problema \( \mathbb{A} \) per
+                    un'istanza specifica \( x \) fissata.
+
+                    \[
+                    x \in \mathcal{I}(\mathbb{A}) \qquad \mathbb{A}(x) = 1 \iff \exists y \quad t.c.
+                     \quad B(x,y) = 1 \iff \exists y \quad t.c. \quad \mathcal{C}^{\mathbb{A}}_x(y) = 1
+                    \]
+
+                    Abbiamo così dimostrato che, per ogni problema in \texttt{NP}, esiste una riduzione
+                    polinomiale a \texttt{Circuit-SAT}, con l'input \( x \) fissato durante la
+                    trasformazione.
+            \end{itemize}
+        \item $\texttt{Circuit-SAT} \leq_p \texttt{SAT}$.
+            
+            Dato il seguente circuito booleano $\mathcal{C}$:
+            \begin{figure}[H]
+                \centering
+                \begin{tikzpicture}[circuit logic US, every circuit symbol/.style={thick}]
+                    % Inputs
+                    \node (x1) at (0, 0) {$x_1$};
+                    \node (x2) at (0, 1) {$x_2$};
+                    \node (x3) at (0, 2) {$x_3$};
+            
+                    % Logic gates
+                    \node[or gate, draw, logic gate inputs=nn] at (2, 0.5) (p1) {};
+                    \node[not gate, draw] at (2, 2) (p2) {};
+                    \node[and gate, draw] at (4, 1) (p3) {};
+            
+                    % Output
+                    \node (y) at (6, 1) {$y_3$};
+            
+                    % Connections
+                    \draw (x1.east) -- ([xshift=0.2cm]x1.east) |- (p1.input 2);
+                    \draw (x2.east) -- ([xshift=0.2cm]x2.east) |- (p1.input 1);
+                    \draw (x3.east) -- ([xshift=0.2cm]x3.east) |- (p2.input);
+
+                    \draw (p1.output) -- ([xshift=0.2cm]p1.output) |- node[midway, below right] {$y_2$} (p3.input 2);
+                    \draw (p2.output) -- ([xshift=0.2cm]p2.output) |- node[midway, above right] {$y_1$} (p3.input 1);
+                    
+                    \draw (p3.output) -- (y.west);
+                \end{tikzpicture}
+                \caption{Circuito booleano $\mathcal{C}$}
+            \end{figure}
+            Vogliamo trasformare il circuito booleano $\mathcal{C}$ in una
+            formula booleana $\phi$ in forma normale congiuntiva, in una 
+            riduzione polinomiale tale che:
+            \[
+                \mathcal{C}(x) = 1 \iff \exists x' \quad t.c. \quad \phi(x') = 1
+            \]
+            Per farlo prendiamo tutti gli output del circuito e gli assegnamo 
+            una variabile, in questo caso $y_i$ con $i \in \{1, 2, 3\}$ e le fissiamo 
+            rispetto alle variabili di input. In questo caso abbiamo che:
+            \[
+                y_1 = \bar{x_3} \quad y_2 = x_1 \lor x_2 \quad y_3 = y_1 \land y_2
+            \]
+            Non sono quindi libere nella formula $\phi$ le variabili $y_i$ ma 
+            sono fissate rispetto alle variabili di input. Inoltre $y_3$ è dovrà 
+            essere a $1$ per far si che il circuito sia soddisfacibile.
+
+            La formula $\phi$ sarà quindi:
+            \[
+                \phi(x_1, x_2, x_3, y_1, y_2, y_3) 
+                = \big[ (x_1 \lor x_2) = y_1 \big] \land 
+                \big[ \bar{x_3} = y_2 \big] \land 
+                \big[ y_1 \land y_2 = y_3 \big] \land
+                y_3
+            \]
+            Quindi abbiamo che:
+            \[
+                \exists x \quad t.c. \quad \mathcal{C}(x) = 1
+                \iff \exists x,y \quad t.c. \quad \phi(x, y) = 1
+            \]
+            Per trasformare la formula $\phi$ in una formula in forma normale
+            congiuntiva possiamo utilizzare le equivalenze logiche.
+
+            Passiamo quindi da un circuito che ha un numero di input $n$ ad una 
+            formula che ha un numero di variabili polinomiale in $n$, da qui 
+            otteniamo una formula in forma normale congiuntiva (\textit{applicando 
+            le equivalenze logiche}) che ha un numero di clausole polinomiale in $n$ 
+            che è soddisfacibile se e solo se il circuito è soddisfacibile.
+    \end{enumerate}
+    Sappiamo che per ogni $\mathbb{A} \in \texttt{NP}, \mathbb{A}
+    \leq_p \texttt{Circuit-SAT} \leq_p \texttt{SAT}$, quindi abbiamo 
+    $\texttt{SAT} \in \texttt{NP}-\texttt{completo}$.
+\end{proof}
