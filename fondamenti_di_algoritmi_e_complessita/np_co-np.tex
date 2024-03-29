@@ -491,10 +491,10 @@ C^{(i)} = l_1^{(i)} \lor l_2^{(i)} \lor \dots \lor l_{k_i}^{(i)}
 \]
 In questa definizione, $k_i$ rappresenta il numero di letterali nella $i$-esima clausola
 $C^{(i)}$, e ogni letterale $l_j^{(i)}$ può essere una variabile booleana $x_t$ o la sua
-negazione $\bar{x_t}$, per qualche $t \in \{1, \dots, n\}$. In altre parole, ogni letterale
+negazione $\overline{x_t}$, per qualche $t \in \{1, \dots, n\}$. In altre parole, ogni letterale
 è definito come:
 \[
-l_j^{(i)} \in \{x_1, \bar{x_1}, x_2, \bar{x_2}, \dots, x_n, \bar{x_n}\}
+l_j^{(i)} \in \{x_1, \overline{x_1}, x_2, \overline{x_2}, \dots, x_n, \overline{x_n}\}
 \]
 
 Questa struttura garantisce che la formula $\phi$ sia una congiunzione di clausole, dove
@@ -511,8 +511,8 @@ se e solo se $\phi(a_1, a_2, \dots, a_n) = \texttt{true}$.
 Consideriamo la seguente formula booleana in forma normale congiuntiva:
 
 \[
-\phi(x_1, x_2, x_3, x_4) = (x_1 \lor x_2 \lor x_3 \lor \bar{x_4}) \land 
-(\bar{x_1} \lor \bar{x_2}) \land (x_1 \lor x_2 \lor x_3 \lor \bar{x_4})
+\phi(x_1, x_2, x_3, x_4) = (x_1 \lor x_2 \lor x_3 \lor \overline{x_4}) \land 
+(\overline{x_1} \lor \overline{x_2}) \land (x_1 \lor x_2 \lor x_3 \lor \overline{x_4})
 \]
 Un assegnamento $a: \{a_1, a_2, a_3, a_4\} \to \{0, 1\}$ può essere il seguente:
 \[
@@ -562,7 +562,7 @@ Per una formula $\phi_\mathcal{G}$ in forma normale congiuntiva, la misura è il
     clausola associata al vertice, ovvero su tutte le coppie possibili di colori 
     distinti, non vogliamo che al vertice $v$ siano associati entrambi i colori.
     \[
-      D^{(v)} = \bigwedge_{1 \leq i < j \leq k} (\bar{x_i^v} \lor \bar{x_j^v})
+      D^{(v)} = \bigwedge_{1 \leq i < j \leq k} (\overline{x_i^v} \lor \overline{x_j^v})
     \]
     Se fosse vero, per esempio, che $x_1^v$ e $x_2^v$ sono entrambi veri, allora la clausola
     $D^{(v)}$ sarebbe falsa, e quindi la formula $\phi_\mathcal{G}$ sarebbe falsa. Questo
@@ -571,7 +571,7 @@ Per una formula $\phi_\mathcal{G}$ in forma normale congiuntiva, la misura è il
     Questo non garantisce una colorazione propria, ovvero che vertici adiacenti abbiano colori
     diversi. Per fare ciò, per ogni arco $e = (u, v) \in E$, aggiungiamo la seguente clausola:
     \[
-        E^{(e)} = \bigwedge_{1 \leq i \leq k} (\bar{x_i^u} \lor \bar{x_i^v})
+        E^{(e)} = \bigwedge_{1 \leq i \leq k} (\overline{x_i^u} \lor \overline{x_i^v})
     \]
     Se fosse vero che $x_i^u$ e $x_i^v$ sono entrambi veri, allora la clausola $E^{(e)}$ sarebbe
     falsa, e quindi la formula $\phi_\mathcal{G}$ sarebbe falsa. Questo garantisce che vertici
@@ -619,26 +619,26 @@ Quindi definiamo le clausole:
 \[
   C^{(a)} = x_1^a \lor x_2^a
  \qquad
-  D^{(a)} = (\bar{x_1^a} \lor \bar{x_2^a})
+  D^{(a)} = (\overline{x_1^a} \lor \overline{x_2^a})
 \]
 \[
   C^{(b)} = x_1^b \lor x_2^b
   \qquad
-  D^{(b)} = (\bar{x_1^b} \lor \bar{x_2^b})
+  D^{(b)} = (\overline{x_1^b} \lor \overline{x_2^b})
 \]
 \[
   C^{(c)} = x_1^c \lor x_2^c
   \qquad
-  D^{(c)} = (\bar{x_1^c} \lor \bar{x_2^c})
+  D^{(c)} = (\overline{x_1^c} \lor \overline{x_2^c})
 \]
 \[ 
-    E^{(e_1)} = (\bar{x_1^a} \lor \bar{x_1^b}) \land (\bar{x_2^a} \lor \bar{x_2^b})
+    E^{(e_1)} = (\overline{x_1^a} \lor \overline{x_1^b}) \land (\overline{x_2^a} \lor \overline{x_2^b})
 \]
 \[ 
-    E^{(e_2)} = (\bar{x_1^a} \lor \bar{x_1^c}) \land (\bar{x_2^a} \lor \bar{x_2^c})
+    E^{(e_2)} = (\overline{x_1^a} \lor \overline{x_1^c}) \land (\overline{x_2^a} \lor \overline{x_2^c})
 \]
 \[ 
-    E^{(e_3)} = (\bar{x_1^b} \lor \bar{x_1^c}) \land (\bar{x_2^b} \lor \bar{x_2^c})
+    E^{(e_3)} = (\overline{x_1^b} \lor \overline{x_1^c}) \land (\overline{x_2^b} \lor \overline{x_2^c})
 \]
 
 Quindi la formula $\phi_\mathcal{G}$ è:
@@ -925,7 +925,7 @@ Per dimostrare il seguente teorema utilizziamo il seguente lemma.
             una variabile, in questo caso $y_i$ con $i \in \{1, 2, 3\}$ e le fissiamo 
             rispetto alle variabili di input. In questo caso abbiamo che:
             \[
-                y_1 = \bar{x_3} \quad y_2 = x_1 \lor x_2 \quad y_3 = y_1 \land y_2
+                y_1 = \overline{x_3} \quad y_2 = x_1 \lor x_2 \quad y_3 = y_1 \land y_2
             \]
             Non sono quindi libere nella formula $\phi$ le variabili $y_i$ ma 
             sono fissate rispetto alle variabili di input. Inoltre $y_3$ è dovrà 
@@ -935,7 +935,7 @@ Per dimostrare il seguente teorema utilizziamo il seguente lemma.
             \[
                 \phi(x_1, x_2, x_3, y_1, y_2, y_3) 
                 = \big[ (x_1 \lor x_2) = y_1 \big] \land 
-                \big[ \bar{x_3} = y_2 \big] \land 
+                \big[ \overline{x_3} = y_2 \big] \land 
                 \big[ y_1 \land y_2 = y_3 \big] \land
                 y_3
             \]
@@ -956,4 +956,169 @@ Per dimostrare il seguente teorema utilizziamo il seguente lemma.
     Sappiamo che per ogni $\mathbb{A} \in \texttt{NP}, \mathbb{A}
     \leq_p \texttt{Circuit-SAT} \leq_p \texttt{SAT}$, quindi abbiamo 
     $\texttt{SAT} \in \texttt{NP}-completo$.
+\end{proof}
+\subsection{Formule \texttt{K-CNF}}
+Una formula \texttt{K-CNF} è una formula in forma normale congiuntiva 
+dove ogni clausola ha al più $k$ letterali.
+
+Per esempio la formula:
+\[
+    \phi = (x_1 \lor x_2 \lor x_3) \land (x_1 \lor x_2 \lor x_4) \land
+    (\overline{x_1} \lor x_2 \lor x_3 \lor x_4 \lor x_5)
+\]
+è una formula \texttt{5-CNF}.
+
+\begin{theorem}
+    \texttt{3-SAT} è \texttt{NP-completo}.
+\end{theorem}
+
+Consideriamo il problema \texttt{3-SAT} che è il problema di decidere
+se una formula in forma normale congiuntiva con al più 3 letterali per
+clausola è soddisfacibile.
+
+\begin{proof}
+    Per dimostrare che \texttt{3-SAT} è \texttt{NP-completo} dobbiamo dimostrare che:
+    \begin{enumerate}
+        \item \texttt{3-SAT} è in \texttt{NP}.
+        \item \texttt{3-SAT} è \texttt{NP-hard}.
+    \end{enumerate}
+
+    Banalmente, \texttt{3-SAT} è in \texttt{NP} in quanto possiamo verificare in tempo
+    polinomiale se un'assegnazione di valori alle variabili soddisfa la formula.
+
+    Dimostriamo ora che \texttt{3-SAT} è \texttt{NP-hard} dimostrando che \texttt{SAT}
+    si riduce in tempo polinomiale a \texttt{3-SAT}. Questo possiamo farlo, in quanto
+    conosciamo che \texttt{SAT} è \texttt{NP}-completo e quindi possiamo ridurre
+    \texttt{SAT} a \texttt{3-SAT}. Per farlo, sfruttiamo una trasformazione clausola per
+    clausola, trasformando una clausola con $k$ letterali in una serie di clausole in
+    \texttt{3-CNF} che possono essere soddisfatte se e solo se la clausola originale è
+    soddisfacibile. Questa trasformazione garantisce che la formula risultante sia in
+    \texttt{3-CNF} e abbia una lunghezza polinomiale rispetto alla formula originale.
+
+    Supponiamo che $C$ sia una clausola:
+    \[
+        C = (l_1 \lor l_2 \lor l_3 \lor \ldots \lor l_k)
+    \]
+    dove $k > 3$ e $l_i$ sono letterali che possono essere variabili booleane o le
+    loro negazioni. Possiamo trasformare $C$ in una formula in forma normale congiuntiva
+    a tre termini (\texttt{3-CNF}) introducendo una serie di variabili ausiliarie $z_i$.
+    La trasformazione procede come segue:
+    \[ 
+        C' = (l_1 \lor l_2 \lor z_1) \land (\overline{z_1} \lor l_3 \lor z_2) \land \ldots
+        \land (\overline{z_{k-3}} \lor l_{k-1} \lor l_k)
+    \]
+    In questa trasformazione, ogni nuova clausola contiene esattamente tre letterali,
+    aderendo alla definizione di \texttt{3-CNF}. La formula risultante $C'$ consiste
+    di $k-2$ clausole, poiché per ogni letterale in $C$ oltre ai primi tre, inseriamo
+    una nuova clausola che utilizza una variabile ausiliaria introdotta. Ciò mantiene
+    la struttura richiesta per una formula \texttt{3-CNF}, assicurando che ogni clausola
+    abbia al massimo tre letterali.
+
+    La trasformazione aggiunge un totale di $k-3$ variabili ausiliarie, poiché ogni nuova
+    variabile ausiliaria $z_i$ è utilizzata per collegare le clausole tra loro in modo che
+    la formula complessiva sia equivalente alla clausola originale $C$ in termini di
+    soddisfacibilità.
+
+    Perciò, la taglia della formula risultante è polinomiale rispetto alla taglia della
+    formula originale, e la trasformazione può essere eseguita in tempo polinomiale.
+
+    Mostriamo ora che se $C$ è soddisfacibile, allora $C'$ è soddisfacibile. Supponiamo
+    che esista un assegnamento di valori alle variabili che soddisfa $C$.
+    Dato che almeno uno dei letterali in $C$ è vero, possiamo assegnare valori
+    alle variabili ausiliarie in modo da garantire che ogni clausola in $C'$ sia
+    soddisfatta. Ad esempio, se $l_1$ è vero, allora la prima clausola di $C'$ è
+    soddisfatta. Possiamo poi assegnare a ciascuna variabile ausiliaria $z_i$ un
+    valore che assicuri la soddisfazione delle clausole successive, tenendo conto
+    che ogni clausola contiene o una variabile ausiliaria o la sua negazione insieme
+    a letterali di $C$. Pertanto,
+    se $C$ è soddisfacibile, possiamo costruire un assegnamento che soddisfa anche $C'$.
+
+    Mostriamo che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile. Supponiamo che
+    esista un assegnamento di valori alle variabili che soddisfa $C'$.
+    Dato che $C'$ è soddisfacibile, almeno uno dei letterali in ogni clausola di $C'$
+    deve essere vero.
+
+    Quindi esiste un assegnamento $a_x$ e $a_z$ tale che $a_x$ e $a_z$ soddisfano $C'$.
+    Supponiamo per assurdo che $a_x$ non soddisfi $C$. Quindi tutti i letterali $l_i$
+    in $C'$ sono falsi.
+
+    Avendo una clausola del tipo:
+    \[
+        C' = (\texttt{false} \lor \texttt{false} \lor z_1) 
+        \land (\overline{z_1} \lor \texttt{false} \lor z_2) \land \ldots
+        \land (\overline{z_{k-3}} \lor \texttt{false} \lor \texttt{false})
+    \]
+    La clausola non può essere soddisfatta, in quanto per soddisfare la prima 
+    sottoclausola, $z_1$ deve essere vero, ma per soddisfare la seconda sottoclausola,
+    $z_2$ deve essere vero e così via. Ma per soddisfare l'ultima sottoclausola,
+    $z_{k-3}$ deve essere falso, il che è una contraddizione, poiché $z_{k-3}$ deve
+    essere vero per soddisfare la penultima sottoclausola.
+    Quindi $a_x$ deve soddisfare $C$ per soddisfare $C'$.
+
+    Il ragionamento può essere esteso a tutte le clausole di $\phi$, dimostrando che
+    se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
+    Perciò abbiamo dimostrato che \texttt{3-SAT} è \texttt{NP}-completo.
+\end{proof}
+
+Consideriamo la versione in cui ogni clausola ha esattamente tre letterali. Questo
+problema è noto come \texttt{3-SAT}.
+
+\begin{proof}
+    Data una formula in forma normale congiuntiva con clausole minori o uguali a tre
+    letterali $\phi$, possiamo trasformarla in una formula in forma normale congiuntiva $\varphi$
+    con clausole esattamente di tre letterali tale che $\phi$ sia soddisfacibile se e
+    solo se $\varphi$ è soddisfacibile.
+
+    Supponiamo che $\phi$ contenga una clausola $C$ con $k$ letterali, dove $k < 3$ 
+    e dimostriamo che $C$ è soddisfacibile se e solo se $C'$ è soddisfacibile.
+
+    Supponiamo che $C$ sia una clausola con un solo letterale:
+    \[
+        C = (l_1)
+    \]
+    La trasformazione procede come segue:
+    \[
+        C' = (l_1 \lor z_1 \lor z_2) \land (l_1 \lor
+        \overline{z_1} \lor z_2) \land (l_1 \lor z_1 \lor \overline{z_2})
+        \land (l_1 \lor \overline{z_1} \lor \overline{z_2})
+    \]
+    In questa trasformazione, ogni nuova clausola contiene esattamente tre letterali,
+    aderendo alla definizione di \texttt{3-CNF}. Se $l_1$ è vero, allora tutte le
+    clausole in $C'$ sono soddisfatte. Se $l_1$ è falso, allora almeno una delle
+    clausole in $C'$ non è soddisfatta, garantendo che $C'$ sia soddisfacibile se e
+    solo se $C$ è soddisfacibile.
+
+    Supponiamo ora che $C$ contenga due letterali:
+    \[
+        C = (l_1 \lor l_2)
+    \]
+    La trasformazione procede come segue:
+    \[
+        C' = (l_1 \lor l_2 \lor z_1) \land (l_1 \lor l_2 \lor \overline{z_1})
+    \]
+    Se la formula originale è soddisfacibile, allora o $l_1$ o $l_2$ è vero, e
+    quindi la clausola $C'$ è soddisfatta. Se $C$ non è soddisfacibile, allora
+    $l_1$ e $l_2$ sono entrambi falsi, e quindi $C'$ non è soddisfacibile, poiché 
+    non esiste alcun valore di verità per $z_1$ che possa rendere soddisfatta la
+    clausola.
+
+    Dimostriamo ora che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
+    Se $C'$ è soddisfacibile, allora esiste un assegnamento $a_x$ e $a_z$ tale che
+    $a_x$ e $a_z$ soddisfano $C'$. Supponiamo per assurdo che $a_x$ non soddisfi $C$.
+    
+    Quindi nel caso in cui $C$ contenga un solo letterale, avrei:
+    \[
+        C' = (\texttt{false} \lor z_1 \lor z_2) \land
+        (\texttt{false} \lor \overline{z_1} \lor z_2)
+        \land (\texttt{false} \lor z_1 \lor \overline{z_2}) \land
+        (\texttt{false} \lor \overline{z_1} \lor \overline{z_2})
+    \]
+    Disponendo di tutte le configurazioni possibili, non esiste un assegnamento
+    che possa soddisfare $C'$, poiché almeno uno dei letterali deve essere vero
+    per soddisfare la clausola. Quindi $a_x$ deve soddisfare $C$ per soddisfare
+    $C'$. Il ragionamento può essere esteso a tutte le clausole con due letterali
+    di $\phi$, dimostrando che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
+
+    Quindi abbiamo dimostrato che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
+    Perciò abbiamo dimostrato che \texttt{3-SAT} è \texttt{NP}-completo.
 \end{proof}
