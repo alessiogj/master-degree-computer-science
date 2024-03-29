@@ -972,10 +972,6 @@ Per esempio la formula:
     \texttt{3-SAT} è \texttt{NP-completo}.
 \end{theorem}
 
-Consideriamo il problema \texttt{3-SAT} che è il problema di decidere
-se una formula in forma normale congiuntiva con al più 3 letterali per
-clausola è soddisfacibile.
-
 \begin{proof}
     Per dimostrare che \texttt{3-SAT} è \texttt{NP-completo} dobbiamo dimostrare che:
     \begin{enumerate}
@@ -1055,15 +1051,8 @@ clausola è soddisfacibile.
     essere vero per soddisfare la penultima sottoclausola.
     Quindi $a_x$ deve soddisfare $C$ per soddisfare $C'$.
 
-    Il ragionamento può essere esteso a tutte le clausole di $\phi$, dimostrando che
-    se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
-    Perciò abbiamo dimostrato che \texttt{3-SAT} è \texttt{NP}-completo.
-\end{proof}
+    Consideriamo il caso in cui $k < 3$.
 
-Consideriamo la versione in cui ogni clausola ha esattamente tre letterali. Questo
-problema è noto come \texttt{3-SAT}.
-
-\begin{proof}
     Data una formula in forma normale congiuntiva con clausole minori o uguali a tre
     letterali $\phi$, possiamo trasformarla in una formula in forma normale congiuntiva $\varphi$
     con clausole esattamente di tre letterali tale che $\phi$ sia soddisfacibile se e
@@ -1118,7 +1107,10 @@ problema è noto come \texttt{3-SAT}.
     per soddisfare la clausola. Quindi $a_x$ deve soddisfare $C$ per soddisfare
     $C'$. Il ragionamento può essere esteso a tutte le clausole con due letterali
     di $\phi$, dimostrando che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
-
     Quindi abbiamo dimostrato che se $C'$ è soddisfacibile, allora $C$ è soddisfacibile.
+
+    Nel caso in cui la clausola contenga tre letterali, allora $C$ è già in forma
+    normale congiuntiva, e quindi $C$ è soddisfacibile se e solo se $C'$ è soddisfacibile.
+
     Perciò abbiamo dimostrato che \texttt{3-SAT} è \texttt{NP}-completo.
 \end{proof}
