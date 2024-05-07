@@ -1465,45 +1465,109 @@ La stessa tecnica non ci darebbe informazioni utili per dimostrare che \texttt{2
     \texttt{2-SAT} è in \texttt{P}.
 \end{theorem}
 \begin{proof}
-    Per procedere con la dimostrazione consideriamo il problema \texttt{2-SAT} come
-    un problema di ricerca, ovvero cerchiamo un assegnamento di verità che soddisfi
-    la formula $\phi$, mostrando quindi che esiste un algoritmo che in tempo polinomiale
-    risolve il problema.
-
-    Data $\phi$ costruiamo un grafo orientato $\mathcal{G}_\phi$ nel seguente modo:
+    Per procedere con la dimostrazione consideriamo il problema \texttt{2-SAT} come un problema di ricerca, ovvero cerchiamo un assegnamento di verità che soddisfi la formula $\phi$, mostrando quindi che esiste un algoritmo che in tempo polinomiale risolve il problema.
+    
+    Data $\phi$, costruiamo un grafo orientato $\mathcal{G}_\phi$ nel seguente modo:
     \begin{itemize}
-        \item Per ogni letterale $l_i$ possibile in $\phi$, ho un vertice 
-        in $V$.
-        \item Per ogni clausola $C$ in $\phi$, aggiungo una coppia di archi 
-        $(\overline{l_i}, l_j)$ e $(\overline{l_j}, l_i)$.
+        \item Per ogni letterale $l_i$ possibile in $\phi$, abbiamo un vertice in $V$.
+        \item Per ogni clausola $C$ in $\phi$, aggiungiamo una coppia di archi $(\overline{l_i}, l_j)$ e $(\overline{l_j}, l_i)$.
     \end{itemize}
-    Se la formula $\phi$ è la seguente:
-    \[
-        \phi = (x_1 \lor \overline{x_2}) \land (x_2 \lor x_3) \land (\overline{x_1}
-        \lor \overline{x_3})
-    \]
-    Il grafo $\mathcal{G}_\phi$ sarà il seguente:
-    \begin{figure}[H]
-        \centering 
-        \begin{tikzpicture}[node distance={10mm}, thick,
-            main/.style = {draw, circle, minimum size=1cm}]
-                \node[main] (x1) {$x_1$};
-                \node[main] (x1neg) [below=of x1] {$\overline{x_1}$};
-                \node[main] (x2) [right=of x1] {$x_2$};
-                \node[main] (x2neg) [below=of x2] {$\overline{x_2}$};
-                \node[main] (x3) [right=of x2] {$x_3$};
-                \node[main] (x3neg) [below=of x3] {$\overline{x_3}$};
+    Quello che osserviamo è che:
+    \begin{itemize}
+        \item Se abbiamo il cammino $x_1 \rightarrow x_2 \rightarrow x_3, \dots, x_k \rightarrow y$ in $\mathcal{G}_\phi$,
+        un assegnamento che soddisfa la formula $\phi$ e rende $x$ vero, deve mettere a \texttt{true}
+        tutti i vertici del cammino.
+        \item Se in $\mathcal{G}_\phi$ esiste per una qualche variabile $x$ un cammino $x \rightarrow \overline{x}$
+        allora nessun assegnamento che soddisfa la formula $\phi$ può rendere $x$ vero.
+        \item Se per qualche variabile $x$ esistono in $\mathcal{G}_\phi$ sia il cammino $x \rightarrow \overline{x}$
+        che il cammino $\overline{x} \rightarrow x$, allora non esiste un assegnamento che soddisfa la formula $\phi$.
+    \end{itemize}
+    Possiamo quindi utilizzare l'algoritmo di \textit{componenti fortemente connesse} per verificare
+    se esiste un assegnamento che soddisfa la formula $\phi$.
+    
+    \begin{algorithm}[H]
+        \caption{\texttt{2SAT}}
+        \DontPrintSemicolon 
+        
+        \KwIn{Una formula booleana $\phi$ rappresentata come un insieme di implicazioni in $\mathcal{G}_\phi$}
+        \KwOut{\texttt{true} se $\phi$ è soddisfacibile, \texttt{false} altrimenti}
+        
+        Costruisci il grafo di implicazione $\mathcal{G}_\phi$ per $\phi$ \;
+        \ForEach{variabile $x$ in $\mathcal{G}_\phi$}{
+            \If{$x \rightarrow \overline{x}$ e $\overline{x} \rightarrow x$}{
+                \Return \texttt{false} \Comment{Esiste una contraddizione}
+            }
+        }
+        \Return \texttt{true} \Comment{Nessuna contraddizione trovata, $\phi$ è soddisfacibile}
+    \end{algorithm}
+    
+    Creare il grafo richiede tempo polinomiale, e l'algoritmo di componenti fortemente connesse
+    ha complessità $O(V + E)$, dove $n$ è il numero di vertici e $m$ il numero di archi.
+    Quindi \texttt{2-SAT} è in \texttt{P}.
 
-                \draw[->] (x1neg) -- (x2neg);
-                \draw[->] (x2) -- (x1);
-                \draw[->] (x2neg) -- (x3);
-                \draw[->] (x3neg) -- (x2);
-                \draw[->] (x1) -- (x3neg);
-                \draw[->] (x3) -- (x1neg);
-        \end{tikzpicture}
-    \end{figure}
-    Quello che osserviamo è che se abbiamo il cammino $x_1 \rightarrow x_2 \rightarrow x_3,
-    \dots, x_k \rightarrow y$ in $\mathcal{G}_\phi$,
-    un assegnamento che soddisfa la formula $\phi$ e rende $x$ vero, deve mettere a \texttt{true}
-    tutti i vertici del cammino.
+    Mostriamo ora che se non troviamo un cammino $x \rightarrow \overline{x}$ o $\overline{x} \rightarrow x$
+    allora esiste un assegnamento che soddisfa la formula $\phi$.
+
+    \begin{algorithm}[H]
+        \caption{\texttt{2SAT}}
+        \DontPrintSemicolon  
+
+        \KwIn{Una formula booleana $\phi$ rappresentata come un insieme di implicazioni in $\mathcal{G}_\phi$}
+        \KwOut{Un assegnamento che soddisfa $\phi$}
+
+        \BlankLine
+        Costruisci il grafo di implicazione $\mathcal{G}_\phi$ per $\phi$ \;
+        \ForEach{variabile $x$ in $\mathcal{G}_\phi$ non ancora assegnata}{
+            \If{$x \rightarrow \overline{x}$ in $\mathcal{G}_\phi$}{
+                $a_x \gets \texttt{false}$ \;
+                \ForEach{percorso $\overline{x} \rightarrow y$ nel $\mathcal{G}_\phi$}{
+                    $a_y \gets \texttt{true}$
+                }
+            }
+            \Else{
+                $a_x \gets \texttt{true}$ \;
+                \ForEach{percorso $x \rightarrow y$ nel $\mathcal{G}_\phi$}{
+                    $a_y \gets \texttt{false}$
+                }
+            }
+        }
+    \end{algorithm}
+    In termini computazionali l'algoritmo richiede tempo $O(2(2V + 2E)\cdot n)$, ovvero due 
+    \texttt{BFS} potenzialmente eseguiti su tutti i vertici del grafo, quindi è polinomiale.
 \end{proof}
+
+In termini di riduzione, quello che abbiamo dimostrato è che $\texttt{2-SAT} \leq_T \texttt{BFS}$,
+dove con il simbolo $\leq_T$ indichiamo una riduzione in tempo polinomiale di Cook-Turing.
+
+\begin{tcolorbox}[title =$\mathbb{A} \leq_T \mathbb{B}$]
+    Dati due problemi di decisione $\mathbb{A}$ e $\mathbb{B}$, diciamo che $\mathbb{A} \leq_T \mathbb{B}$
+    se esiste un algoritmo in tempo polinomiale per risolvere $\mathbb{A}$ che utilizza chiamate a un
+    oracolo per risolvere $\mathbb{B}$.
+\end{tcolorbox}
+\begin{tcolorbox}[title = Oracolo]
+    Un oracolo è un'entità che può rispondere a domande in un solo passo di calcolo, $O(1)$.
+\end{tcolorbox}
+Notiamo quindi che se un algoritmo risolve $\mathbb{B}$ in tempo polinomiale, allora risolverà
+anche $\mathbb{A}$ in tempo polinomiale. 
+\begin{theorem}
+    Se $\mathbb{A} \leq_T \mathbb{B}$ e $\mathbb{B} \in \texttt{P}$, allora $\mathbb{A} \in \texttt{P}$.
+\end{theorem}
+Ne consegue che:
+\begin{theorem}
+    Se $\mathbb{A} \leq_T \mathbb{B}$ e $\mathbb{A} \not \in \texttt{P}$, allora $\mathbb{B} \not \in \texttt{P}$.
+\end{theorem}
+
+Inoltre abbiamo che:
+\begin{theorem}
+    Se $\mathbb{A} \leq \mathbb{B} \implies \mathbb{A} \leq_T \mathbb{B}$.
+\end{theorem}
+\begin{proof}
+    Consideriamo $x$ istanza del problema $\mathbb{A}$, la trasformiamo nell'istanza $y$, ovvero la riduzione applicata 
+    a $x$. Applichiamo l'algoritmo per $\mathbb{B}$ all'istanza $y$ e otteniamo la risposta.
+    \[
+        x \in \mathcal{I}(x) \implies y = R(x) \implies \mathbb{B}(R(x))
+    \]
+\end{proof}
+Si tratta di un caso particolare della riduzione di Cook-Turing, in cui si effettua un'unica chiamata al risolutore,
+ma non la si elabora.
+
