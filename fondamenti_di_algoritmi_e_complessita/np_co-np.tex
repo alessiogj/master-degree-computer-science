@@ -1571,3 +1571,85 @@ Inoltre abbiamo che:
 Si tratta di un caso particolare della riduzione di Cook-Turing, in cui si effettua un'unica chiamata al risolutore,
 ma non la si elabora.
 
+\section{Problemi \texttt{co-NP}}
+I problemi in \texttt{co-NP} sono i complementari dei problemi in \texttt{NP}. Un problema
+$\mathbb{A}$ è in \texttt{co-NP} se il complemento di $\mathbb{A}$ è in \texttt{NP}. In altre
+parole, un problema $\mathbb{A}$ è in \texttt{co-NP} se esiste un algoritmo in tempo polinomiale
+che verifica che una soluzione non appartiene a $\mathbb{A}$.
+
+Se consideriamo un problema $\mathbb{A}$ appartenente a \texttt{NP} come un predicato $A$ sulle istanze di 
+$\mathbb{A}$, tale che $A(x) = \texttt{true}$ se e solo se $\mathbb{A}(x) = \texttt{yes}$, allora:
+\[
+  A(x) = \exists w \textit{ t.c. } B(x, y) = \texttt{true}
+\]
+Dove il predicato $B$ è un predicato in \texttt{P}.
+
+Definiamo il predicato di un problema $\mathbb{A}$ in \texttt{co-NP} come:
+\[
+  \overline{A(x)} = \forall w \textit{ t.c. } B(x, y) = \texttt{false}
+\]
+
+\begin{tcolorbox}[title = Problema \texttt{co-NP}]
+    Data una classe di problemi di decisione $\mathcal{C}$, definiamo la classe \texttt{co-NP} come:
+    \[
+        \texttt{co-NP} = \{ \mathbb{A} \mid \overline{\mathbb{A}} \in \mathcal{C} \}
+    \]
+    Dove $\mathcal{I}(\overline{\mathbb{A}}) = \mathcal{I}(\mathbb{A})$ e 
+    $\overline{\mathbb{A}(x)} = \texttt{yes} \iff \mathbb{A}(x) = \texttt{no}$.
+    
+    Quindi:
+    \[
+        \begin{aligned}
+        \texttt{co-NP} &= \{ \mathbb{A} \mid \overline{\mathbb{A}} \in \texttt{NP} \} \\
+                       &= \{ \mathbb{A} \mid \exists B(x, y) \text{ t.c. } \forall x, (\mathbb{A}(x) = \texttt{no}) \iff \exists w, B(x, w) = \texttt{no} \}
+        \end{aligned}
+    \]
+\end{tcolorbox}
+Da questa definizione possiamo aggiungere che:
+
+\begin{theorem}
+    $\mathbb{A} \leq \mathbb{B} \iff \overline{\mathbb{A}} \leq \overline{\mathbb{B}}$
+\end{theorem}
+
+\subsection{Il problema small factor}
+\textit{Small factor} è un problema che prende in input un intero $n$ e un intero $q$ e restituisce 
+se esiste un fattore primo di $n$ minore di $q$. 
+Abbiamo osservato che il problema del \textit{small factor} è in \texttt{NP}, in quanto possiamo
+verificare in tempo polinomiale se un dato fattore è primo e se è minore di $q$.
+
+La taglia dell'input è il numero ci cifre di $q$ e $n$, quindi $O(\log n + \log q)$, e non il valore 
+numerico di $n$ e $q$. Essenzialmente un algoritmo è polinomiale se usa un numero proporzionale al
+logaritmo dell'input.
+
+\begin{theorem}
+    Il problema del \textit{small factor} è in \texttt{co-NP}.
+\end{theorem}
+\begin{proof}
+    Consideriamo un'istanza del problema data da $n$ e $q$, dove il compito è dimostrare che non esiste un
+    fattore $r < q$ tale che $r \mid n$. Supponiamo di fare la fattorizzazione in numeri primi di $n$:
+    \[
+        n = p_1^{e_1} \cdot p_2^{e_2} \cdot \ldots \cdot p_i^{e_i}
+    \]
+    dove $p_1 < p_2 < \ldots < p_i$. Se $p_1 \geq q$, allora non esiste un fattore primo minore di $q$, e
+    quindi sappiamo che l'istanza non appartiene al problema, confermando che l'affermazione è falsa.
+
+    Per garantire che il certificato sia verificabile in tempo polinomiale, osserviamo che ogni $p_i$ è
+    rappresentabile con un numero di bit che è $O(\log n)$, il che implica che l'intero prodotto $p_1^{e_1}
+    \cdot \ldots \cdot p_i^{e_i}$ sia anch'esso polinomiale rispetto alla taglia dell'input, ossia $O(\log n)$.
+
+    L'algoritmo quindi prende questo certificato e verifica:
+    \begin{enumerate}
+        \item che ogni $p_i$ sia un fattore primo di $n$,
+        \item che la moltiplicazione $p_1^{e_1} \cdot \ldots \cdot p_i^{e_i}$ sia esattamente uguale a $n$.
+    \end{enumerate}
+    Dopo aver confermato questi punti, verifica se $p_1 < q$. Se $p_1 \geq q$, allora $n$ non ha fattori minori
+    di $q$, e l'istanza è quindi nel complemento del problema ``small factor".
+
+    Non possiamo affermare di più riguardo al problema del \textit{small factor}, poiché è intrinsecamente
+    legato alla difficoltà di fattorizzare numeri grandi, un problema alla base della sicurezza del
+    crittosistema \texttt{RSA}. La fattorizzazione efficiente dei numeri interi, in particolare la scoperta
+    di fattori piccoli, comprometterebbe direttamente la sicurezza di \texttt{RSA}.
+
+    Il problema del \textit{small factor} non è sicuramente \texttt{NP-completo}, poiché è sia in \texttt{NP}
+    che in \texttt{co-NP}, e non esiste un problema \texttt{NP-completo} in \texttt{co-NP}.
+\end{proof}
