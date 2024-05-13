@@ -1,0 +1,53 @@
+\chapter{GPU}
+\section{Interrograzione del Device}
+Per interrograre il device si può utilizzare la funzione \texttt{cudaGetDeviceProperties}
+che restituisce una struttura \texttt{cudaDeviceProp} con le informazioni sul device.\\
+\begin{lstlisting}[language=C]
+cudaDeviceProp dev_prop;
+for (i = =; i < deviceCount; i++) {
+    cudaGetDeviceProperties(&dev_prop, i);
+}
+\end{lstlisting}
+\section{Analisi quantitativa sugli accessi in memoria}
+Una \texttt{GPU}. Quando abbiamo un codice e guardiamo il 
+\texttt{CPU} bound e il \texttt{GPU} bound (\textit{relazione tra il tempo di calcolo e
+il tempo di accesso alla memoria}).\\
+\[
+  \frac{\# \texttt{computations}}{\# \texttt{communications}}
+\]
+Nel caso della moltiplicazione tra matrici, se consideriamo una 
+matrice larga \texttt{width}, prende un elemento di $m$, un 
+elemento di $n$ e li moltiplica.
+
+Se ho un \texttt{flops} ho $4$ \texttt{b/s} 
+\dots
+
+\section{Memory Coalescing}
+La coalescenza della memoria è un'ottimizzazione che
+permette di.
+
+Consideriamo il sistema di mantenimento dell'informazione 
+in memoria. 
+Il tempo per far scaricare il condensatore nel corso del tempo 
+non è aumentato, ma il tempo per leggere un byte è aumentato, 
+cercando di miniaturizzare i transistor e aumentare la densità 
+di memoria.
+
+Quando una \texttt{GPU} accede alla memoria in elementi contigui,
+la \texttt{GPU} può fare una sola richiesta per tutti gli elementi
+contigui.
+
+Nel caso di una matrice, se la matrice è memorizzata per righe,
+la \texttt{GPU} può fare una sola richiesta per tutti gli elementi
+di una riga. Se la matrice è memorizzata per colonne, la \texttt{GPU}
+deve fare una richiesta per ogni elemento.
+
+Una soluzione potrebbe essere quella di trasporre la matrice,
+ma questo comporta un costo computazionale.
+
+La coalescenza della memoria ha solo il problema dell'accesso in 
+global memory. 
+
+COnsidero thread dello stesso warp, che accedono a memoria
+contigua. Se i thread accedono a memoria contigua, la \texttt{GPU}
+può fare una sola richiesta per tutti i thread.

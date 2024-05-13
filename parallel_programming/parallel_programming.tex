@@ -41,7 +41,7 @@
 \tcbuselibrary{skins}
 \counterwithin{figure}{section}
 \usetikzlibrary{arrows,shapes,positioning,arrows.meta}
-
+\usepackage{algorithm2e} % Pacchetto per algoritmi
 \tikzset{
     block/.style={
         rectangle,
@@ -101,6 +101,27 @@
 }
 \newcommand{\myboxedtext}[2][rectangle,draw]{%
     \tikz[baseline=-0.6ex] \node [#1]{#2};}%
+
+    \newcommand{\lstfont}[1]{\color{#1}\scriptsize\ttfamily}
+
+    \lstset{
+        language=[ANSI]C++,
+        showstringspaces=false,
+        backgroundcolor=\color{white!90},
+        basicstyle=\lstfont{black},
+        identifierstyle=\lstfont{purple},
+        keywordstyle=\lstfont{magenta!40},
+        numberstyle=\lstfont{white},
+        stringstyle=\lstfont{cyan},
+        commentstyle=\lstfont{yellow!30},
+        emph={
+            cudaMalloc, cudaFree,
+            __global__, __shared__, __device__, __host__,
+            __syncthreads,
+        },
+        emphstyle={\lstfont{green!60!white}},
+        breaklines=true
+    }
 %%======================================================================
 \title{Programmazione Parallela}
 \author{\textit{Alessio Gjergji}}
@@ -122,4 +143,7 @@
 \input{introduction.tex}
 \input{metodiprogrammazione.tex}
 \input{performance.tex}
+\input{prospettiva_prog_parallela.tex}
+
+\input{gpu.tex}
 \end{document}

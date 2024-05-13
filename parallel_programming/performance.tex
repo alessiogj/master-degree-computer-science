@@ -1,22 +1,55 @@
 \chapter{Misurazione delle Performance}
+\section{Introduzione}
 
-Ci sono due punti di vista nella misurazione delle
-performance:
+Ci sono due punti di vista nella misurazione delle performance:
 \begin{itemize}
   \item \textbf{Utente}: tempo di risposta, throughput,
   tempo di completamento.
-  \item \textbf{Sviluppatore}: tempo di esecuzione, tempo
-  di CPU, tempo di I/O, tempo di comunicazione.
+  \item \textbf{Sviluppatore}: tempo di esecuzione,
+  tempo di \texttt{CPU}, tempo di \texttt{I/O}, tempo di comunicazione.
 \end{itemize}
 
-Il \textbf{tempo di risposta} è il tempo che intercorre
-tra la partenza del codice e la fine dell'esecuzione. Il
+Il \textbf{tempo di risposta} è il tempo che intercorre tra la
+partenza del codice e la fine dell'esecuzione. Il
 \textbf{throughput} è la quantità di lavoro fatto dal
-sistema in un determinato periodo di tempo (\textit{si considera
-l'ammontare di lavoro}). La \textbf{latenza} di
-un'istruzione, nel caso della pipeline, è il tempo che
-intercorre tra l'arrivo di un'istruzione e la sua completa
-esecuzione.
+sistema in un determinato periodo di tempo
+(\textit{si considera l'ammontare di lavoro}). La
+\textbf{latenza} di un'istruzione, nel caso della
+pipeline, è il tempo che intercorre tra l'arrivo
+di un'istruzione e la sua completa esecuzione.
+
+L'affermazione ``X è più veloce di Y'' nel contesto
+della misurazione delle prestazioni significa che
+il tempo di risposta o il tempo di esecuzione per
+un determinato compito è inferiore in X rispetto a Y.
+Questo si riferisce direttamente all'efficienza con cui
+X completa un compito rispetto a Y.
+
+Quando diciamo che ``X è n volte più veloce di Y'',
+stiamo esprimendo un rapporto di velocità tra X e Y.
+Formalmente, questo è descritto dalla formula:
+\[
+n = \frac{\texttt{Tempo di esecuzione di } Y}
+{\texttt{Tempo di esecuzione di } X}
+\]
+
+Questo rapporto, noto come \textit{speedup}, 
+indica quante volte X è più veloce di Y. In termini
+di prestazioni, il tempo di esecuzione è inversamente
+proporzionale alla performance. Pertanto, possiamo riformulare il \textit{speedup} utilizzando le prestazioni relative di X e Y:
+\[
+n = \frac{\texttt{Tempo di esecuzione di } Y}
+{\texttt{Tempo di esecuzione di } X} = \frac{\frac{1}
+{\texttt{Prestazioni di } Y}}
+{\frac{1}{\texttt{Prestazioni di }X}} =
+\frac{\texttt{Prestazioni di } X}{\texttt{Prestazioni di } Y}
+\]
+
+Questa equazione ci mostra che il \textit{speedup} è
+il rapporto tra le prestazioni di X e quelle di Y,
+offrendo un modo quantitativo per valutare e confrontare
+l'efficienza di due sistemi o componenti software.
+
 
 \section{Benchmark}
 
