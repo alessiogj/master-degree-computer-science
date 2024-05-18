@@ -53,6 +53,44 @@
     },
     arrow/.style={-Latex}
 }
+\usetikzlibrary{calc}
+\newcommand\unit[4]   {\draw[fill=#2] (#4) rectangle +(#1);
+                       \node[font=\sffamily\bfseries] at ($(#4)+0.5*(#1)$) {#3};
+                      }
+\newcommand\gpualu    {\unit{ 0.9,0.9 }{green!30}{}}
+\newcommand\gpucontrol{\unit{ 0.9,0.4 }{yellow!30}{}}
+\newcommand\gpucache  {\unit{ 0.9,0.4 }{red!30}{}}
+\newcommand\dram      {\unit{16.9,1.9 }{red!30}{DRAM}}
+\newcommand\cpualu    {\unit{ 4.1,2.05}{green!30}{ALU}}
+\newcommand\cpucontrol{\unit{ 8.4,4.2 }{yellow!30}{Control}}
+\newcommand\cpucache  {\unit{16.9,4.2 }{red!30}{Cache}}
+
+\usetikzlibrary{fit, backgrounds, arrows, calc, decorations.pathmorphing, positioning}
+
+\tikzset{
+    snake arrow/.style={
+        ->, thick, 
+        decorate, 
+        decoration={snake, amplitude=.4mm, segment length=2mm, post length=1mm}
+    },
+    thread/.pic={
+        \node[fill=orange,
+              label={[anchor=north, name=th]90:Thread (\the\pgfmatrixcurrentcolumn,\the\pgfmatrixcurrentrow)},
+              minimum width=2cm,  % ridotta da 3cm
+              minimum height=2cm, % ridotta da 2.5cm
+              draw] (Th) {};
+        \draw[thick] (th.south) edge[snake arrow] ++(-90:10mm);
+    },
+    block/.pic={
+        \node[fill=yellow,
+              label={[anchor=north, name=bl]90:Block (\the\pgfmatrixcurrentcolumn,\the\pgfmatrixcurrentrow)},
+              minimum width=2cm,  % ridotta da 3cm
+              minimum height=2cm, % ridotta da 2.5cm
+              draw] (Bl) {};
+        \foreach \i in {-4,0,4}
+            \draw[thick] ([xshift=\i mm]bl.south) edge[snake arrow] ++(-90:10mm); % ridotta la lunghezza della freccia
+    }
+}
 %Nuovi comandi
 \newcommand\myeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \newcommand\prodG{\stackrel{\mathclap{\normalfont\mbox{\tiny{G}}}}{\Longrightarrow}}
@@ -122,6 +160,72 @@
         emphstyle={\lstfont{green!60!white}},
         breaklines=true
     }
+\usetikzlibrary{arrows.meta, 
+    bending,
+    calc, chains,
+    positioning
+    }
+\newcommand{\cube}[7]% position (center), size, color, front edges (1/0), back edges (1/0),
+{%                      label, y shift for the label
+  \begin{scope}[shift={#1},scale=0.5]
+    \draw[fill=#3] (-#2,-#2,-#2) -- (-#2,-#2, #2) -- ( #2,-#2, #2) --
+                   ( #2, #2, #2) -- ( #2, #2,-#2) -- (-#2, #2,-#2)  -- cycle;
+    \ifnum #4 = 1% if we need front edges
+      \draw ( #2,-#2,-#2) -- (-#2,-#2,-#2);
+      \draw ( #2,-#2,-#2) -- ( #2, #2,-#2);
+      \draw ( #2,-#2,-#2) -- ( #2,-#2, #2);    
+    \fi
+    \ifnum #5 = 1% if we need back edges
+      \draw (-#2, #2, #2) -- ( #2, #2, #2);
+      \draw (-#2, #2, #2) -- (-#2,-#2, #2);
+      \draw (-#2, #2, #2) -- (-#2, #2,-#2);
+    \fi
+    \node[blue] at (0,-2*#7,0) {#6};
+  \end{scope}
+}
+%%======================================================================
+\usepackage{xcolor}
+\usepackage{listings}
+
+\usepackage{color}
+\definecolor{backgroundColour}{RGB}{245,245,245}
+\definecolor{mygreen}{RGB}{28,172,0} % Green for comments
+\definecolor{mGray}{RGB}{128,128,128}
+\definecolor{mPurple}{RGB}{128,0,128}
+\definecolor{babyblue}{RGB}{137,207,240}
+\definecolor{green}{RGB}{0,128,0}
+
+% Define a custom color
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+
+% Define a custom style
+\lstdefinestyle{myStyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    keepspaces=true,                 
+    numbers=left,       
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+}
+\usetikzlibrary{matrix,arrows,decorations.pathmorphing}
+% l' unite
+\newcommand{\myunit}{1 cm}
+\tikzset{
+    node style sp/.style={draw,circle,minimum size=\myunit},
+    node style ge/.style={circle,minimum size=\myunit},
+    arrow style mul/.style={draw,sloped,midway,fill=white},
+    arrow style plus/.style={midway,sloped,fill=white},
+}
+
+% Use \lstset to make myStyle the global default
+\lstset{style=myStyle}
 %%======================================================================
 \title{Programmazione Parallela}
 \author{\textit{Alessio Gjergji}}

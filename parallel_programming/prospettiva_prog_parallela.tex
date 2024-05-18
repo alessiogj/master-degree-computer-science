@@ -575,62 +575,260 @@ A_{i,j} = 0.2 \cdot (A_{i, j} + A_{i-1, j} + A_{i+1, j}
 + A_{i, j-1} + A_{i, j+1})  
 \]
 
-%TODO
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \foreach \x in {0, 1, ..., 9}
+            \foreach \y in {0, 1, ..., 9}
+                \draw[] (\x, \y) circle (4pt);
+            
+            \draw[thick,->] (2, 3) -- (2, 2.3);
+            \draw[thick,->] (3, 2) -- (2.3, 2);
+            \draw[thick,->] (2, 1) -- (2, 1.7);
+            \draw[thick,->] (1, 2) -- (1.7, 2);
 
-\chapter{General Purpose Graphics Processing Unit}
-\section{Introduzione}
-Le \texttt{GPU} sono state introdotte per fare
-rendering di immagini
-e video, ma sono state utilizzate anche per fare
-calcoli scientifici.
-Principalmente si utilizzano per fare calcoli di
-tipo matriciale.
+    \end{tikzpicture}  
+\end{figure}
 
-L'instruction set delle \texttt{GPU} è molto più
-semplice rispetto
-a quello delle \texttt{CPU}, in quanto è stato
-progettato per fare
-calcoli matriciali.
+Una versione sequenziale di questo programma potrebbe
+essere scritta come segue:
 
-Le general purpose \texttt{GPU} a differenza delle normali \texttt{GPU}
-hanno un instruction set molto più ricco, in quanto sono state progettate
-per fare calcoli scientifici.
+\begin{algorithm}[H]
+    \caption{\texttt{Simulazioni Oceaniche - Versione Sequenziale}}
+    \DontPrintSemicolon  
+    
+    \KwIn{Dimensione della griglia $n$}
+    \KwOut{Griglia aggiornata $A$ dopo la convergenza}
 
-Nelle \texttt{GPU} sono fatte per il l'indipendenza dei dati, quindi
-sono molto adatte per fare calcoli paralleli. 
-Il problema delle \texttt{CPU} sono dei colli di bottiglia, 
+    \BlankLine
+    $n \gets \texttt{read\_input()}$ \;
+    $A \gets \texttt{allocate\_grid}(n + 2)$ \;
+    \texttt{initialize\_grid}$(A)$ \;
+    \texttt{Solve}$(A)$ \;
+    
+    \SetKwFunction{FMain}{Solve}
+    \SetKwProg{Fn}{Function}{:}{}
+    \Fn{\FMain{$A$}}{
+        $done \gets 0$ \;
+        \While{\textup{not} $done$}{
+            $diff \gets 0$ \;
+            \For{$i \gets 1$ \KwTo $n$}{
+                \For{$j \gets 1$ \KwTo $n$}{
+                    $tmp \gets A[i][j]$ \;
+                    $A[i][j] \gets 0.2 \times (A[i][j] + A[i-1][j] + A[i+1][j] + A[i][j-1] + A[i][j+1])$ \;
+                    $diff \gets diff + \texttt{abs}(A[i][j] - tmp)$ \;
+                }
+            }
+            \If{$diff / (n \times n) < \texttt{threshold}$}{
+                $done \gets 1$ \;
+            }
+        }
+    }
+\end{algorithm}
 
-Le \texttt{GPU} hanno tante \texttt{ALU}.
-Molto meglio calare la frequenza, in modo che si consumi 
-meno energia e si possa fare più calcoli.
-Poiché vi è un andamento esponenziale tra la frequenza e il consumo
-di energia. 
+Il primo passo per parallelizzare questo programma è quello 
+di identificare le dipendenze tra i calcoli. In questo caso,
+ogni punto della griglia dipende dai valori dei suoi vicini
+immediati. Questo implica che i calcoli per ogni punto
+della griglia devono essere eseguiti in un ordine specifico
+per garantire che i valori dei vicini siano disponibili
+prima di calcolare il valore del punto stesso.
 
-\section{\texttt{CUDA}}
-La \texttt{CPU} verrà chiamata \texttt{host}, mentre la \texttt{GPU}
-si chiamerà \texttt{device}.
-Il \texttt{CUDA kernel} è costituito da un insieme di thread, che
-sono raggruppati in blocchi (\textit{grid}).
-Tutte queste thread eseguono lo stesso codice scritto nel 
-\texttt{CUDA kernel}.
-Per distinguere i thread si utilizza l'\texttt{ID} del thread, 
-in questo modo si può fare un calcolo diverso per ogni thread.
-Quindi ogni grid è composta da blocchi, e ogni blocco è composto
-da thread. Le thread che appartengono allo stesso blocco 
-possono comunicare tra di loro in maniera molto efficiente, poiché 
-l'hardware delle \texttt{GPU} è stato progettato per fare ciò avendo una 
-memoria condivisa tra le thread dello stesso blocco.
-Le thread che appartengono a blocchi diversi non possono comunicare
-in modo diretto, ma possono comunicare tramite la memoria globale, che 
-è molto più lenta.
-Ogni kernel ha associato un \texttt{grid} e nella \texttt{grid} ci sono
-dei blocchi, e in ogni blocco ci sono delle thread, perciò l'identificativo 
-delle thread è perciò espresso fino a tre dimensioni.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Creazione griglia
+        \foreach \x in {0, 1, ..., 9}
+            \foreach \y in {0, 1, ..., 9}
+                \draw[] (\x, \y) circle (4pt);
+        
+        % Frecce verticali
+        \foreach \x in {1, ..., 8}
+            \foreach \y in {2, ..., 9} 
+            {
+                \draw[thick,->] (\x, \y) -- (\x, \y - 0.5); 
+            }
+            
+        % Frecce orizzontali
+        \foreach \x in {0, ..., 7} 
+            \foreach \y in {1, ..., 8}
+            {
+                \draw[thick,->] (\x, \y) -- (\x + 0.5, \y); %
+            }
+        % Diagonali da sinistra a destra
+        \draw[thick, blue] (8, 2) -- (7, 1);
+        \draw[thick, blue] (8, 3) -- (6, 1);
+        \draw[thick, blue] (8, 4) -- (5, 1);
+        \draw[thick, blue] (8, 5) -- (4, 1);
+        \draw[thick, blue] (8, 6) -- (3, 1);
+        \draw[thick, blue] (8, 7) -- (2, 1);
+        \draw[thick, blue] (8, 8) -- (1, 1);
+        \draw[thick, blue] (7, 8) -- (1, 2);
+        \draw[thick, blue] (6, 8) -- (1, 3);
+        \draw[thick, blue] (5, 8) -- (1, 4);
+        \draw[thick, blue] (4, 8) -- (1, 5);
+        \draw[thick, blue] (3, 8) -- (1, 6);
+        \draw[thick, blue] (2, 8) -- (1, 7);
+    \end{tikzpicture}  
+\end{figure}
+Quello che possiamo notare è che i calcoli per ogni punto
+della griglia possono essere eseguiti in parallelo, a
+patto che i valori dei vicini siano disponibili. Questo
+significa che possiamo dividere la griglia in sezioni
+più piccole e assegnare ciascuna sezione a un thread
+parallelo. Ogni thread può quindi calcolare i valori
+dei punti nella sua sezione in parallelo, riducendo
+notevolmente il tempo di calcolo complessivo.
 
-Ogni thread ha un suo insieme di registri e l'accesso 
-è molto veloce, in quanto i registri sono molto veloci e 
-indipendenti tra di loro.
+L'idea per migliorare le performance del'algoritmo
+è quella di cambiare l'ordine in cui le celle vengono 
+aggiornate. 
+Il nuovo algoritmo itera le stesse soluzioni, ma converge 
+diversamente.
 
-È importante differenziale i puntatori tra la memoria dell'host e 
-la memoria del device, in quanto sono due memorie diverse.
+Uno dei metodi utili nella risoluzione di sistemi di equazioni su griglie di calcolo, soprattutto in contesti paralleli, è l'adozione di un ordinamento specifico per la traversata della griglia. L'ordinamento "red-black", o scacchiera, è un esempio di questo approccio che consente di migliorare la convergenza degli aggiornamenti iterativi.
 
+\subsection{Ordinamento rosso-nero}
+
+L'ordinamento ``rosso-nero" suddivide la griglia di calcolo in due
+insiemi disgiunti, comunemente denominati come
+\textit{red} e \textit{black}. Questi due insiemi sono aggiornati sequenzialmente:
+\begin{itemize}
+  \item \textbf{Red Sweep:} Durante la fase red, solo i nodi rossi sono aggiornati.
+  \item \textbf{Black Sweep:} Successivamente, durante la fase black, solo i nodi neri sono aggiornati.
+\end{itemize}
+La caratteristica principale di questo metodo è che ciascun ``sweep"
+(\textit{passata}) può essere eseguito in modo completamente parallelo,
+poiché non ci sono dipendenze dirette tra i nodi dello stesso colore
+durante un singolo sweep. Questo riduce significativamente il tempo
+di attesa per le sincronizzazioni globali tra i thread o i processi.
+
+
+Nonostante la parallelizzazione, è necessaria una sincronizzazione globale
+tra le due fasi per garantire che tutti i nodi rossi siano stati completamente
+aggiornati prima di iniziare gli aggiornamenti dei nodi neri e viceversa.
+Questa sincronizzazione, sebbene conservativa, è conveniente per mantenere
+la coerenza dei dati tra le fasi di aggiornamento.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Disegna i cerchi con colorazione alternata red-black
+        \foreach \x in {0, 1, ..., 9}
+            \foreach \y in {0, 1, ..., 9}
+                {
+                % Calcola se la somma delle coordinate è pari (rosso) o dispari (nero)
+                \pgfmathparse{int(mod(\x+\y,2))}
+                \ifnum\pgfmathresult=0
+                    \fill[red] (\x, \y) circle (4pt); % Nodi rossi
+                \else
+                    \fill[black] (\x, \y) circle (4pt); % Nodi neri
+                \fi
+                }
+
+        % Aggiungi le frecce specificate
+        \draw[thick,->] (2, 3) -- (2, 2.3); % Freccia verso il basso
+        \draw[thick,->] (3, 2) -- (2.3, 2); % Freccia verso sinistra
+        \draw[thick,->] (2, 1) -- (2, 1.7); % Freccia verso l'alto
+        \draw[thick,->] (1, 2) -- (1.7, 2); % Freccia verso destra
+
+    \end{tikzpicture}  
+\end{figure}
+
+L'assegnamento dei processi a ciascuna fase può seguire un modello
+di assegnazione statica o dinamica, a seconda delle esigenze dell'applicazione
+e delle caratteristiche dell'architettura sottostante. L'obiettivo principale
+è garantire che i processi siano costantemente occupati e che i tempi di attesa
+siano ridotti al minimo.
+
+\subsubsection{Assegnamento Statico}
+L'assegnamento statico decompone la griglia in righe o colonne e assegna
+ciascuna sezione a un processo specifico. Questo approccio è semplice e prevedibile,
+ma può portare a squilibri di carico se le sezioni non sono bilanciate in termini
+di complessità computazionale.
+
+\subsubsection{Assegnamento Dinamico}
+L'assegnamento dinamico si basa su un modello di coda di lavoro in cui i processi
+richiedono e ricevono nuovi compiti man mano che terminano quelli precedenti.
+Questo metodo è particolarmente vantaggioso in contesti in cui il carico di
+lavoro è variabile, poiché permette una migliore adattabilità e minimizza i
+tempi di inattività dei processi.
+
+
+\subsection{Considerazione delle Dipendenze nel Flusso di Dati}
+
+Il processo di calcolo parallelo richiede una gestione accurata delle dipendenze
+per massimizzare l'efficienza. La seguente sezione descrive il flusso di lavoro
+diviso in fasi di calcolo e comunicazione:
+
+\begin{enumerate}
+    \item Esecuzione parallela dell'aggiornamento delle celle rosse.
+    \item Attesa fino al completamento dell'aggiornamento da parte di tutti
+    i processori.
+    \item Comunicazione delle celle rosse aggiornate agli altri processori.
+    \item Esecuzione parallela dell'aggiornamento delle celle nere.
+    \item Attesa fino al completamento dell'aggiornamento da parte di tutti
+    i processori.
+    \item Comunicazione delle celle nere aggiornate agli altri processori.
+    \item Ripetizione del processo.
+\end{enumerate}
+
+Questo metodo alterna fasi di computazione e comunicazione, essenziale per
+mantenere un flusso di lavoro efficiente e coordinato tra i diversi processori.
+
+\subsection{Come pensare alla parallelizzazione di un programma}
+Ci sono diversi aspetti da considerare quando si pensa alla parallelizzazione
+di un programma. Alcuni di questi includono:
+\begin{itemize}
+    \item \textbf{Pensare alla parallelizzazione dei dati:} Considerare come
+    i dati possono essere suddivisi tra i processi e come le operazioni
+    possono essere eseguite in parallelo.
+    \item \textbf{\texttt{SPMD}/spazi di indirizzi condivisi:} Pensare
+    a come i processi possono condividere dati e comunicare tra di loro
+    in un ambiente di spazio di indirizzi condiviso.
+    \item \textbf{Passaggio di messaggi:} Considerare come i processi possono
+    comunicare tra di loro utilizzando il passaggio di messaggi e come
+    possono coordinare le loro attività.
+\end{itemize}
+\subsubsection{Sincronizzazione in Ambiente di Memoria Condivisa}
+La programmazione in un ambiente di memoria condivisa impone agli sviluppatori la responsabilità della sincronizzazione tra i thread. Le primitive comuni di sincronizzazione includono:
+\begin{itemize}
+    \item \textbf{Locks}: Forniscono l'esclusione mutua, permettendo a un solo thread per volta di entrare in una regione critica.
+    \item \textbf{Barriers}: I thread devono attendere che tutti raggiungano questo punto di barriera prima di procedere.
+\end{itemize}
+
+\subsubsection{Modello di Programmazione \texttt{SPMD}}
+Il modello di programmazione Single Program, Multiple Data (\texttt{SPMD}) non segue il lockstep, ovvero non implica necessariamente l'esecuzione delle stesse istruzioni contemporaneamente da parte di tutti i processi:
+\begin{itemize}
+    \item L'assegnazione è controllata dai valori delle variabili utilizzate come limiti dei loop.
+    \item Le operazioni speciali più interessanti in questo modello sono quelle di sincronizzazione, necessarie per assicurare l'accesso esclusivo a risorse condivise e per le operazioni di riduzione globale.
+    \item La necessità di barriere deriva dalla necessità di assicurare che tutte le operazioni precedenti siano state completate prima di procedere.
+\end{itemize}
+
+\subsection{Primitive di Sincronizzazione con Barriere}
+
+Le barriere sono un metodo di sincronizzazione essenziale nei sistemi di
+calcolo parallelo. Servono per garantire che tutti i thread o i processi
+raggiungano un certo punto nel loro esecuzione prima di procedere. Questo
+permette di gestire le dipendenze tra diverse fasi di calcolo.
+
+Una barriera, tipicamente invocata come \texttt{barrier(num\_threads)},
+assicura che tutti i thread abbiano completato le loro operazioni prima
+di superare questo punto di sincronizzazione. Le caratteristiche principali
+includono:
+
+\begin{itemize}
+    \item Le barriere dividono il calcolo in fasi ben distinte.
+    \item Tutti i calcoli eseguiti da tutti i thread prima della barriera
+    devono essere completati prima che qualsiasi thread inizi i calcoli
+    previsti dopo la barriera.
+    \item In sostanza, si presume che tutti i calcoli che seguono la
+    barriera dipendano da tutti quelli che la precedono.
+\end{itemize}
+
+Le barriere sono quindi un modo conservativo per esprimere le dipendenze
+all'interno di un'applicazione parallela, assicurando che non ci siano
+race condition o inconsistenze nei dati condivisi.
+
+\section{Message Passing Grid Solver}
+
+TODO
