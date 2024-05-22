@@ -625,5 +625,110 @@ thread è identificata da un indice unico all'interno del blocco e della
 griglia, che può essere utilizzato per accedere ai dati e coordinare
 le operazioni tra le thread.
 
-\section{Scalabilità Trasparente}
-TODO
+\section{Modello di Programmazione \texttt{CUDA}}
+Il modello di programmazione \texttt{CUDA} consente una scalabilità trasparente attraverso un'assegnazione dinamica dei blocchi di thread e una gestione flessibile delle esecuzioni, adattandosi automaticamente al numero di processori paralleli disponibili.
+
+\subsection{Scalabilità Trasparente nel Modello \texttt{CUDA}}
+Nel modello \texttt{CUDA}, l'hardware ha 
+la completa libertà di assegnare i blocchi di thread a 
+qualsiasi processore in qualsiasi momento, consentendo al kernel 
+di scalare su un numero arbitrario di processori paralleli. Questa 
+flessibilità è fondamentale per massimizzare l'efficienza di 
+esecuzione e le prestazioni del sistema. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/transparent_scalability.png}
+\end{figure}
+
+\subsection{Dettagli Tecnici di Scheduling e Gestione dei \texttt{SM}}
+I blocchi di thread sono organizzati in griglie di blocchi, e ogni blocco 
+può essere eseguito in un ordine indipendente rispetto agli altri. 
+La granularità dell'assegnazione dei thread ai multiprocessori 
+streaming (\texttt{SM}) varia in base alla generazione del processore:
+\begin{itemize}
+    \item Gli \texttt{SM Fermi} possono gestire fino a $1536$ thread, 
+    con configurazioni come $256$ thread per blocco per $6$ blocchi o $512$ thread per blocco per $3$ blocchi.
+    \item Gli \texttt{SM Kepler} possono gestire fino a $2048$ thread, 
+    con i thread che vengono eseguiti contemporaneamente.
+\end{itemize}
+Gli \texttt{SM} mantengono e gestiscono gli identificativi di thread 
+e blocco, pianificando l'esecuzione dei thread in modo efficiente.
+
+\subsection{Warps come Unità di Scheduling}
+All'interno degli \texttt{SM}, ogni blocco viene eseguito come
+warps di $32$ thread, che sono le unità di scheduling. Ad esempio,
+se a un \texttt{SM} sono assegnati $3$ blocchi e ogni blocco ha
+$256$ thread, il numero totale di warps per \texttt{SM} sarà di
+$24$, calcolato come \(256/32 = 8\) warps per blocco moltiplicato 
+per $3$ blocchi.
+
+\section{Partizione dei Blocchi di Thread e Controllo del Flusso
+in \texttt{CUDA}}
+Comprendere come i blocchi di thread sono partizionati e gestiti
+all'interno del modello di esecuzione di \texttt{CUDA} è fondamentale
+per ottimizzare le prestazioni e garantire un comportamento corretto
+dell'applicazione.
+
+\subsection{Partizione dei Blocchi di Thread}
+I blocchi di thread in \texttt{CUDA} sono partizionati in warp,
+con \texttt{ID} di thread consecutivi e crescenti all'interno di
+un warp. Questa partizione è consistente tra le esecuzioni, il
+che permette ai programmatori di anticipare e pianificare il
+comportamento dei thread all'interno dei warp:
+\begin{itemize}
+    \item Ogni warp inizia con l'\texttt{ID} di thread 0.
+    \item I warp sono strutturati in modo che gli \texttt{ID} di
+    thread siano sempre consecutivi, migliorando la prevedibilità
+    nel controllo del flusso.
+\end{itemize}
+Tuttavia, i programmatori non dovrebbero fare affidamento su un
+ordine specifico tra i warp a causa delle potenziali dipendenze
+tra i thread, che necessitano di una sincronizzazione esplicita
+utilizzando \texttt{\_\_syncthreads()} per ottenere risultati di esecuzione corretti.
+
+\subsection{Controllo del Flusso in \texttt{CUDA}}
+Il controllo del flusso all'interno di \texttt{CUDA} è soggetto a
+problemi di divergenza, dove i thread all'interno di un singolo warp
+possono seguire percorsi di esecuzione differenti:
+\begin{itemize}
+    \item La divergenza si verifica quando i thread in un warp seguono
+    percorsi di controllo differenti, che vengono poi serializzati,
+    potenzialmente degradando le prestazioni.
+    \item Un esempio di divergenza: se \texttt{(threadIdx.x > 2)},
+    questa condizione crea due percorsi all'interno del primo warp.
+    \item Per minimizzare la divergenza, è consigliabile allineare
+    le condizioni di ramificazione con i confini dei warp, ad esempio,
+    \texttt{if (threadIdx.x / WARP\_SIZE > 2)}.
+\end{itemize}
+
+\subsection{Schedulazione e Esecuzione dei Warp}
+La schedulazione dei warp è gestita dai Multiprocessori di Streaming
+(\texttt{SM}) con zero sovraccarico:
+\begin{itemize}
+    \item I warp vengono eseguiti in base alla prontezza degli operandi
+    e alle politiche di schedulazione prioritarie.
+    \item Questo assicura che tutti i thread in un warp eseguano
+    la stessa istruzione simultaneamente quando selezionati, ottimizzando il throughput.
+\end{itemize}
+
+\subsection{Considerazioni sulla Granularità dei Blocchi per una
+Performance Ottimale}
+Scegliere la dimensione giusta del blocco è cruciale per la performance,
+specialmente in applicazioni come la moltiplicazione di matrici:
+\begin{itemize}
+    \item Per una configurazione di blocco $8 \times 8$
+    (\textit{$64$ thread per blocco}), un \texttt{SM} può supportare
+    fino a $24$ blocchi, ma a causa dei vincoli hardware, spesso solo
+    $8$ blocchi possono essere attivi contemporaneamente.
+    \item Una configurazione di blocco $16 \times 16$
+    (\textit{$256$ thread per blocco}) permette a un \texttt{SM}
+    di operare vicino alla piena capacità con fino a $6$ blocchi.
+    \item Blocchi più grandi, come $32 \times 32$
+    (\textit{$1024$ thread per blocco}), possono superare la
+    capacità per \texttt{SM} di alcune versioni di \texttt{CUDA}
+    e hardware, riducendo l'efficienza.
+\end{itemize}
+
+Ciascuna di queste considerazioni gioca un ruolo significativo nel
+determinare quanto efficacemente un programma \texttt{CUDA} può operare, e comprenderle è fondamentale per sfruttare appieno le capacità di \texttt{CUDA}.
