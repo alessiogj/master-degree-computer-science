@@ -731,4 +731,232 @@ specialmente in applicazioni come la moltiplicazione di matrici:
 \end{itemize}
 
 Ciascuna di queste considerazioni gioca un ruolo significativo nel
-determinare quanto efficacemente un programma \texttt{CUDA} può operare, e comprenderle è fondamentale per sfruttare appieno le capacità di \texttt{CUDA}.
+determinare quanto efficacemente un programma \texttt{CUDA} può operare,
+e comprenderle è fondamentale per sfruttare appieno le capacità di \texttt{CUDA}.
+
+\chapter{\texttt{GPU} e memoria}
+\section{Panoramica della Memoria in \texttt{CUDA} e Dichiarazione delle Variabili}
+
+\subsection{Accesso alla Memoria nei Thread \texttt{CUDA}}
+In \texttt{CUDA}, ogni thread può accedere a diverse tipologie di memoria con tempi di accesso variabili, che influenzano le prestazioni dell'applicazione:
+\begin{itemize}
+    \item \textbf{Registri per thread:} Ogni thread può leggere e scrivere nei registri specifici per thread con un tempo di accesso molto basso, circa 1 ciclo.
+    \item \textbf{Memoria condivisa per blocco:} La memoria condivisa accessibile da tutti i thread di un blocco ha un tempo di accesso di circa 5 cicli.
+    \item \textbf{Memoria globale per griglia:} Tutti i thread possono accedere alla memoria globale con un tempo di accesso significativamente più elevato, circa 500 cicli.
+    \item \textbf{Memoria costante per griglia:} Accessibile in sola lettura, la memoria costante ha un tempo di accesso di circa 5 cicli se c'è caching.
+\end{itemize}
+
+\subsection{Qualificatori delle Variabili in \texttt{CUDA}}
+Le variabili in \texttt{CUDA} possono essere qualificate in modo specifico per
+definire la loro visibilità e il luogo di memorizzazione. Di seguito è presentata
+una tabella che riassume i principali qualificatori delle variabili, la loro
+visibilità e i luoghi di memorizzazione.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Dichiarazione} & \textbf{Memoria} & \textbf{Visibilità} & \textbf{tempo di vita} \\
+\hline
+\texttt{int LocalVar;} & Registri & Thread & Thread \\
+\texttt{\_\_device\_\_ int GlobalVar;} & Globale & Grid & Applicazione \\
+\texttt{\_\_device\_\_ \_\_shared\_\_ int SharedVar;} & Condivisa & Blocco & Blocco \\
+\texttt{\_\_device\_\_ \_\_constant\_\_ int ConstVar;} & Costante & Grid & Applicazione \\
+\hline
+\end{tabular}
+\caption{Qualificatori delle variabili in \texttt{CUDA} e loro proprietà}
+\label{tab:cuda_variable_qualifiers}
+\end{table}
+\subsubsection{Dove Dichiarare le Variabili?}
+\begin{itemize}
+    \item Variabili \texttt{global} e \texttt{constant} vanno dichiarate
+    all'esterno di qualsiasi funzione per essere accessibili dall'host.
+    \item Variabili \texttt{register} (automatiche) e \texttt{shared}
+    sono dichiarate all'interno dei kernel.
+\end{itemize}
+
+\subsubsection{Esempio}
+\begin{lstlisting}
+__global__ void MatrixMulKernel(float* d_M, float* d_N, float* d_P, int Width) {
+    __shared__ float ds_M[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float ds_N[TILE_WIDTH][TILE_WIDTH];
+\end{lstlisting}
+
+
+\section{Strategia di Programmazione Comune in \texttt{CUDA}: Tiling e Blocking}
+
+\subsection{Utilizzo della Memoria Globale e Condivisa}
+La memoria globale, situata nella memoria del dispositivo (\texttt{DRAM}), presenta
+tempi di accesso lenti. Un metodo efficace per eseguire calcoli sul dispositivo
+è quindi quello di usare la tecnica di tiling, che sfrutta la memoria condivisa
+più veloce:
+\begin{itemize}
+    \item \textbf{Partizionamento dei dati:} I dati vengono suddivisi in sottoinsiemi
+    che si adattano alla memoria condivisa.
+    \item \textbf{Caricamento dei dati:} Ogni blocco di thread carica un sottoinsieme 
+    dalla memoria globale alla memoria condivisa, utilizzando più thread per sfruttare 
+    il parallelismo a livello di memoria.
+    \item \textbf{Computazione sui dati:} I thread eseguono calcoli sui dati nella 
+    memoria condivisa. Ogni thread può passare efficientemente più volte su qualsiasi 
+    elemento dei dati.
+    \item \textbf{Copia dei risultati:} I risultati vengono copiati dalla memoria 
+    condivisa alla memoria globale.
+\end{itemize}
+
+\subsection{Vantaggi del Tiling e del Blocking}
+\begin{itemize}
+    \item \textbf{Efficienza:} L'utilizzo di memoria condivisa riduce la latenza di 
+    accesso ai dati e aumenta la velocità di esecuzione.
+    \item \textbf{Parallelismo a livello di memoria:} Più thread possono caricare e 
+    scrivere dati in modo simultaneo, migliorando ulteriormente le prestazioni.
+\end{itemize}
+
+\subsection{Considerazioni sul Timing di Accesso dei Thread}
+\begin{itemize}
+    \item \textbf{Accesso simile:} Il tiling è particolarmente vantaggioso quando i 
+    thread hanno tempi di accesso simili, poiché questo permette di massimizzare 
+    l'efficienza e minimizzare i conflitti di accesso alla memoria.
+    \item \textbf{Accesso diverso:} Se i tempi di accesso dei thread sono molto 
+    diversi, il tiling potrebbe non essere efficace e potrebbe portare a una 
+    serializzazione indesiderata delle operazioni, riducendo le prestazioni.
+\end{itemize}
+
+Queste strategie di programmazione sono cruciali per ottimizzare l'utilizzo delle 
+risorse del dispositivo e migliorare le prestazioni generali delle applicazioni 
+\texttt{CUDA}.
+
+\section{Moltiplicazione di Matrici in \texttt{CUDA}: Tiling e Blocking}
+
+\subsection{Descrizione dell'Algoritmo}
+La moltiplicazione di matrici in \texttt{CUDA} può essere notevolmente
+ottimizzata attraverso l'uso del tiling e del blocking. Queste tecniche
+sfruttano la memoria condivisa del dispositivo per ridurre il numero di
+accessi alla memoria globale, che è più lenta. L'idea di base è suddividere
+le matrici in blocchi o ``tiles" più piccoli che possono essere caricati nella
+memoria condivisa, permettendo così ai thread di lavorare su porzioni di dati 
+più gestibili contemporaneamente.
+
+\subsection{Implementazione in \texttt{CUDA}}
+Il kernel \texttt{CUDA} per la moltiplicazione di matrici utilizzando il
+tiling segue questi passaggi principali:
+\begin{enumerate}
+    \item Partizionare le matrici di input in blocchi di dimensioni
+    \texttt{TILE\_WIDTH} x \texttt{TILE\_WIDTH}.
+    \item Ogni blocco di thread carica un tile di una matrice in memoria condivisa,
+    sincronizzandosi con gli altri thread per assicurare che tutti i dati siano
+    caricati prima di procedere al calcolo.
+    \item Calcolare il prodotto del blocco moltiplicando i corrispondenti tile delle
+    due matrici.
+    \item Ogni thread accumula il risultato in una variabile locale e, una volta
+    completato il calcolo per tutti i tile, scrive il risultato nella memoria globale.
+\end{enumerate}
+
+\subsection{Codice \texttt{CUDA} per il Kernel di Moltiplicazione}
+Di seguito è riportato un esempio di implementazione di un kernel \texttt{CUDA}
+per la moltiplicazione di matrici utilizzando il tiling:
+
+\begin{lstlisting}
+__global__ void MatrixMulKernel(float* d_M, float* d_N, float* d_P, int Width) {
+    __shared__ float ds_M[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float ds_N[TILE_WIDTH][TILE_WIDTH];
+    int bx = blockIdx.x; int by = blockIdx.y;
+    int tx = threadIdx.x; int ty = threadIdx.y;
+    int Row = by * TILE_WIDTH + ty;
+    int Col = bx * TILE_WIDTH + tx;
+    float Pvalue = 0;
+    for (int m = 0; m < Width/TILE_WIDTH; ++m) {
+        ds_M[ty][tx] = d_M[Row * Width + (m * TILE_WIDTH + tx)];
+        ds_N[ty][tx] = d_N[Col + (m * TILE_WIDTH + ty) * Width];
+        __syncthreads();
+        for (int k = 0; k < TILE_WIDTH; ++k) {
+            Pvalue += ds_M[ty][k] * ds_N[k][tx];
+        }
+        __syncthreads();
+    }
+    d_P[Row * Width + Col] = Pvalue;
+}
+\end{lstlisting}
+
+Questo kernel \texttt{CUDA} esegue la moltiplicazione di matrici utilizzando il tiling
+per ottimizzare l'accesso alla memoria e migliorare le prestazioni complessive.
+
+\subsection{Spiegazione del Codice}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/matrix_mul_tiles.png}
+    \caption{Moltiplicazione di matrici con tiling}
+\end{figure}
+\begin{itemize}
+    \item Il kernel carica i tile delle matrici \(M\) e \(N\) in memoria condivisa
+    e calcola il prodotto del blocco.
+    \item I thread sincronizzano l'accesso alla memoria condivisa per evitare
+    conflitti e assicurare che tutti i dati siano disponibili per il calcolo.
+    \item Il risultato viene accumulato in una variabile locale e scritto nella
+    memoria globale.
+\end{itemize}
+
+Questo approccio sfrutta la memoria condivisa per ridurre i tempi di accesso
+alla memoria globale e migliorare le prestazioni della moltiplicazione di matrici
+su \texttt{CUDA}.
+
+\subsection{Dimensionamento dei Blocchi di Thread e Utilizzo della Memoria Condivisa}
+La scelta della dimensione dei blocchi di thread e della larghezza delle tessere (\texttt{TILE\_WIDTH}) ha un impatto significativo sulla performance dei programmi \texttt{CUDA}. 
+
+\begin{itemize}
+    \item Un \texttt{TILE\_WIDTH} di $16$ porta a blocchi di $256$
+    thread ($16\cdot16$), mentre un \texttt{TILE\_WIDTH} di $32$ comporta
+    blocchi di 1024 thread (32x32).
+    \item Per una \texttt{TILE\_WIDTH} di $16$, ogni blocco esegue
+    $512$ caricamenti di float dalla memoria globale e può eseguire
+    $8,192$ operazioni di moltiplicazione/addizione.
+    \item Con una \texttt{TILE\_WIDTH} di $32$, il numero di
+    operazioni di moltiplicazione/addizione sale a $65536$, per
+    un totale di $2048$ caricamenti di float.
+\end{itemize}
+
+Queste operazioni di caricamento influenzano direttamente l'utilizzo
+della memoria condivisa e la capacità di avere più blocchi attivi
+contemporaneamente su un singolo Multiprocessore di Streaming (\texttt{SM}):
+\begin{itemize}
+    \item Con \texttt{TILE\_WIDTH} = $16$, ogni blocco di thread utilizza
+    $2KB$ di memoria condivisa ($2*256*4B$), consentendo potenzialmente
+    fino a 8 blocchi di thread attivi contemporaneamente.
+    \item Con \texttt{TILE\_WIDTH} = $32$, l'utilizzo di memoria condivisa
+    aumenta a $8KB$ per blocco, limitando il numero di blocchi attivi a
+    $2$ o $6$ a seconda della configurazione della memoria condivisa e
+    della dimensione totale disponibile sull'\texttt{SM}.
+\end{itemize}
+
+Utilizzando un tiling di 16x16, si riducono gli accessi alla memoria
+globale di un fattore 16, incrementando così efficacemente la larghezza
+di banda utilizzabile e il throughput di calcolo.
+
+\subsection{Interrogazione delle Proprietà del Dispositivo}
+Per sfruttare al meglio le risorse hardware, è essenziale interrogare
+le proprietà del dispositivo \texttt{CUDA} disponibile:
+\begin{lstlisting}
+int dev_count;
+cudaGetDeviceCount(&dev_count);
+cudaDeviceProp dev_prop;
+for (int i = 0; i < dev_count; i++) {
+    cudaGetDeviceProperties(&dev_prop, i);
+    // Decisioni basate su dev_prop.maxThreadsPerBlock,dev_prop.sharedMemPerBlock, ...
+}
+\end{lstlisting}
+Questo codice permette di determinare il numero di dispositivi e
+le loro specifiche, come il numero massimo di thread per blocco e
+la memoria condivisa per blocco, elementi cruciali per configurare
+correttamente i kernel.
+
+\subsection{Riepilogo - Struttura Tipica di un Programma \texttt{CUDA}}
+Un programma \texttt{CUDA} tipico segue questa struttura:
+\begin{enumerate}
+    \item Definizione dei kernel e configurazione dei blocchi di thread.
+    \item Allocazione e inizializzazione delle strutture di dati.
+    \item Trasferimento dei dati dall'host al device.
+    \item Esecuzione dei kernel.
+    \item Copia dei risultati dal device all'host.
+    \item Liberazione delle risorse.
+\end{enumerate}
+Ripetere questi passi secondo necessità per ottenere il comportamento
+desiderato e massimizzare le prestazioni.
