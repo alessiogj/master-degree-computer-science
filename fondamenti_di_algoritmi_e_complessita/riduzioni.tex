@@ -230,15 +230,30 @@ dobbiamo mostrare che il problema è in \texttt{NP} e che è \texttt{NP-hard}.
     almeno $k$, e la verifica consiste nel controllare che ogni arco abbia almeno un estremo in $W$
     e che $|W| \geq k$, entrambe le operazioni sono fattibili in tempo polinomiale, infatti il controllo
     viene fatto in tempo $O(|E| \cdot |W|)$.
-    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Clique} \leq \texttt{Vertex Cover}$.
+    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Indipendent set} \leq \texttt{Vertex Cover}$.
 
 \begin{lemma}
     Dato un grafo $G = (V,E)$ e un sottoinsieme $I$ dei vertici, $I$ è un insieme indipendente
     in $G$ se e solo se $V \setminus I$ è un vertex cover in $G$.
 \end{lemma}
-    Dato il lemma, possiamo ridurre il problema della clique al problema del vertex cover.
+    Dato il lemma, possiamo ridurre il problema dell'insieme indipendente al
+    problema del vertex cover. Data un'istanza $(G, k)$ del problema dell'insieme indipendente,
+    costruiamo un'istanza $(G', k')$ del problema del vertex cover tale che $G$ ha un insieme 
+    indipendente di cardinalità almeno $k$ se e solo se $G'$ ha un vertex cover di cardinalità
+    al più $k'$.
 
-    Data un'istanza $(G, k)$ del problema della clique, l'istanza $(G', k')$ del problema del vertex
-    cover è tale che l'istanza $(G, k)$ ha una clique di cardinalità almeno $k$ se e solo se l'istanza
-    $(G', k')$ ha un vertex cover di cardinalità almeno $k$.
+    In virtù del lemma, possiamo costruire $G'$ a partire da $G$, tale che $G' = G$ e $k' = |V| - k$.
+    In tal caso $G$ ha un insieme indipendente di cardinalità almeno $k$ se e solo se $G'$ ha un
+    vertex cover di cardinalità al più $k'$.
+
+    Tale costruzione è polinomiale, infatti richiede $O(|V|)$ operazioni.
+
+    Abbiamo quindi dimostrato che il problema del vertex cover è \texttt{NP}-completo.
 \end{itemize}
+
+\section{Set Cover}
+Consideriamo il problema del set cover.
+
+In input disponiamo di un insieme $U$ di $n$ elementi, una famiglia $\mathcal{S}$ di sottoinsiemi
+di $U$ e un parametro $k$, e in output abbiamo \texttt{yes} se e solo se esiste una collezione
+$\mathcal{C} \subseteq \mathcal{S}$ tale che $|\mathcal{C}| \leq k$ e $\bigcup_{S \in \mathcal{C}} S = U$.

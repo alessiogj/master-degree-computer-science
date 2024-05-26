@@ -960,3 +960,349 @@ Un programma \texttt{CUDA} tipico segue questa struttura:
 \end{enumerate}
 Ripetere questi passi secondo necessità per ottenere il comportamento
 desiderato e massimizzare le prestazioni.
+
+\chapter{\texttt{GPU} e considerazioni sulle performance}
+
+\section{Coalescenza della Memoria in \texttt{CUDA}}
+La coalescenza della memoria è un concetto chiave per ottimizzare le prestazioni
+delle applicazioni \texttt{CUDA}. La coalescenza si riferisce all'accesso
+sequenziale e allineato alla memoria da parte dei thread, che consente alla
+\texttt{GPU} di combinare le richieste di accesso in un singolo ciclo di
+memoria, migliorando così l'efficienza e riducendo i tempi di accesso.
+
+Consideriamo una matrice, rappresentata come un array monodimensionale,
+in condizioni normali, l'accesso ai dati da parte dei thread non è
+coalescente, poiché i thread accedono a posizioni di memoria non contigue.
+Tuttavia, organizzando la matrice in modo che i thread accedano a posizioni
+contigue, è possibile ottenere un accesso coalescente, che consente alla
+\texttt{GPU} di combinare le richieste di accesso in un singolo ciclo di
+memoria.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/coalescenza.png}
+  \caption{Accesso coalescente alla memoria}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{img/non-coalescenza.png}
+  \caption{Accesso non coalescente alla memoria}
+\end{figure}
+\subsection{Coalescenza della memoria}
+La coalescenza della memoria si occupa degli accessi alla memoria globale.
+A differenza della memoria condivisa, la memoria globale può subire penalità
+di prestazioni a causa di accessi non coalescenti. Gli accessi alla memoria
+coalescenti riguardano i thread dello stesso warp; l'hardware verifica se gli
+accessi alla memoria globale sono eseguiti dai thread dello stesso mezzo warp
+e, in tal caso, coalesce gli accessi dei thread in un unico accesso consolidato.
+
+\section{Partizione dinamica delle risorse di esecuzione}
+\subsection{Risorse di esecuzione in uno \texttt{SM}}
+Le risorse di esecuzione in uno Streaming Multiprocessor (\texttt{SM}) includono
+registri, memoria condivisa e slot per blocchi di thread. Analizziamo un
+dispositivo con un massimo di $1536$ thread per \texttt{SM}:
+\begin{itemize}
+  \item Con blocchi da $512$ thread, è possibile ospitare 3 blocchi per \texttt{SM},
+  una configurazione ottimale.
+  \item Con blocchi da $128$ thread, si teorizzano $12$ blocchi per \texttt{SM}, ma questo
+  supera le capacità e si limita a $8$ blocchi da $128$ thread ciascuno, totalizzando
+  $1024$ thread, sotto-utilizzando così le capacità dello \texttt{SM}.
+\end{itemize}
+
+\subsection{Gestione dei registri per \texttt{SM}}
+Considerando uno \texttt{SM} con $16384$ registri disponibili:
+\begin{itemize}
+  \item Se un kernel istanzia 10 variabili ($32$ bit) per thread:
+  \begin{itemize}
+    \item Con blocchi da $256$ thread, si necessitano 2560 registri per blocco.
+    \item Con un rapporto di $1536$ thread per \texttt{SM} suddivisi in blocchi da
+    $256$ thread, si possono ospitare $6$ blocchi, che utilizzano 15360 registri in
+    totale, una configurazione accettabile.
+    \item Aggiungere anche solo un blocco ulteriore per \texttt{SM} comporterebbe
+    il superamento del limite di registri disponibili, richiedendo una riduzione
+    nel numero di blocchi.
+  \end{itemize}
+  \item Aggiungendo due variabili per kernel ($12$ variabili in totale per thread):
+  \begin{itemize}
+    \item Ogni blocco da $256$ thread richiederebbe 3072 registri.
+    \item Sei blocchi da $3072$ registri ciascuno comportano un totale di 18432
+    registri, superando il limite. La soluzione comporta una riduzione del
+    numero di blocchi a 5, rientrando così nei $15360$ registri disponibili,
+    ma riducendo il numero di thread attivi per \texttt{SM} a $1280$ anziché $1536$, a
+    causa dell'aumento del numero di variabili.
+  \end{itemize}
+\end{itemize}
+
+\section{Parallelizzazione dei task per il trasferimento dati}
+Quando si schedula un kernel, è possibile definire un grafo di dipendenza tra
+le esecuzioni dei kernel e i trasferimenti di memoria. Per esempio, il kernel
+A non può eseguire
+fino a quando non sono completati i trasferimenti di dati A e B, ma può iniziare
+mentre il trasferimento C è ancora in corso.
+
+\texttt{CUDA} offre la possibilità di eseguire operazioni di trasferimento dati
+e computazione in modo asincrono attraverso l'uso degli stream. Gli stream
+permettono di eseguire trasferimenti di dati e kernel in parallelo, migliorando
+l'utilizzo delle risorse e riducendo i tempi di attesa.
+\section{Device Overlap}
+
+Nel contesto della programmazione \texttt{CUDA}, il \texttt{deviceOverlap}
+rappresenta una funzionalità importante per aumentare l'efficienza e
+la velocità di esecuzione dei programmi. Questa funzione permette ai
+dispositivi \texttt{CUDA} di eseguire simultaneamente un kernel
+e una operazione di copia di memoria tra il dispositivo e l'host.
+
+\section*{Verifica del Supporto a \texttt{deviceOverlap}}
+Per determinare se un dispositivo \texttt{CUDA} supporta il
+\texttt{deviceOverlap},
+è possibile utilizzare il seguente codice:
+
+\begin{lstlisting}
+int dev_count; 
+cudaDeviceProp prop;
+cudaGetDeviceCount(&dev_count);
+for (int i = 0; i < dev_count; i++) {
+    cudaGetDeviceProperties(&prop, i);
+    if (prop.deviceOverlap) {
+        // Il dispositivo supporta deviceOverlap
+    }
+}
+\end{lstlisting}
+
+Questo frammento di codice prima interroga il numero totale di dispositivi
+\texttt{CUDA} disponibili. Successivamente, per ogni dispositivo, acquisisce
+e analizza le sue proprietà attraverso \texttt{cudaGetDeviceProperties} per
+verificare la presenza della caratteristica \texttt{deviceOverlap}.
+
+\section*{Utilizzo del Timing Sovrapposto (Pipelined)}
+Una tecnica efficace per sfruttare al meglio il \texttt{deviceOverlap}
+consiste nel dividere i vettori di grandi dimensioni in segmenti più piccoli
+e gestire il trasferimento e il calcolo di questi segmenti in maniera
+sovrapposta. Questo approccio, noto come \textit{pipelined timing},
+permette di ridurre i tempi morti in cui il dispositivo potrebbe altrimenti
+rimanere inattivo, ottimizzando così sia le operazioni di trasferimento che
+quelle di calcolo.
+
+\subsection{Stram di \texttt{CUDA}}
+Il parallelismo di task in \texttt{CUDA} è realizzato mediante divers
+ \texttt{streams}. Le operazioni inserite in \texttt{streams} differenti
+ possono essere eseguite in parallelo. Questo è particolarmente utile per
+ sovrapporre la copia di memoria e l'esecuzione di kernel, migliorando
+ l'efficienza complessiva del programma.
+
+Le richieste di dispositivo effettuate dal codice host sono inserite
+in una coda, che viene letta ed elaborata in modo asincrono dal driver
+e dal dispositivo. Il driver assicura che i comandi nella coda siano
+processati in sequenza, garantendo che le copie di memoria siano
+completate prima del lancio dei kernel, tra gli altri.
+
+Per permettere la copia e l'esecuzione di kernel in modo concorrente, è
+necessario utilizzare più code, denominate \texttt{streams}. Gli ``eventi"
+\texttt{CUDA} permettono al thread host di interrogare e sincronizzarsi
+con le code individuali.
+
+\section*{Codice Host Multi-Stream Semplice}
+Di seguito è presentato un esempio di codice host che utilizza due
+\texttt{streams} per gestire le operazioni in modo parallelo:
+
+\begin{lstlisting}[language=C]
+cudaStream_t stream0, stream1;
+cudaStreamCreate(&stream0);
+cudaStreamCreate(&stream1);
+
+float *d_A0, *d_B0, *d_C0; // memoria del dispositivo per stream 0
+float *d_A1, *d_B1, *d_C1; // memoria del dispositivo per stream 1
+
+// Allocazione di cudaMalloc per d_A0, d_B0, d_C0, d_A1, d_B1, d_C1
+
+for (int i = 0; i < n; i += SegSize * 2) {
+    cudaMemCpyAsync(d_A0, h_A + i, SegSize * sizeof(float), ..., stream0);
+    cudaMemCpyAsync(d_B0, h_B + i, SegSize * sizeof(float), ..., stream0);
+    vecAdd<<<SegSize / 256, 256, 0, stream0>>>(d_A0, d_B0, ...);
+    cudaMemCpyAsync(d_C0, h_C + i, SegSize * sizeof(float), ..., stream0);
+
+    cudaMemCpyAsync(d_A1, h_A + i + SegSize, SegSize * sizeof(float), ..., stream1);
+    cudaMemCpyAsync(d_B1, h_B + i + SegSize, SegSize * sizeof(float), ..., stream1);
+    vecAdd<<<SegSize / 256, 256, 0, stream1>>>(d_A1, d_B1, ...);
+    cudaMemCpyAsync(d_C1, h_C + i + SegSize, SegSize * sizeof(float), ..., stream1);
+}
+\end{lstlisting}
+
+Il problema di questo codice è che non avviene in trasferimento dei dati
+nel momento in cui il kernel esegue la somma vettoriale. Questo problema
+può essere risolto riorganizzando il codice in modo che i trasferimenti
+di dati avvengano in modo corretto:
+\begin{lstlisting}[language=C]
+for (int i = 0; i < n; i += SegSize * 2) {
+    cudaMemCpyAsync(d_A0, h_A + i, SegSize * sizeof(float), ..., stream0);
+    cudaMemCpyAsync(d_A1, h_A + i + SegSize, SegSize * sizeof(float), ..., stream1);
+    cudaMemCpyAsync(d_B0, h_B + i, SegSize * sizeof(float), ..., stream0);
+    cudaMemCpyAsync(d_B1, h_B + i + SegSize, SegSize * sizeof(float), ..., stream1);
+
+    vecAdd<<<SegSize / 256, 256, 0, stream0>>>(d_A0, d_B0, ...);
+    vecAdd<<<SegSize / 256, 256, 0, stream1>>>(d_A1, d_B1, ...);
+
+    cudaMemCpyAsync(d_C0, h_C + i, SegSize * sizeof(float), ..., stream0);
+    cudaMemCpyAsync(d_C1, h_C + i + SegSize, SegSize * sizeof(float), ..., stream1);
+}
+\end{lstlisting}
+
+\subsection{Concorrenza in Fermi e Precedenti}
+Le architetture \texttt{GPU} di \texttt{NVIDIA} precedenti a Kepler, come Fermi,
+supportavano una concorrenza a $16$ vie. Questo significava che fino a
+$16$ griglie potevano essere eseguite contemporaneamente. Tuttavia, le
+\texttt{CUDA streams} venivano multiplexate in una singola coda hardware
+per l'esecuzione, limitando la concorrenza a livello di stream.
+
+\subsection{Hyper Queue in Kepler}
+Con l'introduzione di Kepler, \texttt{NVIDIA} ha implementato Hyper Queue,
+che fornisce multiple code reali per ciascun motore, permettendo una maggiore
+concorrenza. Questo approccio consente ad alcune stream di fare progressi
+per un motore mentre altre possono essere bloccate, migliorando l'efficienza
+e la scalabilità.
+
+\subsection{Miglioramento della Concorrenza con Kepler}
+Kepler ha significativamente migliorato la concorrenza rispetto a Fermi,
+consentendo una concorrenza a $32$ vie. Ogni stream ha una propria coda
+di lavoro dedicata, che elimina le dipendenze inter-stream e consente
+la concorrenza a livello di intero stream, migliorando così le
+prestazioni generali:
+
+\begin{itemize}
+    \item \textbf{Concorrenza $32$-vie:} Ogni \texttt{GPU} Kepler può gestire
+    fino a $32$ stream contemporaneamente.
+    \item \textbf{Code di lavoro multiple:} Una coda di lavoro per ogni stream.
+    \item \textbf{Nessuna dipendenza inter-stream:} Ogni stream opera
+    indipendentemente dagli altri, permettendo una migliore scalabilità
+    e efficienza.
+\end{itemize}
+\section{Introduzione al Prefix Scan}
+L'operazione di \textbf{Prefix Scan}, prende in input:
+\begin{itemize}
+  \item Un operatore binario associativo $\oplus$.
+  \item Un array di $N$ elementi $[x_0, x_1, \dots, x_{N-1}]$.
+\end{itemize}
+Essa restituisce un array trasformato che può essere:
+\begin{itemize}
+  \item \textbf{Inclusivo:} $[x_0, (x_0 \oplus x_1), \dots,
+  (x_0 \oplus x_1 \oplus \dots \oplus x_{N-1})]$.
+  \item \textbf{Esclusivo:} $[0, x_0, (x_0 \oplus x_1), \dots,
+  (x_0 \oplus x_1 \oplus \dots \oplus x_{N-2})]$.
+\end{itemize}
+
+\subsubsection{Esempio}
+Per $\oplus$ come addizione (somma prefissa):
+\begin{itemize}
+  \item \textbf{Inclusivo:} Da $[3, 1, 7, 4, 6]$ a $[3, 4, 11, 15, 21]$.
+  \item \textbf{Esclusivo:} Da $[3, 1, 7, 4, 6]$ a $[0, 3, 4, 11, 15]$.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/scan_1.png}
+  \caption{Esempio di Prefix Scan}
+\end{figure}
+\subsubsection{Conversione tra Scansioni Inclusive ed Esclusive}
+\begin{itemize}
+  \item Da esclusiva a inclusiva:
+  \begin{itemize}
+    \item Spostare l'array risultante di un elemento a sinistra.
+    \item Inserire alla fine la somma dell'ultimo elemento della
+    scansione e l'ultimo elemento dell'array di input.
+  \end{itemize}
+  \item Da inclusiva a esclusiva:
+  \begin{itemize}
+    \item Spostare l'array risultante di un elemento a destra.
+    \item Inserire l'identità all'inizio.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Usi del Prefix Scan}
+Il Prefix Scan è una primitiva chiave in molti algoritmi paralleli
+per convertire calcoli seriali in paralleli, utilizzato in:
+\begin{itemize}
+  \item Ordinamento (counting sort/radix sort)
+  \item Istogramma
+  \item Inserimento in coda di massa
+  \item Compattazione di flusso/Partizione
+  \item Moltiplicazione di matrici sparse
+  \item Costruzione di strutture dati in parallelo
+  \item e altro...
+\end{itemize}
+
+\subsection{Implementazione Sequenziale}
+\textbf{Inclusivo:}
+\begin{lstlisting}
+Out[0] = In[0];
+for (int i = 1; i < N; ++i) {
+  Out[i] = Out[i-1] + In[i];
+}
+\end{lstlisting}
+
+\textbf{Esclusivo:}
+\begin{lstlisting}
+Out[0] = 0;
+for (int i = 1; i < N; ++i) {
+  Out[i] = Out[i-1] + In[i-1];
+}
+\end{lstlisting}
+\textbf{Nota:} Sono necessarie $N$ addizioni per $N$ elementi,
+con una complessità di $O(n)$.
+
+\subsection{Prefix Scan Parallelo}
+
+Di seguito è riportato l'algoritmo per un'implementazione parallela naive del
+Prefix Scan, usando un approccio iterativo che aumenta progressivamente la
+distanza tra gli elementi combinati ad ogni step.
+
+\begin{algorithm}[H]
+\caption{Naive Parallel Prefix Scan}
+\label{alg:parallel_prefix_scan}
+  \For{$int \texttt{ level} = 0$; $level < \log_2(N)$; $\texttt{++level}$}{
+    \ForPar{$\forall i \in N$}{
+      \texttt{offset} = $2^{\texttt{level}}$\\
+    }
+    \If{$i \geq \texttt{offset}$}{
+      $X[i] = X[i - \texttt{offset}] + X[i]$\\
+    }
+    }
+\end{algorithm}
+
+La complessità parallela, \textit{span}, di questo algoritmo è $O(\log(N))$, 
+mentre la complessità di lavoro è $O(n \cdot \log(n))$, dove $n$ è il numero di
+elementi da scansionare, poiché ogni elemento deve essere combinato con tutti
+gli altri.
+
+\section{Prefix scan per l'efficienza di lavoro}
+L'algoritmo consiste in due fasi principali:
+\begin{itemize}
+  \item \textit{up-sweep}: calcola la somma prefissa per ogni potenza di $2$.
+  \item \textit{down-sweep}: calcola la somma prefissa finale.
+\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/scan_2_fase1.png}
+  \caption{Fase 1: Up-Sweep}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/scan_2_fase2.png}
+  \caption{Fase 2: Down-Sweep}
+\end{figure}
+
+Di seguito è riportato il codice per l'implementazione parallela del Prefix Scan
+con efficienza di lavoro:
+
+\begin{algorithm}[H]
+\caption{Efficient Parallel Prefix Scan}
+\label{alg:efficient_parallel_prefix_scan}
+\For{$\texttt{level} = 0$; $\texttt{level} < \log_2(N)$; $\texttt{++level}$}{
+  \texttt{step} = $2^{\texttt{level}}$\\
+  \ForPar{$\forall i \mid i \mod (\texttt{step} \cdot 2) = 0$}{
+    \texttt{valueRight} = $(i + 1) \cdot (step \cdot 2) - 1$\\
+    \texttt{valueLeft} = \texttt{valueRight} - \texttt{step}\\
+    $X[\texttt{valueRight}] = X[\texttt{valueRight}] + X[\texttt{valueLeft}]$\\
+  }
+}
+\end{algorithm}
+
+In questo modo si riduce la complessità di lavoro a $O(n)$, mantenendo
+una complessità parallela di $O(\log(n))$.
