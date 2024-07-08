@@ -320,7 +320,7 @@ permettendoci di dimostrare che un problema è almeno tanto difficile quanto un 
 problema.
 \begin{tcolorbox}[title = {Riduzione polinomiale (Karp)}]
     Siano $\mathbb{A}$ e $\mathbb{B}$ due problemi decisionali. Diciamo che $\mathbb{A}$
-    si riduce polinomialmente a $\mathbb{B}$, e scriviamo $\mathbb{A} \leq_p \mathbb{B}$,
+    si riduce polinomialmente a $\mathbb{B}$, e scriviamo $\mathbb{A} \preceq_p \mathbb{B}$,
     se esiste una funzione calcolabile in tempo polinomiale $f: \{0,1\}^* \rightarrow
     \{0,1\}^*$ tale che per ogni $x \in \{0,1\}^*$:
     \[
@@ -368,7 +368,7 @@ un algoritmo polinomiale per la colorazione di un grafo:
 \end{itemize}
 Per $k \geq 3$ non sappiamo se esiste un algoritmo polinomiale per la colorazione di un grafo.
 
-\begin{tcolorbox}[title = {$\texttt{k-colorazione} \leq_p \texttt{(k + 1)-colorazione}$}]
+\begin{tcolorbox}[title = {$\texttt{k-colorazione} \preceq_p \texttt{(k + 1)-colorazione}$}]
     Se \texttt{(k+1)-colorazione} è \texttt{P}, allora \texttt{k-colorazione} è \texttt{P},
     ovvero \texttt{(k+1)-colorazione} non è più facile di \texttt{k-colorazione}.
     \[
@@ -459,7 +459,7 @@ allora $\mathbb{B}$ non è in \texttt{P} e quindi $\mathbb{A}$ non è in \texttt
 
 Diciamo che $\mathbb{B}$ è \texttt{NP}-completo se $\mathbb{B}$ è in \texttt{NP} e
 per ogni problema $\mathbb{A}$ in \texttt{NP}, $\mathbb{A}$ è riducibile a $\mathbb{B}$ in tempo polinomiale, 
-ovvero $\mathbb{A} \leq_p \mathbb{B}$. 
+ovvero $\mathbb{A} \preceq_p \mathbb{B}$. 
 
 \begin{tcolorbox}
     Un problema $\mathbb{B}$ è \texttt{NP}-completo se $\mathbb{B}$ è in \texttt{NP}
@@ -648,7 +648,7 @@ Quindi la formula $\phi_\mathcal{G}$ è:
 
 Dimostriamo che \texttt{k-col} si riduce polinomialmente a \texttt{SAT}.
 \begin{theorem}
-    $\texttt{k-col} \leq_p \texttt{SAT}$
+    $\texttt{k-col} \preceq_p \texttt{SAT}$
 \end{theorem}
 \begin{proof} Dimostriamo entrambi i versi dell'implicazione.
     
@@ -884,7 +884,7 @@ Per dimostrare il seguente teorema utilizziamo il seguente lemma.
                     polinomiale a \texttt{Circuit-SAT}, con l'input \( x \) fissato durante la
                     trasformazione.
             \end{itemize}
-        \item $\texttt{Circuit-SAT} \leq_p \texttt{SAT}$.
+        \item $\texttt{Circuit-SAT} \preceq_p \texttt{SAT}$.
             
             Dato il seguente circuito booleano $\mathcal{C}$:
             \begin{figure}[H]
@@ -954,7 +954,7 @@ Per dimostrare il seguente teorema utilizziamo il seguente lemma.
             che è soddisfacibile se e solo se il circuito è soddisfacibile.
     \end{enumerate}
     Sappiamo che per ogni $\mathbb{A} \in \texttt{NP}, \mathbb{A}
-    \leq_p \texttt{Circuit-SAT} \leq_p \texttt{SAT}$, quindi abbiamo 
+    \preceq_p \texttt{Circuit-SAT} \preceq_p \texttt{SAT}$, quindi abbiamo 
     $\texttt{SAT} \in \texttt{NP}-completo$.
 \end{proof}
 \subsection{Formule \texttt{K-CNF}}
@@ -1163,7 +1163,7 @@ ogni clausola abbia almeno un letterale vero e uno falso.
 si riduce in tempo polinomiale a \texttt{NAE-4-SAT}, che a sua volta si riduce
 a \texttt{NAE-3-SAT}:
 \[
-  \texttt{3-SAT} \leq_p \texttt{NAE-4-SAT} \leq_p \texttt{NAE-3-SAT}
+  \texttt{3-SAT} \preceq_p \texttt{NAE-4-SAT} \preceq_p \texttt{NAE-3-SAT}
 \]
 \begin{itemize}
     \item \textbf{Riduzione da \texttt{3-SAT} a \texttt{NAE-4-SAT}:} Per ogni
@@ -1536,11 +1536,11 @@ La stessa tecnica non ci darebbe informazioni utili per dimostrare che \texttt{2
     \texttt{BFS} potenzialmente eseguiti su tutti i vertici del grafo, quindi è polinomiale.
 \end{proof}
 
-In termini di riduzione, quello che abbiamo dimostrato è che $\texttt{2-SAT} \leq_T \texttt{BFS}$,
-dove con il simbolo $\leq_T$ indichiamo una riduzione in tempo polinomiale di Cook-Turing.
+In termini di riduzione, quello che abbiamo dimostrato è che $\texttt{2-SAT} \preceq_T \texttt{BFS}$,
+dove con il simbolo $\preceq_T$ indichiamo una riduzione in tempo polinomiale di Cook-Turing.
 
-\begin{tcolorbox}[title =$\mathbb{A} \leq_T \mathbb{B}$]
-    Dati due problemi di decisione $\mathbb{A}$ e $\mathbb{B}$, diciamo che $\mathbb{A} \leq_T \mathbb{B}$
+\begin{tcolorbox}[title =$\mathbb{A} \preceq_T \mathbb{B}$]
+    Dati due problemi di decisione $\mathbb{A}$ e $\mathbb{B}$, diciamo che $\mathbb{A} \preceq_T \mathbb{B}$
     se esiste un algoritmo in tempo polinomiale per risolvere $\mathbb{A}$ che utilizza chiamate a un
     oracolo per risolvere $\mathbb{B}$.
 \end{tcolorbox}
@@ -1550,16 +1550,16 @@ dove con il simbolo $\leq_T$ indichiamo una riduzione in tempo polinomiale di Co
 Notiamo quindi che se un algoritmo risolve $\mathbb{B}$ in tempo polinomiale, allora risolverà
 anche $\mathbb{A}$ in tempo polinomiale. 
 \begin{theorem}
-    Se $\mathbb{A} \leq_T \mathbb{B}$ e $\mathbb{B} \in \texttt{P}$, allora $\mathbb{A} \in \texttt{P}$.
+    Se $\mathbb{A} \preceq_T \mathbb{B}$ e $\mathbb{B} \in \texttt{P}$, allora $\mathbb{A} \in \texttt{P}$.
 \end{theorem}
 Ne consegue che:
 \begin{theorem}
-    Se $\mathbb{A} \leq_T \mathbb{B}$ e $\mathbb{A} \not \in \texttt{P}$, allora $\mathbb{B} \not \in \texttt{P}$.
+    Se $\mathbb{A} \preceq_T \mathbb{B}$ e $\mathbb{A} \not \in \texttt{P}$, allora $\mathbb{B} \not \in \texttt{P}$.
 \end{theorem}
 
 Inoltre abbiamo che:
 \begin{theorem}
-    Se $\mathbb{A} \leq \mathbb{B} \implies \mathbb{A} \leq_T \mathbb{B}$.
+    Se $\mathbb{A} \preceq_T \mathbb{B} \implies \mathbb{A} \preceq_T \mathbb{B}$.
 \end{theorem}
 \begin{proof}
     Consideriamo $x$ istanza del problema $\mathbb{A}$, la trasformiamo nell'istanza $y$, ovvero la riduzione applicata 
@@ -1608,7 +1608,7 @@ Definiamo il predicato di un problema $\mathbb{A}$ in \texttt{co-NP} come:
 Da questa definizione possiamo aggiungere che:
 
 \begin{theorem}
-    $\mathbb{A} \leq \mathbb{B} \iff \overline{\mathbb{A}} \leq \overline{\mathbb{B}}$
+    $\mathbb{A} \preceq \mathbb{B} \iff \overline{\mathbb{A}} \preceq \overline{\mathbb{B}}$
 \end{theorem}
 
 \subsection{Il problema small factor}

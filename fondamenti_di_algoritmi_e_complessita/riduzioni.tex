@@ -17,7 +17,7 @@ dobbiamo mostrare che il problema è in \texttt{NP} e che è \texttt{NP-hard}.
     $G$ di cardinalità almeno $k$, e la verifica consiste nel controllare che nessun arco abbia
     entrambi i vertici in $I$ e che $|I| \geq k$, entrambe le operazioni sono fattibili in tempo
     polinomiale, infatti il controllo viene fatto in tempo $O(|E| \cdot |V|^2)$.
-    \item \texttt{NP-hard}: Dimostriamo che $\texttt{3-SAT} \leq \texttt{Indipendent Set}$.
+    \item \texttt{NP-hard}: Dimostriamo che $\texttt{3-SAT} \preceq  \texttt{Indipendent Set}$.
     
     Per farlo dobbiamo mappare una formula $\phi$ in un grafo $G_\phi$ tale che $\phi$ sia soddisfacibile
     se e solo se $G_\phi$ ha un insieme indipendente di cardinalità almeno $k$.
@@ -171,7 +171,7 @@ dobbiamo mostrare che il problema è in \texttt{NP} e che è \texttt{NP-hard}.
     e la verifica consiste nel controllare che ogni coppia di vertici in $C$ sia adiacente e che
     $|C| \geq k$, entrambe le operazioni sono fattibili in tempo polinomiale, infatti il controllo
     viene fatto in tempo $O(|E| \cdot |V|^2)$.
-    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Indipendent Set} \leq \texttt{Clique}$.
+    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Indipendent Set} \preceq \texttt{Clique}$.
     
     Per farlo dobbiamo mappare un grafo $G = (V,E)$ e un parametro $k$ in un grafo $G'$ tale che
     $G$ ha un insieme indipendente di cardinalità almeno $k$ se e solo se $G'$ ha una clique di
@@ -230,7 +230,7 @@ dobbiamo mostrare che il problema è in \texttt{NP} e che è \texttt{NP-hard}.
     almeno $k$, e la verifica consiste nel controllare che ogni arco abbia almeno un estremo in $W$
     e che $|W| \geq k$, entrambe le operazioni sono fattibili in tempo polinomiale, infatti il controllo
     viene fatto in tempo $O(|E| \cdot |W|)$.
-    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Indipendent set} \leq \texttt{Vertex Cover}$.
+    \item \texttt{NP-hard}: Dimostriamo che $\texttt{Indipendent set} \preceq  \texttt{Vertex Cover}$.
 
 \begin{lemma}
     Dato un grafo $G = (V,E)$ e un sottoinsieme $I$ dei vertici, $I$ è un insieme indipendente
@@ -257,3 +257,18 @@ Consideriamo il problema del set cover.
 In input disponiamo di un insieme $U$ di $n$ elementi, una famiglia $\mathcal{S}$ di sottoinsiemi
 di $U$ e un parametro $k$, e in output abbiamo \texttt{yes} se e solo se esiste una collezione
 $\mathcal{C} \subseteq \mathcal{S}$ tale che $|\mathcal{C}| \leq k$ e $\bigcup_{S \in \mathcal{C}} S = U$.
+
+Per dimostrare che il problema del set cover è \texttt{NP}-completo, mostriamo che si riduce al
+problema del vertex cover.
+
+Dato un grafo $G = (V,E)$ e un parametro $k$, costruiamo un'istanza $(\mathcal{S}_1 
+\dots \mathcal{S}_n, k)$.
+
+Per ogni vertice $v \in V$ costruiamo un sottoinsieme $S_v$ di $U$ tale che $S_v = \{e \in U \mid e
+\text{ è incidente a } v\}$.
+\[
+    \forall v \in V \quad S_v = \{e = (u, v) \in E\}
+\]
+Avendo un insieme di sottoinsiemi $\mathcal{S} = \{S_v \mid v \in V\}$, possiamo costruire
+un set cover
+di cardinalità al più $k$ se e solo se esiste un vertex cover di cardinalità al più $k$.

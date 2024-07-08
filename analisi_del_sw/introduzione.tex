@@ -55,11 +55,11 @@ Sia $\mathcal{L}$ un linguaggio di programmazione e consideriamo l'insieme $\mat
 di tutti i programmi validi scritti in $\mathcal{L}$. Ogni programma $p$ in $\mathcal{P}$ è
 rappresentato da un numero naturale che funge da codifica univoca.
 
-Definiamo una "proprietà di programma" $\pi$ come un sottoinsieme di $\mathcal{P}$. In altre parole,
+Definiamo una ``proprietà di programma" $\pi$ come un sottoinsieme di $\mathcal{P}$. In altre parole,
 $\pi$ è un insieme di programmi che soddisfano una certa caratteristica o comportamento specifico.
 
 Il Teorema di Rice afferma che, per ogni proprietà non banale $\pi$ (ovvero, $\pi$ non è vuota e
-$\pi \neq \mathcal{P}$), l'insieme ${p \in \mathcal{P} ,|, p \text{ soddisfa } \pi}$ è indecidibile.
+$\pi \neq \mathcal{P}$), l'insieme ${p \in \mathcal{P}, p \text{ soddisfa } \pi}$ è indecidibile.
 \begin{tcolorbox}[title = {Teorema di Rice}]
     Sia $\mathcal{L}$ un linguaggio di programmazione Turing completo e sia $\pi$ una proprietà non banale
     di programmi in $\mathcal{L}$. Allora, l'insieme ${p \in \mathcal{L} ,\, p \text{ soddisfa } \pi}$ è indecidibile.
@@ -89,12 +89,12 @@ e l'errore, che rappresenta una violazione significativa delle aspettative.
 $\pi$ proprietà di analizzare, $p$ programma, quindi Analisi$_{\pi}(p)$.
 
 Nel contesto dell'analisi, consideriamo una proprietà $\pi$ da analizzare su un programma $p$,
-che denotiamo come Analisi${\pi}(p)$. Questo significa che per ogni programma $p$ nel linguaggio
-$\mathcal{L}$, l'output dell'analisi, ovvero Analisi${\pi}(p)$, sarà "true" solo se il programma
+che denotiamo come Analisi$_{\pi}(p)$. Questo significa che per ogni programma $p$ nel linguaggio
+$\mathcal{L}$, l'output dell'analisi, ovvero Analisi$_{\pi}(p)$, sarà \texttt{true} solo se il programma
 $p$ soddisfa la proprietà $\pi$. In altre parole, l'analisi ci dice se un programma rispetta la proprietà o meno.
 \[
     \forall p \in \mathcal{L}\qquad
-    Analisi_{\pi}(p) = \textit{true} \Leftrightarrow p \, \textit{soddisfa} \,\pi
+    Analisi_{\pi}(p) = \texttt{true} \iff p \, \textit{soddisfa} \,\pi
 \]
 
 Tuttavia, è importante notare che non sempre è possibile ottenere una bi-implicazione
@@ -106,24 +106,24 @@ necessario nell'ambito dell'analisi statica per rendere l'analisi praticamente r
 
 \begin{tcolorbox}[title =Soundness (\textit{Correttezza})]
 La correttezza (\textit{o soundness}) dell'analisi implica che se l'output dell'analisi,
-cioè $Analisi_{\pi}(p)$, è "true," allora il programma $p$ deve effettivamente soddisfare la
+cioè $Analisi_{\pi}(p)$, è \texttt{true}, allora il programma $p$ deve effettivamente soddisfare la
 proprietà $\pi$.
 
-\[ Analisi_{\pi}(p) = true \Rightarrow p \,\textit{soddisfa} \,\pi \]
+\[ Analisi_{\pi}(p) = \texttt{true} \Longrightarrow p \,\textit{soddisfa} \,\pi \]
 \end{tcolorbox}
 In altre parole, se l'analisi dice che un programma soddisfa la proprietà,
-questa affermazione è accurata. Tuttavia, è importante notare che se l'analisi restituisce ``false,"
-l'analizzatore potrebbe sovrastimare i programmi che non soddisfano la proprietà, includendo programmi
+questa affermazione è accurata. Tuttavia, è importante notare che se l'analisi restituisce \texttt{false},
+l'analizzatore potrebbe \textbf{sovrastimare} i programmi che non soddisfano la proprietà, includendo programmi
 che in realtà potrebbero soddisfarla. In termini pratici, ciò significa che l'analisi potrebbe essere
 conservativa nel rifiutare alcuni programmi.
 
-\begin{tcolorbox}[title={Completezza}]
+\begin{tcolorbox}[title={Completeness} (\textit{Completezza})]
 La completezza implica che se un programma $p$ soddisfa effettivamente la proprietà $\pi$,
-allora l'output dell'analisi, cioè $Analisi_{\pi}(p)$, deve essere ``true."
+allora l'output dell'analisi, cioè $Analisi_{\pi}(p)$, deve essere \texttt{true}.
 
-\[ Analisi_{\pi}(p) = true \Leftarrow p \,\textit{soddisfa} \,\pi \]
+\[ Analisi_{\pi}(p) = \texttt{true} \Longleftarrow p \,\textit{soddisfa} \,\pi \]
 quindi
-\[ p \,\textit{soddisfa} \,\pi \Rightarrow Analisi_{\pi}(p) = true \]
+\[ p \,\textit{soddisfa} \,\pi \Longrightarrow Analisi_{\pi}(p) = \texttt{true} \]
 \end{tcolorbox}
 In altre parole, se un programma rispetta la proprietà, l'analisi dovrebbe essere in grado di riconoscerlo come
 tale e restituire una risposta positiva. Questo garantisce che l'analisi non dia risultati
@@ -139,7 +139,7 @@ determinare se una determinata proprietà $\pi$ vale su di esso. In generale, no
 è sempre possibile condurre un'analisi diretta su $p$ a causa della complessità del
 codice. Per affrontare questa sfida, trasformiamo il nostro codice in un modello astratto
 su cui possiamo applicare strumenti automatici come grafi di flusso di controllo ($\texttt{CFG}$),
-automi, e così via. Su questi modelli, spesso disponiamo di tecniche algoritmiche decidibili per
+automi, e così via. Su questi modelli, spesso disponiamo di tecniche algoritmiche \textbf{decidibili} per
 stabilire se una versione adattata della proprietà $\pi$, denotata come $\pi'$, vale sul programma $p$.
 Questa trasformazione del codice in un modello astratto consente di sfruttare
 strumenti automatizzati per ottenere informazioni sulla proprietà $\pi'$.
