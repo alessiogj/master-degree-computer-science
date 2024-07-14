@@ -24,16 +24,664 @@ evidenziati nel processo decisionale:
     e supportare lo sviluppo incrementale.
 \end{itemize}
 \section{Gestione delle Inconsistenze}
-\subsection{Tipologie di Inconsistenze}
-\subsection{Come affrontare le Inconsistenze}
+L'inconsistenza rappresenta una violazione delle regole di coerenza tra vari
+elementi e è un fenomeno altamente frequente nell'ingegneria dei requisiti.
+Queste incongruenze possono sorgere da diverse prospettive:
+
+\begin{itemize}
+    \item \textbf{Inter-punti di vista}: Ogni stakeholder ha le proprie priorità
+    e preoccupazioni, che possono variare significativamente. Per esempio, gli
+    esperti di dominio possono avere requisiti che contrastano con quelli del
+    reparto marketing.
+    \item \textbf{Intra-punto di vista}: Possono emergere conflitti anche all'interno
+    dello stesso punto di vista, come tra requisiti di qualità che si contraddicono
+    (\textit{ad esempio, sicurezza vs. usabilità}).
+\end{itemize}
+
+l'inconsistenza può rappresentare anche un valore,
+permettendo di avere due punti di vista differenti circa uno stesso requisito. Facendo 
+quindi scoprire nuovi requisiti. 
+
+Le inconsistenze devono essere rilevate e risolte in modo tempestivo:
+\begin{itemize}
+    \item \textbf{Non troppo presto}: perché potremmo avere una visione parziale 
+    dei requisiti.
+    \item \textbf{Non troppo tardi}: perché va risolta prima della progettazione e 
+    la realizzazione del sistema.
+\end{itemize}
+
+\subsection{Tipi di Inconsistenza nell'Ingegneria dei Requisiti}
+
+Nell'ambito dell'ingegneria dei requisiti, si possono identificare diversi tipi di
+inconsistenze, ciascuno con specifiche sfide da gestire:
+
+\subsubsection{Clash di Terminologia}
+Questo tipo di inconsistenza si verifica quando lo stesso concetto viene nominato
+in modi diversi nelle diverse dichiarazioni. Ad esempio, nella gestione di una
+biblioteca, i termini \textit{borrower} e \textit{patron} possono essere
+utilizzati per indicare la stessa figura.
+
+\subsubsection{Clash di Designazione}
+Si verifica un clash di designazione quando lo stesso nome viene utilizzato
+per concetti differenti. Ad esempio, il termine \textit{user} potrebbe riferirsi
+sia a un \textit{library user} che a un \textit{library software user},
+creando confusione.
+
+\subsubsection{Clash Strutturale}
+Questo tipo di inconsistenza si verifica quando lo stesso concetto è strutturato
+in modo diverso in dichiarazioni differenti. Un esempio è la \textit{latest return date},
+che può essere interpretata sia come un punto temporale specifico (\textit{es. Venerdì alle 17:00})
+che come un intervallo di tempo (\textit{es. il Venerdì}).
+
+\subsubsection{Conflitto Forte}
+Un conflitto forte si verifica quando le dichiarazioni sono logicamente inconsistenti
+e non possono essere soddisfatte contemporaneamente, ad esempio, ``le restrizioni dei
+partecipanti non possono essere divulgate a nessuno" contro ``l'iniziatore dell'incontro
+dovrebbe conoscere le restrizioni dei partecipanti".
+
+\subsubsection{Conflitto Debole (\textit{Divergenza})}
+I conflitti deboli avvengono quando le dichiarazioni non possono essere soddisfatte
+insieme sotto certe condizioni limite. Questi sono molto più frequenti nell'ingegneria 
+dei requisiti. Ad esempio,
+da un punto di vista del personale, ``i lettori devono restituire i libri presi
+in prestito entro due settimane" può confliggere con la prospettiva del lettore che
+``i lettori possono tenere i libri presi in prestito finché necessario",
+se il lettore ha bisogno del libro per più di due settimane.
+
+Questi tipi di inconsistenze richiedono attenzione e strategie specifiche per la loro
+risoluzione, per garantire che il processo di sviluppo dei requisiti sia efficace e
+che il prodotto finale soddisfi tutte le parti interessate.
+
+\subsection{Gestione delle Inconsistenze}
+
+La gestione efficace delle inconsistenze è fondamentale nell'ingegneria dei requisiti.
+Ecco alcune strategie per affrontare questi problemi:
+
+\subsubsection{Gestione dei Conflitti di Terminologia, Designazione e Struttura}
+Per mitigare i conflitti di terminologia, designazione e struttura, è utile sviluppare
+un \textbf{glossario} condiviso di termini durante la fase di raccolta dei requisiti. Questo
+glossario dovrebbe includere:
+\begin{itemize}
+    \item Definizioni chiare per ogni termine rilevante.
+    \item Sinonimi accettati, se necessario, per garantire coerenza nella
+    comunicazione tra le parti interessate.
+\end{itemize}
+
+\subsubsection{Conflitti Deboli e Forti}
+I conflitti, sia deboli che forti, possono essere radicati in obiettivi personali
+contrastanti degli stakeholder:
+\begin{itemize}
+    \item \textbf{Radice dei Conflitti}: Spesso, questi conflitti sono profondamente
+    radicati negli obiettivi personali degli stakeholder e devono essere affrontati
+    a questo livello per poi essere propagati al livello dei requisiti.
+    \item \textbf{Conflitti Funzionali e Non-Funzionali}: Sono frequenti in questioni
+    non-funzionali come il bilanciamento tra prestazione e sicurezza, o tra riservatezza
+    e consapevolezza. L'esplorazione di compromessi preferenziali è essenziale.
+\end{itemize}
+
 \subsection{Come risolvere le Inconsistenze}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start]
+        {Identificare \\ statement con \\ overlapping};
+        \node (detect) [process, right=0.5cm of identify]
+        {Rilevare i conflitti};
+        \node (generate) [process, right=0.5cm of detect]
+        {Generare \\ strategie di \\ risoluzione};
+        \node (evaluate) [process, right=0.5cm of generate]
+        {Valutare \\ strategie di \\ risoluzione};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (generate);
+        \draw[->] (generate) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+L'\textbf{Overlap} si riferisce al riferimento a termini o fenomeni
+comuni, che sono una precondizione per l'identificazione di
+dichiarazioni conflittuali. Questo include attività come la
+raccolta dei vincoli degli incontri e la determinazione dei programmi.
+
+La \textbf{Rilevazione dei Conflitti} può avvenire attraverso vari
+metodi:
+\begin{itemize}
+  \item \textbf{Informalmente}: Utilizzando conoscenze generali ed
+  esperienza per identificare potenziali conflitti senza metodi
+  formali.
+  \item \textbf{Usando euristiche su categorie di requisiti in
+  conflitto}, come la verifica dei conflitti tra ``requisiti di
+  informazione e requisiti di riservatezza su oggetti correlati''
+  e la valutazione dei requisiti su ``quantità in aumento e
+  diminuzione correlate''.
+  \item \textbf{Usando modelli di conflitto}: Identificazione di
+  scenari o strutture ripetuti che tipicamente portano a conflitti
+  nei requisiti.
+  \item \textbf{Formalmente (tecniche di dimostrazione teoremi)}:
+  Applicazione di metodi matematici o logici per provare se certe
+  combinazioni di requisiti possono coesistere senza conflitti.
+\end{itemize}
+\subsubsection{Importanza della Documentazione dei Conflitti}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start] {Identificare \\ statement con \\ overlapping};
+        \node (detect) [process, right=0.5cm of identify, line width=1mm] {Rilevare i conflitti};
+        \node (generate) [process, right=0.5cm of detect] {Generare \\ strategie di \\ risoluzione};
+        \node (evaluate) [process, right=0.5cm of generate] {Valutare \\ strategie di \\ risoluzione};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (generate);
+        \draw[->] (generate) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+Per una successiva risoluzione e analisi dell'impatto, è importante documentare i
+conflitti rilevati. Utilizzando strumenti di documentazione e query che sfruttano
+i collegamenti \textit{Conflict} registrati nel database dei requisiti, è possibile
+tracciare e gestire efficacemente le dichiarazioni che presentano molteplici conflitti.
+
+\subsubsection{Matrice di Interazione}
+Una matrice di interazione è uno strumento utile per visualizzare le relazioni
+tra i requisiti e identificare i conflitti. Questa struttura consente di vedere
+facilmente quali requisiti si sovrappongono o entrano in conflitto, come illustrato
+nella matrice seguente:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Statement} & \textbf{S1} & \textbf{S2} & \textbf{S3} & \textbf{S4} &
+\textbf{Totale} \\
+\hline
+S1 & 0 & 1000 & 1 & 1 & 1002 \\
+\hline
+S2 & 1000 & 0 & 0 & 0 & 1000 \\
+\hline
+S3 & 1 & 0 & 0 & 1 & 2 \\
+\hline
+S4 & 1 & 0 & 1 & 0 & 2 \\
+\hline
+\textbf{Totale} & 1002 & 1000 & 2 & 2 & 2006 \\
+\hline
+\end{tabular}
+\end{center}
+
+Nella matrice:
+\begin{itemize}
+    \item \textbf{0} indica nessuna sovrapposizione,
+    \item \textbf{1} indica un conflitto,
+    \item \textbf{1000} indica l'assenza di conflitti.
+\end{itemize}
+
+La formula per calcolare il numero di conflitti per \textit{S1} è data dal resto
+della divisione di 1002 per 1000, mentre il numero di sovrapposizioni non conflittuali
+è il quoziente di 1002 diviso 1000.
+\subsubsection{Generazione di Strategie di Risoluzione}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start] {Identificare \\ statement con \\ overlapping};
+        \node (detect) [process, right=0.5cm of identify] {Rilevare i conflitti};
+        \node (generate) [process, line width=1mm, right=0.5cm of detect] {Generare \\ strategie di \\ risoluzione};
+        \node (evaluate) [process, right=0.5cm of generate] {Valutare \\ strategie di \\ risoluzione};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (generate);
+        \draw[->] (generate) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+Bisogna per prima cosa identificare le possibili soluzioni che si possono avere a 
+disposizione. Nella fase successiva cerco di confrontare le soluzioni e valutare 
+quale sia la migliore.
+Per cercare dei candidati per la risoluzione dei conflitti, si possono utilizzare
+altre tecniche di elicitazione dei requisiti, come interviste, questionari, o altro; 
+oppure utilizzo delle strategie di risoluzione dei conflitti tra cui:
+
+\begin{itemize}
+  \item \textbf{Evitare le condizioni al limite:} ad esempio, ``\textit{Mantenere le copie
+  dei libri molto richiesti non prenotabili}''.
+  \item \textbf{Ripristinare le affermazioni in conflitto:} ad esempio, ``\textit{Copia restituita
+  entro 2 settimane e poi presa in prestito di nuovo}''.
+  \item \textbf{Indebolire le affermazioni in conflitto:} ad esempio, ``\textit{Copia restituita
+  entro 2 settimane a meno di un permesso esplicito}''.
+  \item \textbf{Omettere le affermazioni di minore priorità:} questo implica scartare le
+  affermazioni meno critiche per risolvere il conflitto.
+  \item \textbf{Specializzare la fonte o il target del conflitto:} ad esempio, ``\textit{Stato
+  del prestito del libro noto solo agli utenti dello staff}''.
+\end{itemize}
+
+Queste strategie aiutano a trasformare le affermazioni in conflitto o gli oggetti coinvolti,
+oppure a introdurre nuovi requisiti per facilitare la risoluzione dei conflitti.
+
+\subsubsection{Valutazione delle Strategie di Risoluzione}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm,
+        minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start] {Identificare \\ statement con \\
+        overlapping};
+        \node (detect) [process, right=0.5cm of identify] {Rilevare i conflitti};
+        \node (generate) [process, right=0.5cm of detect] {Generare \\ strategie di \\
+        risoluzione};
+        \node (evaluate) [process, line width=1mm, right=0.5cm of generate] {Valutare \\
+        strategie di \\ risoluzione};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (generate);
+        \draw[->] (generate) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+La valutazione delle strategie per risolvere i conflitti si basa su criteri ben definiti
+che mirano a ottimizzare il processo decisionale e garantire la coerenza con gli obiettivi
+del progetto:
+
+\begin{itemize}
+    \item \textbf{Contributo agli obiettivi non funzionali critici:} Le strategie di
+    risoluzione vengono valutate in base al loro impatto sui requisiti non funzionali
+    considerati critici per il successo del sistema.
+    \item \textbf{Contributo alla risoluzione di altri conflitti e rischi:} Oltre a
+    risolvere il conflitto specifico, una strategia efficace dovrebbe facilitare la
+    gestione di altri conflitti potenziali e mitigare i rischi associati.
+\end{itemize}
+
+Questi criteri sono fondamentali per scegliere la risoluzione che non solo risolve
+il conflitto immediato ma promuove anche la stabilità e l'integrità del sistema nel
+lungo termine. Ulteriori dettagli sulla selezione e l'implementazione di queste
+strategie possono essere trovati nella sezione ``Valutazione delle opzioni alternative".
 
 \section{Analisi dei rischi}
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=Rischio]
+    Un \textbf{rischio} è un fattore incerto il cui verificarsi può comportare la perdita
+di soddisfazione di un obiettivo corrispondente.
+\end{tcolorbox}
+
+Esempi includono:
+\begin{itemize}
+    \item Un passeggero che forza l'apertura delle porte mentre il treno è in movimento.
+    \item Un partecipante a una riunione che non controlla regolarmente la posta elettronica.
+\end{itemize}
+Un rischio è caratterizzato da:
+\begin{itemize}
+    \item Una probabilità di occorrenza.
+    \item Una o più conseguenze indesiderate, come i passeggeri che cadono dal treno in movimento con le porte aperte.
+\end{itemize}
+Ogni conseguenza del rischio ha:
+\begin{itemize}
+    \item Una probabilità di occorrenza se il rischio si verifica.
+    \item Una gravità, che è il grado di perdita di soddisfazione dell'obiettivo.
+\end{itemize}
+
 \subsection{Tipologie di rischi}
+I rischi possono essere categorizzati in:
+\begin{itemize}
+    \item \textbf{Rischi legati al prodotto:} Impattano sugli obiettivi funzionali o non funzionali del sistema. Esempi includono minacce alla sicurezza e pericoli per la sicurezza.
+    \item \textbf{Rischi legati al processo:} Hanno un impatto sugli obiettivi di sviluppo, come ritardi nella consegna o superamenti di costo. Un esempio comune è il turnover del personale.
+\end{itemize}
 \subsection{Come affrontare i rischi}
-\subsection{Come documentare i rischi}
-\subsection{Come risolvere i rischi}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start]
+        {Identificare \\ i rischi};
+        \node (detect) [process, right=0.5cm of identify]
+        {Valutazione \\ dei rischi};
+        \node (evaluate) [process, right=0.5cm of detect]
+        {Controllo dei \\ rischi};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+L'identificazione del rischio è un processo iterativo, infatti
+le azioni che prendiamo per controllare i rischi potrebbero dettare nuovi requisiti, 
+ponendo nuovi rischi.
+
+La gestione superficiale è una delle principali cause di fallimento di progetti software.
+
+\subsubsection{Identificazione dei Rischi}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm,
+        minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start, line width=1mm]
+        {Identificare \\ i rischi};
+        \node (detect) [process, right=0.5cm of identify]
+        {Valutazione \\ dei rischi};
+        \node (evaluate) [process, right=0.5cm of detect]
+        {Controllo dei \\ rischi};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+L'identificazione dei rischi è un processo essenziale che si basa sull'uso di
+liste di controllo specifiche per ciascuna categoria di progetto, al fine di
+personalizzare l'approccio al contesto specifico del progetto. Queste liste
+sono importanti per identificare i rischi potenziali associati alle diverse categorie
+di requisiti.
+
+\begin{itemize}
+    \item \textbf{Rischi Legati al Prodotto}:
+    derivano dalla possibile insoddisfazione nei
+    requisiti funzionali o di qualità:
+    \begin{itemize}
+        \item \textbf{Inesattezze informative}, come stime errate della velocità o della
+        posizione dei treni.
+        \item \textbf{Indisponibilità o inutilizzabilità} delle informazioni.
+        \item \textbf{Tempi di risposta scarsi} o \textbf{carenze durante picchi di carico},
+        che possono compromettere l'efficienza del servizio.
+    \end{itemize}
+    \item \textbf{Rischi Legati al Processo}:
+   includono quelli che possono influenzare negativamente il raggiungimento
+   degli obiettivi di sviluppo:
+    \begin{itemize}
+        \item \textbf{Volatilità dei requisiti}, che può portare a frequenti cambiamenti
+        e riallineamenti.
+        \item \textbf{Carenze di personale} o \textbf{dipendenze da fonti esterne}, che
+        possono ritardare il progresso del progetto.
+        \item \textbf{Programmazioni o budget non realistici}, aumentando il rischio di
+        superamenti di costi.
+        \item \textbf{Gestione inefficace dei rischi}, come può avvenire con un team di
+        sviluppatori inesperto.
+    \end{itemize}
+\end{itemize}
+
+Questi rischi devono essere sistematicamente identificati e gestiti attraverso l'uso
+di strategie di mitigazione adeguate, affinché il progetto possa procedere senza
+intoppi e con il minor numero di sorprese possibili.
+
+Per i rischi legati al prodotto, tipicamente analizziamo il \textit{system to-be} e
+ci focalizziamo sulle sotto-componenti per capire in quanti modi ogni singolo componente
+potrebbe fallire, comprendendo inoltre come ogni componente possa fallire.
+Possiamo procedere spezzando ulteriormente i componenti in sotto-componenti, fino a
+quando non siamo in grado di identificare i rischi.
+
+Per identificare i rischi è possibile inoltre utilizzare il \textbf{risk tree}, che è
+un albero che parte da un nodo radice e si dirama in nodi figli, che rappresentano
+i sotto-rischi. Questo albero può essere utilizzato per identificare i rischi e
+per capire come questi si propagano.
+
+Quando ho un risk tree, posso analizzare il \textit{cut set}, ovvero la minima decomposizione 
+delle foglie dell'albero che mi permette di analizzare il rischio ed essi stessi possono 
+essere organizzati in un albero.
+
+Per identificare i rischi, oltre a queste analisi, posso dotarmi di scenari e chiedendo 
+agli stakeholder, sessioni di gruppo e il riuso della conoscenza sulla base di esperienze 
+passate.
+\subsubsection{Valutazione dei Rischi}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm,
+        minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start]
+        {Identificare \\ i rischi};
+        \node (detect) [process, right=0.5cm of identify, line width=1mm]
+        {Valutazione \\ dei rischi};
+        \node (evaluate) [process, right=0.5cm of detect]
+        {Controllo dei \\ rischi};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+La valutazione dei rischi è importante per determinare la probabilità e la gravità
+delle conseguenze dei rischi identificati. Questo processo è guidato da:
+
+\begin{itemize}
+    \item \textbf{Stima Qualitativa}: Utilizzo di stime qualitative per la probabilità
+    e la gravità:
+    \begin{itemize}
+        \item \textit{Probabilità}: ad esempio, molto probabile, probabile, possibile,
+        improbabile.
+        \item \textit{Gravità}: ad esempio, catastrofica, grave, alta, moderata.
+    \end{itemize}
+    \item \textbf{Tavola di Consequenzialità dei Rischi}: Ogni rischio viene valutato
+    in base a una tabella che incrocia la probabilità del suo verificarsi con la gravità
+    delle sue conseguenze.
+    \item \textbf{Confronto e Prioritizzazione dei Rischi}: I rischi vengono confrontati
+    e prioritizzati in base ai loro livelli di severità per focalizzarsi sul controllo
+    dei rischi ad alta priorità.
+\end{itemize}
+
+Questi passaggi sono essenziali per sviluppare strategie efficaci di gestione e mitigazione
+dei rischi, assicurando così che i rischi ad alta priorità siano gestiti con le risorse
+adeguate e nei tempi appropriati.
+
+Per la valutazione dei rischi possiamo dotarci di una tabella di valutazione dei rischi:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Conseguenze} & \textbf{Probabile} & \textbf{Possibile} & \textbf{Improbabile} \\ \hline
+    Perdita di vite      & Catastrofico       & Catastrofico       & Grave                \\ \hline
+    Ferite gravi         & Catastrofico       & Grave              & Alta                 \\ \hline
+    Danni al treno       & Alto               & Moderato           & Basso                \\ \hline
+    Riduzione passeggeri & Alto               & Alto               & Basso                \\ \hline
+    Danno reputazionale  & Moderato           & Basso              & Basso                \\ \hline
+    \end{tabular}
+\end{center}
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=Pro]
+    Questo approccio è \textbf{facile da utilizzare} e fornisce stime rapide.
+\end{tcolorbox}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Contro]
+    Le conclusioni sono \textbf{limitate}: le stime sono grossolane e soggettive,
+    e non considerano la probabilità complessiva delle conseguenze.
+\end{tcolorbox}
+Una valutazione del rischio più quantitativo può essere fatto mediante 
+l'ausilio della probabilità e per la scala di severità sempre con un range di valori.
+Questo permette di associare dei valori metrici quantitativi per calcolare delle metriche 
+derivate.
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=Pro]
+    Questo approccio è \textbf{più preciso} e \textbf{più accurato}.
+\end{tcolorbox}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Contro]
+    Tale approccio rimane soggettivo, di fatto questi valori dovrebbero essere 
+    negoziati con gli stakeholder, che conoscono meglio il contesto.
+\end{tcolorbox}
+\subsubsection{Controllo dei Rischi}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Styles
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=3cm,
+        minimum height=1cm, text centered, draw=black, fill=blue!20, text width=2.5cm]
+      
+        % Nodes
+        \node (start) [circle, fill, inner sep=2pt] {};
+        \node (identify) [process, right=0.5cm of start]
+        {Identificare \\ i rischi};
+        \node (detect) [process, right=0.5cm of identify]
+        {Valutazione \\ dei rischi};
+        \node (evaluate) [process, right=0.5cm of detect, line width=1mm]
+        {Controllo dei \\ rischi};
+      
+        % Arrows
+        \draw[->] (start) -- (identify);
+        \draw[->] (identify) -- (detect);
+        \draw[->] (detect) -- (evaluate);
+        \draw[->]  (evaluate.south) -- ++(0,-0.5) -| (start.south);
+    \end{tikzpicture}
+\end{figure}
+L'obiettivo principale nella gestione dei rischi è ridurre l'esposizione ai
+rischi più critici attraverso l'implementazione di contromisure efficaci. Queste
+contromisure non solo mitigano i rischi esistenti ma possono anche portare all'emergere
+di nuovi requisiti per affrontare condizioni o sfide non precedentemente identificate.
+
+L'adozione di tali misure richiede un'analisi accurata e una valutazione continua per
+assicurare che i rischi vengano gestiti in modo proattivo e che le soluzioni implementate
+migliorino effettivamente la robustezza del sistema o del processo.
+\subsection{Documentazione dei Rischi}
+La documentazione accurata dei rischi è fondamentale per supportare l'evoluzione del
+sistema e garantire che le contromisure siano adeguatamente pianificate e implementate.
+Per ogni rischio identificato, è essenziale documentare:
+
+\begin{itemize}
+    \item \textbf{Condizioni o Eventi di Occorrenza:} Specificare le circostanze sotto le
+    quali il rischio può manifestarsi.
+    \item \textbf{Probabilità Stimata:} Valutare la frequenza con cui il rischio può
+    verificarsi.
+    \item \textbf{Cause e Conseguenze Possibili:} Analizzare e registrare le potenziali
+    cause dei rischi e le loro possibili conseguenze.
+    \item \textbf{Probabilità e Gravità di Ogni Conseguenza:} Stabilire quanto spesso le
+    conseguenze possono verificarsi e quanto gravi possono essere
+    \item \textbf{Contromisure Identificate e Leverage di Riduzione del Rischio:} Elencare
+    le contromisure proposte e valutare la loro efficacia nel ridurre la probabilità o
+    l'impatto del rischio.
+    \item \textbf{Contromisure Selezionate:} Indicare quali contromisure sono state
+    effettivamente scelte per l'implementazione.
+\end{itemize}
+
+Questa documentazione dettagliata forma la base per un \textbf{albero dei rischi annotato},
+che serve come strumento visivo e funzionale per comprendere e gestire i rischi durante
+tutto il ciclo di vita del progetto.
+
+\subsection{Defect Detection Prevention}
+Il \textbf{Defect Detection Prevention (\texttt{DDP})} è una tecnica e uno strumento
+sviluppati presso la \texttt{NASA} per fornire supporto quantitativo ai cicli di
+\textit{Identificazione-Valutazione-Controlla} dei rischi. Questo approccio si
+articola in tre fasi principali:
+
+Il \texttt{DDP} è un metodo per identificare i rischi e le opportunità,
+valutarli e controllarli. Questo metodo si basa su tre fasi principali:
+
+\begin{enumerate}
+    \item \textbf{Elaborazione della Matrice di Impatto del Rischio:} Questa
+    fase prevede la creazione di una matrice che valuta l'impatto di ciascun
+    rischio identificato, facilitando una comprensione quantitativa delle
+    potenziali conseguenze.
+    
+    \item \textbf{Elaborazione della Matrice di Efficacia delle Contromisure:}
+    Successivamente, viene sviluppata una matrice che valuta l'efficacia delle
+    varie contromisure proposte contro i rischi identificati.
+    
+    \item \textbf{Determinazione del Bilanciamento Ottimale tra Riduzione del Rischio
+    e Costo delle Contromisure:} L'ultima fase del processo mira a trovare un equilibrio
+    ottimale tra il grado di riduzione del rischio ottenuto e il costo delle contromisure
+    implementate.
+\end{enumerate}
+
+Questo metodo permette di approcciare la gestione dei rischi in maniera sistematica
+e quantificabile, assicurando che le decisioni prese siano basate su dati solidi e
+analisi approfondite.
 
 \section{Confronto delle opzioni alternative}
+l processo di Ingegneria dei Requisiti solleva diverse opzioni alternative per
+soddisfare gli obiettivi di un sistema, risolvere i conflitti e ridurre i rischi. 
+La selezione delle alternative preferite richiede una negoziazione basata su criteri 
+ben definiti.
+
+\subsection{Valutazione Qualitativa e Quantitativa}
+\begin{itemize}
+    \item \textbf{Valutazione Qualitativa:} Si determina il contributo di ciascuna 
+    opzione ai requisiti non funzionali (NFRs), usando etichette qualitative come 
+    molto positivo (++), positivo (+), negativo (-) e molto negativo (--). Ad esempio, 
+    nella programmazione di riunioni, le opzioni possono variare nella loro capacità 
+    di fornire risposte rapide o minimizzare gli inconvenienti.
+    \item \textbf{Valutazione Quantitativa:} Si costruisce una matrice ponderata 
+    per valutare ogni opzione secondo diversi criteri, basati sull'importanza 
+    relativa di ciascun criterio. Il punteggio complessivo di ogni opzione è 
+    calcolato come:
+    \[
+    \text{Punteggio Totale} (opt) = \sum_{\text{crit}} (\text{Punteggio} 
+    (opt, \text{crit}) \times \text{Peso} (\text{crit}))
+    \]
+    dove i punteggi vanno da 0 a 1, indicando la percentuale di soddisfacimento 
+    del criterio.
+\end{itemize}
+
+\subsection{Criteri di Valutazione}
+Per selezionare le alternative preferenziali, si concorda sui seguenti criteri:
+\begin{itemize}
+    \item Contributo ai requisiti non funzionali critici.
+    \item Contributo alla risoluzione di altri rischi.
+    \item Costo-efficacia, misurato attraverso il leverage di riduzione del rischio.
+\end{itemize}
+
+Questo approccio consente di prendere decisioni informate durante il processo 
+ingegneria dei requisiti, assicurando che le soluzioni scelte offrano il miglior 
+equilibrio tra 
+benefici e costi.
 
 \section{Prioritizzazione dei requisiti}
+La prioritizzazione dei requisiti è essenziale per affrontare conflitti di risorse,
+sviluppo incrementale e per adattarsi a problemi imprevisti durante lo sviluppo
+del progetto. Qui sono illustrati i principi e le tecniche per una prioritizzazione
+efficace dei requisiti.
+
+\subsection{Principi di Prioritizzazione dei Requisiti}
+\begin{itemize}
+    \item Prioritizzazione ordinata per livelli di priorità.
+    \item Uso di livelli qualitativi e relativi (es. ``superiore a").
+    \item Requisiti di granularità comparabile e stesso livello di astrazione.
+    \item Requisiti non mutuamente dipendenti per permettere eliminazioni selettive.
+    \item Convergenza sui requisiti accettati dai principali stakeholder.
+\end{itemize}
+
+\subsection{Tecnica di Valutazione Valore-Costo}
+\begin{itemize}
+    \item \textbf{Stima del Contributo Relativo}: Ogni requisito è valutato per il
+    suo contributo al valore e al costo del progetto.
+    \item \textbf{Diagramma Valore-Costo}: Viene utilizzato per visualizzare la
+    trade-off tra valore e costo, categorizzando i requisiti in alta, media e bassa priorità.
+    \item \textbf{Uso della Tecnica AHP}: L'Analytic Hierarchy Process aiuta a
+    determinare quanto ogni requisito contribuisca al valore o al costo del
+    progetto relativamente agli altri requisiti.
+\end{itemize}
+
+\subsection{Implementazione della Prioritizzazione}
+I requisiti vengono quindi mappati in una matrice valore-costo per determinare
+le priorità basate su una valutazione sistematica e quantificata. Questo metodo
+fornisce una base oggettiva per decisioni di sviluppo e riallocazione delle risorse.
