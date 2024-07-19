@@ -149,13 +149,13 @@ Tipicamente, però, si ragiona in termini di \textit{scenario-oriented} e \texti
         \tikzset{oval node/.style={draw, ellipse, minimum width=2.5cm, minimum height=1.5cm, align=center, fill=#1}}
         
         % Creazione dei nodi
-        \node[oval node=blue!20] (A) at (0,3) {Obiettivi};
-        \node[oval node=green!20] (B) at (-3,-1) {Agenti};
-        \node[oval node=red!20] (C) at (3,-1) {Scenario};
+        \node[oval node=blue!20] (A) at (0,3) {Goals};
+        \node[oval node=green!20] (B) at (-3,-1) {Scenari};
+        \node[oval node=red!20] (C) at (3,-1) {Agenti};
 
         % Creazione degli archi con etichette
-        \draw (A) -- (B) node[midway, left] {Responsabilità};
-        \draw (A) -- (C) node[midway, right] {Copertura};
+        \draw (A) -- (B) node[midway, left] {Copertura};
+        \draw (A) -- (C) node[midway, right] {Responsabilità};
         \draw (B) -- (C) node[midway, below] {Interazione};
     \end{tikzpicture}
 \end{figure}
