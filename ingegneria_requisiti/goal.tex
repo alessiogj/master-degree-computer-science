@@ -1,5 +1,5 @@
 \chapter{Orientamento ai goal}
-L'obiettivo, nell'ingegneria dei requisiti, è un concetto intrinseco quando 
+Il goal, nell'ingegneria dei requisiti, è un concetto intrinseco quando 
 si parla di requisiti.
 Di fatto abbiamo sempre avuto a che fare con gli obiettivi, e la metodologia
 \textit{goal-oriented} definisce il concetto di goal come astrazione chiave che 
@@ -13,11 +13,12 @@ ci guida nell'ingegneria dei requisiti.
 Lo statement prescrittivo perché può essere esprimibile con ``deve'', ``dovrebbe'', 
 ``può'', ``potrebbe'', e così via.
 \begin{tcolorbox}[colback=cyan!5!white,colframe=cyan!75!black, title=Agente]
-    Un agente è un componete \textbf{attivo} del sistema \textbf{responsabile} del raggiungimento
+    Un agente è un componete \textbf{attivo} del sistema \textit{as-is} o \textit{to-be} che è
+    \textbf{responsabile} del raggiungimento
     di un goal.
 \end{tcolorbox}
 Capiamo quindi che gli agenti possono essere umani, software o hardware. L'agente è quindi 
-un \textbf{ruolo} che prende decisioni, in modo che il goal assegnato sia raggiunto.
+un \textbf{ruolo} che prende decisioni, rispetto che un individuo, in modo che il goal assegnato sia raggiunto.
 Per farlo dovrà \textit{monitorare} e \textit{controllare} delle grandezze.
 \subsubsection{Esempio di goal soddisfatto dalla cooperazione di più agenti}
 Il raggiungimento del'obiettivo ``\textit{Restituzione di un libro in biblioteca}''
@@ -60,7 +61,7 @@ I goal prendono un nome distinto a seconda della relazione che hanno con gli age
     nel \textit{software to-be} (\textit{come per esempio il meccanismo di frenata}).
 \end{tcolorbox}
 \begin{tcolorbox}[colback=orange!5!white,colframe=orange!75!black, title=Prospettiva]
-    Il requisito è un goal che deve essere soddisfatto da un \textbf{unico} agente 
+    La prospettiva è un goal che deve essere soddisfatto da un \textbf{unico} agente 
     nel \textit{environment} (\textit{come per esempio le persone}).
 \end{tcolorbox}
 \section{Tipologie e categorie di goal}
@@ -153,8 +154,8 @@ Tipicamente, però, si ragiona in termini di \textit{scenario-oriented} e \texti
         \node[oval node=red!20] (C) at (3,-1) {Scenario};
 
         % Creazione degli archi con etichette
-        \draw (A) -- (B) node[midway, left] {Copertura};
-        \draw (A) -- (C) node[midway, right] {Responsabilità};
+        \draw (A) -- (B) node[midway, left] {Responsabilità};
+        \draw (A) -- (C) node[midway, right] {Copertura};
         \draw (B) -- (C) node[midway, below] {Interazione};
     \end{tikzpicture}
 \end{figure}
