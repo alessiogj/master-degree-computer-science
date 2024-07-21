@@ -12,5 +12,9 @@ init_latex.py
 .vscode/
 .DS_Store
 
-# Mantieni la cartella img e il suo percorso completo
-!/**/img/
+# Eliminazione di tutti i file immagine
+**/img/
+
+# Ignora i file tex
+**/*.tex
+
