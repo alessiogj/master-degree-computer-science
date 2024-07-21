@@ -337,3 +337,48 @@ Per farlo utilizziamo i nodi di \texttt{fork} e \texttt{join}.
         \item Difficile da costruire e da capire.
     \end{itemize}
 \end{tcolorbox}
+
+\subsection{Decorare gli scenari con condizioni di stato}
+Per aiutarci possiamo decorare gli scenari con condizioni di stato, in modo da
+rappresentare gli stati raggiunti durante l'esecuzione di uno scenario all'emissione 
+di un evento.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{img/state_scenari.png}
+\end{figure}
+\subsection{Transire da un sequence diagram a una state machine}
+Tutte le informazioni provenienti dagli scenari mi permettono di costruire in 
+maniera semplice una state machine.
+Gli step per farlo sono:
+\begin{itemize}
+    \item \textbf{Decorare gli scenari}: aggiungendo gli stati raggiunti durante
+    l'esecuzione di uno scenario (\textit{come visto precedentemente}).
+    \item \textbf{Generalizzare gli scenari in una state machine}.
+    \item \textbf{Verificare, integrare e ristrutturare la state machine}.
+\end{itemize}
+\subsection{Esempio pratico}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/da_scenari_a_state.png}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/merge_state.png}
+\end{figure}
+Sostanzialmente, a questo punto, si verifica che non si verifichino 
+scenari non documentati che potrebbero violare i requisiti.
+
+\subsection{Transire da una state machine ai goal}
+I goal vengono identificati a partire dagli scenari chiedendosi \textit{perché} in 
+caso di scenari positivi o 
+\textit{perché no} in caso di scenari negativi.
+
+\begin{itemize}
+    \item Per gli \textit{achive goal} si utilizza un pattern di 
+    stimolo o risposta.
+    \item Per i \textit{maintain goal} si utilizza un pattern in 
+    cui si considerano invarianti.
+\end{itemize}
+
+\subsubsection{Transire da una goal diagram a una state machine}
+Per farlo dobbiamo aver definito le operazioni
