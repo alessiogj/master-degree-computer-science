@@ -381,4 +381,29 @@ caso di scenari positivi o
 \end{itemize}
 
 \subsubsection{Transire da una goal diagram a una state machine}
-Per farlo dobbiamo aver definito le operazioni
+Per farlo dobbiamo aver definito le operazioni. 
+
+\begin{itemize}
+    \item Una SM concorrente per agente; una sub-SM concorrente per ogni variabile
+    controllata dall'agente.
+    \item Per ogni variabile di stato dinamicamente rilevante:
+    \begin{itemize}
+        \item Selezione dell'operazionalizzazione: considerare tutti i goal foglia
+        che la vincolano e le operazioni associate che la includono nella lista di Output.
+        \item Derivazione della SM: per ogni operazione selezionata (\textit{Op}),
+        derivare una transizione:
+        \begin{itemize}
+            \item (DomPre, DomPost) $\rightarrow$ (sourceState, targetState) con
+            etichetta di transizione \textit{Op}.
+            \item Congiunzione di tutti i \textit{ReqPre} $\rightarrow$ guardia di
+            transizione.
+            \item Disgiunzione di tutti i \textit{ReqTrig} $\rightarrow$ guardia su
+            transizione senza evento.
+        \end{itemize}
+        \item Aggiungere una transizione senza etichetta dallo stato iniziale (basato
+        sull'\textit{Init} della variabile).
+        \item Verificare, estendere e ristrutturare questa SM secondo necessità.
+    \end{itemize}
+    \item Questo processo può essere usato inversamente per trovare \textit{ReqPre},
+    \textit{ReqTrig}, \textit{Op} mancanti.
+\end{itemize}
